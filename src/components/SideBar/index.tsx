@@ -1,12 +1,7 @@
-import SideBarButton from 'components/SideBarButton';
 import React, { useCallback } from 'react';
+import SideBarButton from 'components/SideBarButton';
 import { ButtonPair, Container } from './styles';
-
-const properties = [
-  ['h1', 'h2'],
-  ['h3', 'h4'],
-  ['b', 'i'],
-];
+import properties, { Property } from '../../utils/properties';
 
 interface SideBarProps {
   inputRef: React.RefObject<HTMLDivElement>;
@@ -15,7 +10,7 @@ interface SideBarProps {
 
 const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
   const getNodes = useCallback(
-    (property: string): (Node | string)[] => {
+    (property: Property): (Node | string)[] => {
       const selection = window.getSelection();
       const textRef = inputRef.current;
 
@@ -29,25 +24,44 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
         const comparativeNode: Node | null | undefined =
           parentNode !== textRef ? parentNode : selection.anchorNode;
 
-        textRef.childNodes.forEach(child => {
-          if (comparativeNode === child) {
+        textRef.childNodes.forEach((child, key) => {
+          if (property.type === 'tag' && comparativeNode === child) {
             const updatedText: string[] = [];
             const content = child.textContent || '';
 
             if (start >= 0 && end >= 0) {
               if (start === 0) {
                 updatedText.push(
-                  `<${property}>${content.slice(0, end)}</${property}>`,
+                  `<${property.name}>${content.slice(0, end)}</${
+                    property.name
+                  }>`,
                 );
               } else {
                 updatedText.push(
                   content.slice(0, start),
-                  `<${property}>${content.slice(start, end)}</${property}>`,
+                  `<${property.name}>${content.slice(start, end)}</${
+                    property.name
+                  }>`,
                 );
               }
 
               updatedText.push(content.slice(end));
               inputNodes.push(updatedText.join(''));
+            }
+          } else if (comparativeNode === child && property.type === 'style') {
+            if (parentNode !== textRef) {
+              const clone = document.createElement(child.nodeName);
+
+              clone.innerText = child.textContent || '';
+              clone.setAttribute(
+                'style',
+                (textRef.children[key].getAttribute('style') || '') +
+                  property.code,
+              );
+
+              inputNodes.push(clone);
+            } else {
+              // When it not has a parentElement (Just text)
             }
           } else {
             inputNodes.push(child);
@@ -61,7 +75,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
   );
 
   const handleButtonClick = useCallback(
-    (property: string) => {
+    (property: Property) => {
       if (!inputRef.current?.onfocus) {
         inputRef.current?.focus();
       }
@@ -74,11 +88,11 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
   return (
     <Container>
       {properties.map(positions => (
-        <ButtonPair key={positions[0] + positions[1]}>
-          {positions.map(position => (
+        <ButtonPair key={positions[0].name + positions[1].name}>
+          {positions.map((position: Property) => (
             <SideBarButton
-              key={position}
-              name={position}
+              key={position.name}
+              name={position.name}
               onClick={() => handleButtonClick(position)}
             />
           ))}
