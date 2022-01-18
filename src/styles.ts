@@ -17,6 +17,8 @@ export const Container = styled.div`
     font-size: 42px;
 
     color: #ffffff;
+
+    margin: 40px 0;
   }
 `;
 
@@ -29,19 +31,31 @@ export const EditableArea = styled.main`
   width: 100%;
 
   margin-bottom: 3%;
+  position: relative;
 
-  textarea {
-    width: 80%;
-    resize: none;
+  &::after {
+    content: '';
+    position: absolute;
+    top: -30px;
 
-    border: 0;
-    outline: 0;
+    width: 70%;
+    height: 2px;
 
-    overflow: hidden;
-    background-color: transparent;
-    color: #fff;
-
-    font-family: 'Poppins', sans-serif;
-    font-size: 26px;
+    background-color: #fff;
+    opacity: 0.6;
   }
+`;
+
+export const TextArea = styled.div`
+  width: 70%;
+
+  border: 0;
+  outline: 0;
+
+  overflow: hidden;
+  background-color: transparent;
+  color: #fff;
+
+  font-family: 'Poppins', sans-serif;
+  font-size: 26px;
 `;

@@ -10,7 +10,7 @@ export const ButtonPair = styled.div`
 
 export const Container = styled.aside`
   position: absolute;
-  right: 0;
+  left: 0;
   top: 25%;
 
   display: flex;
@@ -21,8 +21,8 @@ export const Container = styled.aside`
   width: 5%;
   background-color: #fffa6b;
 
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
 
   transition: 0.4s;
 

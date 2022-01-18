@@ -1,10 +1,19 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import SideBar from 'components/SideBar';
-import { Container, EditableArea } from './styles';
+import { Container, EditableArea, TextArea } from './styles';
+
+const placeHolder =
+  '<div style="color:#8e8e8e;">Insira o conteúdo aqui...</div>';
 
 const App: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const textInputRef = useRef<HTMLTextAreaElement>(null);
+  const textInputRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (textInputRef.current) {
+      textInputRef.current.innerHTML = placeHolder;
+    }
+  }, []);
 
   const handleInputChange = useCallback(() => {
     const inputRef = textInputRef.current;
@@ -17,6 +26,28 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const handleInputFocus = useCallback(() => {
+    const inputRef = textInputRef.current;
+
+    if (inputRef && inputRef.innerHTML === placeHolder) {
+      inputRef.innerHTML = '';
+    }
+  }, []);
+
+  const handleInputBlur = useCallback(() => {
+    const inputRef = textInputRef.current;
+
+    if (inputRef && inputRef.innerHTML === '') {
+      inputRef.innerHTML = placeHolder;
+    }
+  }, []);
+
+  const setTextProperty = useCallback(updatedText => {
+    if (textInputRef.current) {
+      textInputRef.current.innerHTML = updatedText;
+    }
+  }, []);
+
   return (
     <Container ref={containerRef}>
       <h1>Highedit</h1>
@@ -26,14 +57,19 @@ const App: React.FC = () => {
           textInputRef.current?.focus();
         }}
       >
-        <textarea
-          placeholder="Insira o conteúdo aqui"
+        <TextArea
           ref={textInputRef}
+          contentEditable
           onChange={handleInputChange}
+          onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
         />
       </EditableArea>
 
-      <SideBar />
+      <SideBar
+        inputRef={textInputRef}
+        setTextProperty={updatedText => setTextProperty(updatedText)}
+      />
     </Container>
   );
 };
