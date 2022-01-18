@@ -14,26 +14,20 @@ interface SideBarProps {
 }
 
 const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
-  const handleButtonClick = useCallback(
-    (property: string) => {
+  const getNodes = useCallback(
+    (property: string): (Node | string)[] => {
+      const selection = window.getSelection();
       const textRef = inputRef.current;
 
-      if (!textRef?.onfocus) {
-        textRef?.focus();
-      }
-
-      const selection = window.getSelection();
+      const inputNodes: (Node | string)[] = [];
 
       if (selection && textRef) {
         const start = selection.anchorOffset;
         const end = selection.focusOffset;
+        const parentNode = selection.anchorNode?.parentNode;
 
         const comparativeNode: Node | null | undefined =
-          selection.anchorNode?.parentNode !== textRef
-            ? selection.anchorNode?.parentNode
-            : selection.anchorNode;
-
-        const inputNodes: (Node | string)[] = [];
+          parentNode !== textRef ? parentNode : selection.anchorNode;
 
         textRef.childNodes.forEach(child => {
           if (comparativeNode === child) {
@@ -59,11 +53,22 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
             inputNodes.push(child);
           }
         });
-
-        setTextProperty(inputNodes);
       }
+
+      return inputNodes;
     },
-    [inputRef, setTextProperty],
+    [inputRef],
+  );
+
+  const handleButtonClick = useCallback(
+    (property: string) => {
+      if (!inputRef.current?.onfocus) {
+        inputRef.current?.focus();
+      }
+
+      setTextProperty(getNodes(property));
+    },
+    [getNodes, inputRef, setTextProperty],
   );
 
   return (
