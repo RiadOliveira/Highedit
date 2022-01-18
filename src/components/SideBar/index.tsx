@@ -10,37 +10,57 @@ const properties = [
 
 interface SideBarProps {
   inputRef: React.RefObject<HTMLDivElement>;
-  setTextProperty: (updatedText: string) => void;
+  setTextProperty: (updatedChildren: (Node | string)[]) => void;
 }
 
 const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
   const handleButtonClick = useCallback(
     (property: string) => {
       const textRef = inputRef.current;
+
+      if (!textRef?.onfocus) {
+        textRef?.focus();
+      }
+
       const selection = window.getSelection();
 
       if (selection && textRef) {
-        const content = textRef.innerHTML;
         const start = selection.anchorOffset;
         const end = selection.focusOffset;
 
-        if (start >= 0 && end >= 0) {
-          const updatedText: string[] = [];
+        const comparativeNode: Node | null | undefined =
+          selection.anchorNode?.parentNode !== textRef
+            ? selection.anchorNode?.parentNode
+            : selection.anchorNode;
 
-          if (start === 0) {
-            updatedText.push(
-              `<${property}>${content.slice(0, end)}</${property}>`,
-            );
+        const inputNodes: (Node | string)[] = [];
+
+        textRef.childNodes.forEach(child => {
+          if (comparativeNode === child) {
+            const updatedText: string[] = [];
+            const content = child.textContent || '';
+
+            if (start >= 0 && end >= 0) {
+              if (start === 0) {
+                updatedText.push(
+                  `<${property}>${content.slice(0, end)}</${property}>`,
+                );
+              } else {
+                updatedText.push(
+                  content.slice(0, start),
+                  `<${property}>${content.slice(start, end)}</${property}>`,
+                );
+              }
+
+              updatedText.push(content.slice(end));
+              inputNodes.push(updatedText.join(''));
+            }
           } else {
-            updatedText.push(
-              content.slice(0, start),
-              `<${property}>${content.slice(start, end)}</${property}>`,
-            );
+            inputNodes.push(child);
           }
+        });
 
-          updatedText.push(content.slice(end));
-          setTextProperty(updatedText.join(''));
-        }
+        setTextProperty(inputNodes);
       }
     },
     [inputRef, setTextProperty],

@@ -42,9 +42,19 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const setTextProperty = useCallback(updatedText => {
-    if (textInputRef.current) {
-      textInputRef.current.innerHTML = updatedText;
+  const setTextProperty = useCallback((updatedChildren: (Node | string)[]) => {
+    const inputRef = textInputRef.current;
+
+    if (inputRef) {
+      inputRef.innerHTML = '';
+
+      updatedChildren.forEach(child => {
+        if (typeof child === 'string') {
+          inputRef.innerHTML += child;
+        } else {
+          inputRef.appendChild(child);
+        }
+      });
     }
   }, []);
 
