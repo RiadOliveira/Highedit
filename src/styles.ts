@@ -43,6 +43,8 @@ export const EditableArea = styled.main`
 
     background-color: #fff;
     opacity: 0.6;
+
+    cursor: auto;
   }
 `;
 

@@ -25,26 +25,21 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
         const end = selection.focusOffset;
 
         if (start >= 0 && end >= 0) {
-          let updatedText = '';
+          const updatedText: string[] = [];
 
           if (start === 0) {
-            updatedText = [
-              `<${property}>`,
-              content.slice(0, end),
-              `</${property}>`,
-              content.slice(end),
-            ].join('');
+            updatedText.push(
+              `<${property}>${content.slice(0, end)}</${property}>`,
+            );
           } else {
-            updatedText = [
+            updatedText.push(
               content.slice(0, start),
-              `<${property}>`,
-              content.slice(start, end),
-              `</${property}>`,
-              content.slice(end),
-            ].join('');
+              `<${property}>${content.slice(start, end)}</${property}>`,
+            );
           }
 
-          setTextProperty(updatedText);
+          updatedText.push(content.slice(end));
+          setTextProperty(updatedText.join(''));
         }
       }
     },

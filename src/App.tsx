@@ -52,11 +52,7 @@ const App: React.FC = () => {
     <Container ref={containerRef}>
       <h1>Highedit</h1>
 
-      <EditableArea
-        onClick={() => {
-          textInputRef.current?.focus();
-        }}
-      >
+      <EditableArea>
         <TextArea
           ref={textInputRef}
           contentEditable
