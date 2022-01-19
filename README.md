@@ -4,7 +4,7 @@
   A simple and practical Rich-Text editor app.
 </p>
 
-<h4 align="center"> 
+<h4 align="center">
 	:pencil:&nbsp; Highedit - In development... &nbsp; :pencil: </br>
 </h4>
 
@@ -33,15 +33,15 @@ Tools used on this project:
 
 <ul>
   <li id="prerequisites"><h3>Prerequisites</h3></li>
-  
+
   Before you start, it will be necessary to install those tools on your machine: [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/).
-  
+
   <li id="running"><h3>Running the app</h3></li>
-  
+
   ```bash
     # Clone this repository
     $ git clone https://github.com/RiadOliveira/Highedit.git
-  
+
     # Access project's folder
     $ cd Highedit
 
@@ -61,8 +61,8 @@ Tools used on this project:
 
 <h2 id="features">:gear: Features</h2>
 
-- [ ] Tag formatting (Change part of the text into H1, H2 ...).
-- [ ] Text style formatting (Change text into Bold, Italic...).
+- [X] Tag formatting (Change part of the text into H1, H2 ...).
+- [X] Text style formatting (Change text into Bold, Italic...).
 - [ ] Text color formatting.
 - [ ] Text font editing.
 - [ ] Text size editing.
@@ -88,5 +88,5 @@ This project is MIT Licensed. See <a href="https://github.com/RiadOliveira/Highe
 
 </br>Contact:</br>
 
-[![Linkedin Badge](https://img.shields.io/badge/-Ríad&nbsp;Oliveira-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/r%C3%ADad-oliveira-8492891b4/)](https://www.linkedin.com/in/r%C3%ADad-oliveira-8492891b4/) 
+[![Linkedin Badge](https://img.shields.io/badge/-Ríad&nbsp;Oliveira-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/r%C3%ADad-oliveira-8492891b4/)](https://www.linkedin.com/in/r%C3%ADad-oliveira-8492891b4/)
 [![Gmail Badge](https://img.shields.io/badge/-riad.oliveira@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:riad.oliveira@gmail.com)](mailto:riad.oliveira@gmail.com)
