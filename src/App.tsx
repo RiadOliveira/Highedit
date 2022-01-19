@@ -31,6 +31,7 @@ const App: React.FC = () => {
 
     if (inputRef && inputRef.innerHTML === placeHolder) {
       inputRef.innerHTML = '';
+      window.getSelection()?.setPosition(inputRef, 0);
     }
   }, []);
 

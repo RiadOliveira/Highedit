@@ -25,52 +25,64 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
           parentNode !== textRef ? parentNode : selection.anchorNode;
 
         textRef.childNodes.forEach(child => {
-          if (property.type === 'tag' && comparativeNode === child) {
+          if (comparativeNode !== child) {
+            inputNodes.push(child);
+            return;
+          }
+
+          const content = child.textContent || '';
+
+          if (property.type === 'tag') {
             const updatedText: string[] = [];
-            const content = child.textContent || '';
 
             if (start >= 0 && end >= 0) {
-              if (start === 0) {
-                updatedText.push(
-                  `<${property.name}>${content.slice(0, end)}</${
-                    property.name
-                  }>`,
-                );
-              } else {
-                updatedText.push(
-                  content.slice(0, start),
-                  `<${property.name}>${content.slice(start, end)}</${
-                    property.name
-                  }>`,
-                );
+              const { name } = property;
+
+              if (start !== 0) {
+                updatedText.push(content.slice(0, start));
               }
 
+              updatedText.push(
+                `<${name}>${content.slice(start, end)}</${name}>`,
+              );
               updatedText.push(content.slice(end));
+
               inputNodes.push(updatedText.join(''));
             }
-          } else if (comparativeNode === child && property.type === 'style') {
+          } else {
             const { cssProp, value } = property.code;
 
-            if (parentNode !== textRef) {
-              const styledChild = child.firstChild?.parentElement;
-              const previousStyle = styledChild?.getAttribute('style') || '';
+            if (parentNode === textRef) {
+              // Has just text.
+              const updatedText: string[] = [];
 
-              if (previousStyle.includes(cssProp)) {
-                styledChild?.style.removeProperty(cssProp);
-              } else {
-                styledChild?.style.setProperty(cssProp, value);
+              if (start !== 0) {
+                updatedText.push(content.slice(0, start));
               }
 
-              inputNodes.push(styledChild?.outerHTML || '');
-            } else {
-              const { textContent } = child;
-
-              inputNodes.push(
-                `<p style="${cssProp}:${value};">${textContent}</p>`,
+              updatedText.push(
+                `<span style="${cssProp}:${value};">${content.slice(
+                  start,
+                  end,
+                )}</span>`,
               );
+              updatedText.push(content.slice(end));
+
+              inputNodes.push(updatedText.join(''));
+              return;
             }
-          } else {
-            inputNodes.push(child);
+
+            // Already has tag.
+            const styledChild = child.firstChild?.parentElement;
+            const hasProp = !!styledChild?.style.getPropertyValue(cssProp);
+
+            if (hasProp) {
+              styledChild?.style.removeProperty(cssProp);
+            } else {
+              styledChild?.style.setProperty(cssProp, value);
+            }
+
+            inputNodes.push(styledChild?.outerHTML || '');
           }
         });
       }
