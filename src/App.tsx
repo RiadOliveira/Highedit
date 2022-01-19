@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SideBar from 'components/SideBar';
 import { Container, EditableArea, TextArea } from './styles';
 
@@ -8,6 +8,10 @@ const placeHolder =
 const App: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const textInputRef = useRef<HTMLDivElement>(null);
+
+  const [selectedElement, setSelectedElement] = useState<ChildNode | undefined>(
+    undefined,
+  );
 
   useEffect(() => {
     if (textInputRef.current) {
@@ -59,6 +63,23 @@ const App: React.FC = () => {
     }
   }, []);
 
+  const handleContentSelect = useCallback(
+    (nodes: ChildNode[]) => {
+      const selection = window.getSelection();
+      const textRef = textInputRef.current;
+
+      if (selection && textRef) {
+        const parentNode = selection.anchorNode?.parentNode;
+        const comparativeNode: Node | null | undefined =
+          parentNode !== textRef ? parentNode : selection.anchorNode;
+
+        const findedNode = nodes.find(node => node === comparativeNode);
+        if (findedNode !== selectedElement) setSelectedElement(findedNode);
+      }
+    },
+    [selectedElement],
+  );
+
   return (
     <Container ref={containerRef}>
       <h1>Highedit</h1>
@@ -70,13 +91,16 @@ const App: React.FC = () => {
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          autoCorrect="false"
+          onSelect={({ currentTarget: { childNodes } }) =>
+            handleContentSelect(Array.from(childNodes))
+          }
         />
       </EditableArea>
 
       <SideBar
         inputRef={textInputRef}
         setTextProperty={updatedText => setTextProperty(updatedText)}
+        selectedElement={selectedElement}
       />
     </Container>
   );

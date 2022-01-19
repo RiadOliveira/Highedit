@@ -1,14 +1,50 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import SideBarButton from 'components/SideBarButton';
 import { ButtonPair, Container } from './styles';
-import properties, { Property } from '../../utils/properties';
+import properties, { Property, SelectableProp } from '../../utils/properties';
 
 interface SideBarProps {
   inputRef: React.RefObject<HTMLDivElement>;
   setTextProperty: (updatedChildren: (Node | string)[]) => void;
+  selectedElement: ChildNode | undefined;
 }
 
-const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
+const SideBar: React.FC<SideBarProps> = ({
+  inputRef,
+  setTextProperty,
+  selectedElement,
+}) => {
+  const [activeProps, setActiveProps] = useState<SelectableProp[]>([]);
+
+  useEffect(() => {
+    if (selectedElement && selectedElement.nodeName !== 'text') {
+      const props: SelectableProp[] = [];
+      const { nodeName } = selectedElement;
+
+      if (nodeName !== 'p') {
+        props.push(nodeName.toLowerCase() as SelectableProp);
+      }
+
+      const elementStyle =
+        selectedElement?.firstChild?.parentElement?.getAttribute('style');
+
+      properties.forEach(subprops =>
+        subprops.forEach(property => {
+          if (property.type === 'style') {
+            const {
+              name,
+              code: { cssProp },
+            } = property;
+
+            if (elementStyle?.includes(cssProp)) props.push(name);
+          }
+        }),
+      );
+
+      setActiveProps(props);
+    }
+  }, [selectedElement]);
+
   const getNodes = useCallback(
     (property: Property): (Node | string)[] => {
       const selection = window.getSelection();
@@ -112,6 +148,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
               key={position.name}
               name={position.name}
               Icon={position.type === 'style' ? position.icon : undefined}
+              active={activeProps.includes(position.name as SelectableProp)}
               onClick={() => handleButtonClick(position)}
             />
           ))}

@@ -1,13 +1,15 @@
 import { FaBold, FaItalic, FaUnderline, FaStrikethrough } from 'react-icons/fa';
 import { IconType } from 'react-icons/lib';
 
+export type SelectableProp = 'h1' | 'h2' | 'h3' | 'h4' | 'b' | 'i' | 'u' | 's';
+
 export type Property =
   | {
       name: string;
       type: 'tag';
     }
   | {
-      name: string;
+      name: SelectableProp;
       type: 'style';
       code: {
         cssProp: string;

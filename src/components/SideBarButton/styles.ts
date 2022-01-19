@@ -1,6 +1,10 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-export const Container = styled.button`
+interface ButtonProps {
+  active: boolean;
+}
+
+export const Container = styled.button<ButtonProps>`
   border: 0;
   outline: 0;
   cursor: pointer;
@@ -17,13 +21,20 @@ export const Container = styled.button`
   justify-content: center;
   align-items: center;
 
-  background-color: transparent;
+  background-color: ${({ active }) => (active ? '#2b2929' : 'transparent')};
   border: 2px solid #2b2929;
 
   transition: 0.2s;
 
-  &:hover {
-    background-color: #2b2929;
-    color: #fff;
-  }
+  ${({ active }) =>
+    active
+      ? css`
+          color: #fff;
+        `
+      : css`
+          &:hover {
+            background-color: #2b2929;
+            color: #fff;
+          }
+        `}
 `;
