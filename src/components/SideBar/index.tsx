@@ -80,12 +80,21 @@ const SideBar: React.FC<SideBarProps> = ({
                 updatedText.push(content.slice(0, start));
               }
 
-              updatedText.push(
-                `<${name}${styles ? ` style="${styles}"` : ''}>${content.slice(
-                  start,
-                  end,
-                )}</${name}>`,
-              );
+              const sameTagName = name === child.nodeName.toLowerCase();
+              const tagContent = content.slice(start, end);
+
+              if (sameTagName && !styles) {
+                updatedText.push(tagContent);
+              } else {
+                const tagName = sameTagName ? 'span' : name;
+
+                updatedText.push(
+                  `<${tagName}${
+                    styles ? ` style="${styles}"` : ''
+                  }>${tagContent}</${tagName}>`,
+                );
+              }
+
               updatedText.push(content.slice(end));
 
               inputNodes.push(updatedText.join(''));
