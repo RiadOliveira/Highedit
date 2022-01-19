@@ -6,7 +6,10 @@ export type Property =
   | {
       name: string;
       type: 'style';
-      code: string;
+      code: {
+        cssProp: string;
+        value: string;
+      };
     };
 
 export default [
@@ -34,12 +37,18 @@ export default [
     {
       name: 'b',
       type: 'style',
-      code: 'font-weight: bold;',
+      code: {
+        cssProp: 'font-weight',
+        value: 'bold',
+      },
     },
     {
       name: 'i',
       type: 'style',
-      code: 'font-style: italic;',
+      code: {
+        cssProp: 'font-style',
+        value: 'italic',
+      },
     },
   ],
 ] as Property[][];

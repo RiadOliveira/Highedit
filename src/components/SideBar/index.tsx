@@ -24,7 +24,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
         const comparativeNode: Node | null | undefined =
           parentNode !== textRef ? parentNode : selection.anchorNode;
 
-        textRef.childNodes.forEach((child, key) => {
+        textRef.childNodes.forEach(child => {
           if (property.type === 'tag' && comparativeNode === child) {
             const updatedText: string[] = [];
             const content = child.textContent || '';
@@ -49,19 +49,25 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
               inputNodes.push(updatedText.join(''));
             }
           } else if (comparativeNode === child && property.type === 'style') {
+            const { cssProp, value } = property.code;
+
             if (parentNode !== textRef) {
-              const clone = document.createElement(child.nodeName);
+              const styledChild = child.firstChild?.parentElement;
+              const previousStyle = styledChild?.getAttribute('style') || '';
 
-              clone.innerText = child.textContent || '';
-              clone.setAttribute(
-                'style',
-                (textRef.children[key].getAttribute('style') || '') +
-                  property.code,
-              );
+              if (previousStyle.includes(cssProp)) {
+                styledChild?.style.removeProperty(cssProp);
+              } else {
+                styledChild?.style.setProperty(cssProp, value);
+              }
 
-              inputNodes.push(clone);
+              inputNodes.push(styledChild?.outerHTML || '');
             } else {
-              // When it not has a parentElement (Just text)
+              const { textContent } = child;
+
+              inputNodes.push(
+                `<p style="${cssProp}:${value};">${textContent}</p>`,
+              );
             }
           } else {
             inputNodes.push(child);
