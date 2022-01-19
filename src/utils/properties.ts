@@ -1,3 +1,6 @@
+import { FaBold, FaItalic, FaUnderline, FaStrikethrough } from 'react-icons/fa';
+import { IconType } from 'react-icons/lib';
+
 export type Property =
   | {
       name: string;
@@ -10,6 +13,7 @@ export type Property =
         cssProp: string;
         value: string;
       };
+      icon: IconType;
     };
 
 export default [
@@ -41,6 +45,7 @@ export default [
         cssProp: 'font-weight',
         value: 'bold',
       },
+      icon: FaBold,
     },
     {
       name: 'i',
@@ -49,6 +54,27 @@ export default [
         cssProp: 'font-style',
         value: 'italic',
       },
+      icon: FaItalic,
+    },
+  ],
+  [
+    {
+      name: 'u',
+      type: 'style',
+      code: {
+        cssProp: 'text-decoration',
+        value: 'underline',
+      },
+      icon: FaUnderline,
+    },
+    {
+      name: 's',
+      type: 'style',
+      code: {
+        cssProp: 'text-decoration',
+        value: 'line-through',
+      },
+      icon: FaStrikethrough,
     },
   ],
 ] as Property[][];

@@ -111,6 +111,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
             <SideBarButton
               key={position.name}
               name={position.name}
+              Icon={position.type === 'style' ? position.icon : undefined}
               onClick={() => handleButtonClick(position)}
             />
           ))}

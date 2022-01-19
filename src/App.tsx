@@ -70,6 +70,7 @@ const App: React.FC = () => {
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
+          autoCorrect="false"
         />
       </EditableArea>
 
