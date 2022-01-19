@@ -27,6 +27,8 @@ const App: React.FC = () => {
       inputRef.style.height = 'auto';
       inputRef.style.height = `${inputRef.scrollHeight - 5}px`;
       divRef.scrollTo({ top: inputRef.scrollHeight - 5 });
+
+      if (inputRef.innerHTML === '<br>') inputRef.innerHTML = '';
     }
   }, []);
 
@@ -88,7 +90,7 @@ const App: React.FC = () => {
         <TextArea
           ref={textInputRef}
           contentEditable
-          onChange={handleInputChange}
+          onInput={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           onSelect={({ currentTarget: { childNodes } }) =>
