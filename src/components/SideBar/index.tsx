@@ -33,10 +33,10 @@ const SideBar: React.FC<SideBarProps> = ({
           if (property.type === 'style') {
             const {
               name,
-              code: { cssProp },
+              code: { value },
             } = property;
 
-            if (elementStyle?.includes(cssProp)) props.push(name);
+            if (elementStyle?.includes(value)) props.push(name);
           }
         }),
       );
@@ -73,13 +73,18 @@ const SideBar: React.FC<SideBarProps> = ({
 
             if (start >= 0 && end >= 0) {
               const { name } = property;
+              const styles =
+                child.firstChild?.parentElement?.getAttribute('style');
 
               if (start !== 0) {
                 updatedText.push(content.slice(0, start));
               }
 
               updatedText.push(
-                `<${name}>${content.slice(start, end)}</${name}>`,
+                `<${name}${styles ? ` style="${styles}"` : ''}>${content.slice(
+                  start,
+                  end,
+                )}</${name}>`,
               );
               updatedText.push(content.slice(end));
 
@@ -110,9 +115,9 @@ const SideBar: React.FC<SideBarProps> = ({
 
             // Already has tag.
             const styledChild = child.firstChild?.parentElement;
-            const hasProp = !!styledChild?.style.getPropertyValue(cssProp);
+            const hasProp = styledChild?.style.getPropertyValue(cssProp);
 
-            if (hasProp) {
+            if (hasProp && value === hasProp) {
               styledChild?.style.removeProperty(cssProp);
             } else {
               styledChild?.style.setProperty(cssProp, value);
@@ -122,6 +127,8 @@ const SideBar: React.FC<SideBarProps> = ({
           }
         });
       }
+
+      setActiveProps([]);
 
       return inputNodes;
     },
