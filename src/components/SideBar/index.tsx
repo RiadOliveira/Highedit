@@ -1,20 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import SideBarButton from 'components/SideBarButton';
+import { useElement } from 'hooks/selectedElement';
 import { ButtonPair, Container } from './styles';
 import properties, { Property, SelectableProp } from '../../utils/properties';
 
 interface SideBarProps {
   inputRef: React.RefObject<HTMLDivElement>;
   setTextProperty: (updatedChildren: (Node | string)[]) => void;
-  selectedElement: ChildNode | undefined;
 }
 
-const SideBar: React.FC<SideBarProps> = ({
-  inputRef,
-  setTextProperty,
-  selectedElement,
-}) => {
+const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
   const [activeProps, setActiveProps] = useState<SelectableProp[]>([]);
+  const { selectedElement, updateElement } = useElement();
 
   useEffect(() => {
     if (selectedElement && selectedElement.nodeName !== 'text') {
@@ -141,10 +138,20 @@ const SideBar: React.FC<SideBarProps> = ({
               if (!itsChild) {
                 const selectedText = selection.toString();
 
-                element.innerHTML = element.innerHTML.replace(
-                  selectedText,
-                  `<span style="${cssProp}:${value};">${selectedText}</span>`,
-                );
+                if (selectedText !== element.innerText) {
+                  element.innerHTML = element.innerHTML.replace(
+                    selectedText,
+                    `<span style="${cssProp}:${value};">${selectedText}</span>`,
+                  );
+                } else {
+                  const hasProp = element.style.getPropertyValue(cssProp);
+
+                  if (hasProp && value === hasProp) {
+                    element.style.removeProperty(cssProp);
+                  } else {
+                    element.style.setProperty(cssProp, value);
+                  }
+                }
               } else {
                 const childIndex = Array.from(element.children).findIndex(
                   indexChild => indexChild === comparativeNode,
@@ -171,10 +178,11 @@ const SideBar: React.FC<SideBarProps> = ({
       }
 
       setActiveProps([]);
+      updateElement(undefined);
 
       return inputNodes;
     },
-    [inputRef],
+    [inputRef, updateElement],
   );
 
   const handleButtonClick = useCallback(
