@@ -17,24 +17,20 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
   useEffect(() => {
     if (selectedElement && selectedElement.nodeName !== 'text') {
       const props: SelectableProp[] = [];
-      const { nodeName } = selectedElement;
+      const { nodeName, parentElement, firstChild } = selectedElement;
 
       const isChild = selectedElement.parentElement !== inputRef.current;
 
       if (nodeName !== 'SPAN') {
         props.push(nodeName.toLowerCase() as SelectableProp);
       } else if (isChild) {
-        props.push(
-          selectedElement.parentElement?.nodeName.toLowerCase() as SelectableProp,
-        );
+        props.push(parentElement?.nodeName.toLowerCase() as SelectableProp);
       }
 
-      let elementStyle =
-        selectedElement?.firstChild?.parentElement?.getAttribute('style');
+      let elementStyle = firstChild?.parentElement?.getAttribute('style');
 
       if (isChild) {
-        elementStyle +=
-          selectedElement.parentElement?.getAttribute('style') || '';
+        elementStyle += parentElement?.getAttribute('style') || '';
       }
 
       properties.forEach(subprops =>
