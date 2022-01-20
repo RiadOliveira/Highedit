@@ -137,7 +137,7 @@ const hasTagNotChild = (
 
         finalElement = updatedText.join('');
       } else {
-        finalElement = element.innerHTML.replace(
+        finalElement = element.outerHTML.replace(
           selectedText,
           `<span style="${cssProp}:${value};">${selectedText}</span>`,
         );
