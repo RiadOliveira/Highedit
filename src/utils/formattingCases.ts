@@ -104,6 +104,10 @@ const hasTagNotChild = (
 
       if (hasProp && value === hasProp) {
         element.style.removeProperty(cssProp);
+
+        if (!element.getAttribute('style')) {
+          return element.innerText;
+        }
       } else {
         element.style.setProperty(cssProp, value);
       }
