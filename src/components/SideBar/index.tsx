@@ -62,12 +62,11 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
       const inputNodes: (Node | string)[] = [];
 
       if (selection && textRef) {
-        const start = selection.anchorOffset;
-        const end = selection.focusOffset;
-        const parentNode = selection.anchorNode?.parentNode;
+        const { anchorOffset: start, focusOffset: end, anchorNode } = selection;
+        const parentNode = anchorNode?.parentNode;
 
         const comparativeNode: Node | null | undefined =
-          parentNode !== textRef ? parentNode : selection.anchorNode;
+          parentNode !== textRef ? parentNode : anchorNode;
 
         textRef.childNodes.forEach(child => {
           const isChild = Array.from(child.childNodes).includes(
@@ -79,38 +78,27 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
             return;
           }
 
-          const content = child.textContent || '';
-          const updatedText: string[] = [];
+          switch (property.type) {
+            case 'tag':
+              inputNodes.push(cases.tag({ start, end }, property.name, child));
+              break;
 
-          if (property.type === 'tag')
-            inputNodes.push(cases.tag({ start, end }, property.name, child));
-          else {
-            const { code } = property;
+            default: {
+              const hasJustText = parentNode === textRef;
+              const element =
+                child.firstChild?.parentElement ||
+                document.createElement('span');
+              const { code } = property;
 
-            const hasJustText = parentNode === textRef;
+              const {
+                style: { hasTag, justText },
+              } = cases;
 
-            if (parentNode === textRef) {
-              inputNodes.push(
-                cases.style.justText({ start, end }, code, child),
-              );
-              return;
-            }
-
-            // Already has tag.
-            const element = child.firstChild?.parentElement;
-
-            if (element) {
-              if (!isChild) {
-                cases.style.hasTag.notChild(
-                  { child, code },
-                  selection.toString(),
-                );
-              } else {
-                cases.style.hasTag.isChild(
-                  { child, code },
-                  comparativeNode as Node,
-                );
-              }
+              if (hasJustText)
+                inputNodes.push(justText({ start, end }, code, child));
+              else if (isChild)
+                hasTag.isChild({ element, code }, comparativeNode as Node);
+              else hasTag.notChild({ element, code }, selection.toString());
 
               inputNodes.push(element);
             }

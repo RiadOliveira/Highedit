@@ -10,16 +10,22 @@ interface Code {
 
 interface StyleHasTagProps {
   code: Code;
-  child: ChildNode;
+  element: HTMLElement;
 }
+
+const getContentTools = ({
+  textContent,
+}: ChildNode): { updatedText: string[]; content: string } => ({
+  updatedText: [],
+  content: textContent || '',
+});
 
 const tagFormat = (
   { start, end }: Selection,
   propertyName: string,
   child: ChildNode,
 ): string => {
-  const updatedText: string[] = [];
-  const content = child.textContent || '';
+  const { updatedText, content } = getContentTools(child);
 
   if (start >= 0 && end >= 0) {
     const styles = child.firstChild?.parentElement?.getAttribute('style');
@@ -55,8 +61,7 @@ const justText = (
   { cssProp, value }: Code,
   child: ChildNode,
 ): string => {
-  const updatedText: string[] = [];
-  const content = child.textContent || '';
+  const { updatedText, content } = getContentTools(child);
 
   if (start !== 0) {
     updatedText.push(content.slice(0, start));
@@ -71,46 +76,51 @@ const justText = (
 };
 
 const hasTagIsChild = (
-  { child, code: { cssProp, value } }: StyleHasTagProps,
+  // Child of a create element.
+  { element, code: { cssProp, value } }: StyleHasTagProps,
   comparativeNode: Node,
 ): void => {
-  const element = child.firstChild?.parentElement || new HTMLElement();
-
   const childIndex = Array.from(element.children).findIndex(
     indexChild => indexChild === comparativeNode,
   );
 
-  const childElement = element.children[childIndex].firstChild?.parentElement;
+  const childElement =
+    element.children[childIndex].firstChild?.parentElement ||
+    document.createElement('span');
 
-  if (childElement) {
-    const hasProp = childElement.style.getPropertyValue(cssProp);
+  const hasProp = childElement.style.getPropertyValue(cssProp);
 
-    if (hasProp && value === hasProp) {
-      childElement.style.removeProperty(cssProp);
-    } else {
-      childElement.style.setProperty(cssProp, value);
-    }
+  if (hasProp && value === hasProp) {
+    childElement.style.removeProperty(cssProp);
+  } else {
+    childElement.style.setProperty(cssProp, value);
   }
 };
 
 const hasTagNotChild = (
-  { child, code: { cssProp, value } }: StyleHasTagProps,
+  { element, code: { cssProp, value } }: StyleHasTagProps,
   selectedText: string,
 ): void => {
-  const element = child.firstChild?.parentElement || new HTMLElement();
+  switch (selectedText) {
+    case element.innerText: {
+      // All text of the tag.
+      const hasProp = element.style.getPropertyValue(cssProp);
 
-  if (selectedText !== element.innerText) {
-    element.innerHTML = element.innerHTML.replace(
-      selectedText,
-      `<span style="${cssProp}:${value};">${selectedText}</span>`,
-    );
-  } else {
-    const hasProp = element.style.getPropertyValue(cssProp);
+      if (hasProp && value === hasProp) {
+        element.style.removeProperty(cssProp);
+      } else {
+        element.style.setProperty(cssProp, value);
+      }
+      break;
+    }
 
-    if (hasProp && value === hasProp) {
-      element.style.removeProperty(cssProp);
-    } else {
-      element.style.setProperty(cssProp, value);
+    default: {
+      // Part of tag's text.
+      // eslint-disable-next-line no-param-reassign
+      element.innerHTML = element.innerHTML.replace(
+        selectedText,
+        `<span style="${cssProp}:${value};">${selectedText}</span>`,
+      );
     }
   }
 };
