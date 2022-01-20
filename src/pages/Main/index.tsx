@@ -97,10 +97,31 @@ const Main: React.FC = () => {
     [selectedElement, updateElement],
   );
 
+  const handleNewLineAdd = useCallback((key: string) => {
+    const inputRef = textInputRef.current;
+
+    if (key === 'Enter' && inputRef) {
+      setTimeout(() => {
+        const childrenArray = Array.from(inputRef.childNodes);
+
+        const findedChild = childrenArray.find(
+          child => child.nodeName === 'DIV',
+        );
+        inputRef.removeChild(findedChild as Node);
+
+        inputRef.innerHTML += '<br><br>';
+
+        const linesQuantity =
+          childrenArray.filter(child => child.nodeName === '#text').length * 2;
+
+        window.getSelection()?.setPosition(inputRef, linesQuantity);
+      }, 1);
+    }
+  }, []);
+
   return (
     <Container ref={containerRef}>
       <h1>Highedit</h1>
-
       <EditableArea>
         <TextArea
           ref={textInputRef}
@@ -108,6 +129,7 @@ const Main: React.FC = () => {
           onInput={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
+          onKeyDown={({ key }) => handleNewLineAdd(key)}
           onSelect={({ currentTarget: { childNodes } }) =>
             handleContentSelect(Array.from(childNodes))
           }
