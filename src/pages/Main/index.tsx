@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import SideBar from 'components/SideBar';
-import { useElement } from 'hooks/selectedElement';
+import { useElement } from 'hooks/element';
 import { Container, EditableArea, TextArea } from './styles';
 
 const placeHolder =

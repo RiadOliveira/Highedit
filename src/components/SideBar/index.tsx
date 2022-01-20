@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import SideBarButton from 'components/SideBarButton';
-import { useElement } from 'hooks/selectedElement';
+import { useElement } from 'hooks/element';
 import { ButtonPair, Container } from './styles';
 import properties, { Property, SelectableProp } from '../../utils/properties';
 
