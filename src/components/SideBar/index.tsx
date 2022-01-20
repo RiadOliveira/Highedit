@@ -59,7 +59,10 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
 
       if (selection && textRef) {
         const { anchorOffset: start, focusOffset: end, anchorNode } = selection;
-        const points = { start, end };
+        const points = {
+          start: Math.min(start, end),
+          end: Math.max(start, end),
+        };
         const parentNode = anchorNode?.parentNode;
 
         const comparativeNode: Node | null | undefined =

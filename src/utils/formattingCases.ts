@@ -97,8 +97,10 @@ const hasTagNotChild = (
   { start, end }: Selection,
   { cssProp, value }: Code,
 ): string | Node => {
+  const elementText = element.innerText;
+
   switch (selectedText) {
-    case element.innerText: {
+    case elementText: {
       // All text of the tag.
       const hasProp = element.style.getPropertyValue(cssProp);
 
@@ -106,7 +108,7 @@ const hasTagNotChild = (
         element.style.removeProperty(cssProp);
 
         if (!element.getAttribute('style')) {
-          return element.innerText;
+          return elementText;
         }
       } else {
         element.style.setProperty(cssProp, value);
@@ -121,16 +123,16 @@ const hasTagNotChild = (
 
       if (element.style.getPropertyValue(cssProp)) {
         const { content, updatedText } = getContentTools(element);
-        const template = element.outerHTML.replace(element.innerText, '?');
+        const template = element.outerHTML.replace(elementText, '?');
 
         if (start !== 0) {
           updatedText.push(template.replace('?', content.slice(0, start)));
         }
 
-        updatedText.push(content.slice(start, end + 1));
+        updatedText.push(content.slice(start, end));
 
         if (end !== content.length) {
-          updatedText.push(template.replace('?', content.slice(end + 1)));
+          updatedText.push(template.replace('?', content.slice(end)));
         }
 
         finalElement = updatedText.join('');

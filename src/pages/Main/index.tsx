@@ -87,8 +87,10 @@ const Main: React.FC = () => {
             child => child === comparativeNode,
           );
 
-          findedNode = childNode;
-          break;
+          if (childNode) {
+            findedNode = childNode;
+            break;
+          }
         }
 
         if (findedNode !== selectedElement) updateElement(findedNode);
