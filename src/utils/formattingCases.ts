@@ -107,7 +107,7 @@ const hasTagNotChild = (
       if (hasProp && value === hasProp) {
         element.style.removeProperty(cssProp);
 
-        if (!element.getAttribute('style')) {
+        if (!element.getAttribute('style') && element.nodeName === 'span') {
           return elementText;
         }
       } else {
