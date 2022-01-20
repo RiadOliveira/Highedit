@@ -3,6 +3,7 @@ import SideBarButton from 'components/SideBarButton';
 import { useElement } from 'hooks/element';
 import { ButtonPair, Container } from './styles';
 import properties, { Property, SelectableProp } from '../../utils/properties';
+import cases from '../../utils/formattingCases';
 
 interface SideBarProps {
   inputRef: React.RefObject<HTMLDivElement>;
@@ -18,11 +19,11 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
       const props: SelectableProp[] = [];
       const { nodeName } = selectedElement;
 
-      const itsChild = selectedElement.parentElement !== inputRef.current;
+      const isChild = selectedElement.parentElement !== inputRef.current;
 
       if (nodeName !== 'SPAN') {
         props.push(nodeName.toLowerCase() as SelectableProp);
-      } else if (itsChild) {
+      } else if (isChild) {
         props.push(
           selectedElement.parentElement?.nodeName.toLowerCase() as SelectableProp,
         );
@@ -31,7 +32,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
       let elementStyle =
         selectedElement?.firstChild?.parentElement?.getAttribute('style');
 
-      if (itsChild) {
+      if (isChild) {
         elementStyle +=
           selectedElement.parentElement?.getAttribute('style') || '';
       }
@@ -69,11 +70,11 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
           parentNode !== textRef ? parentNode : selection.anchorNode;
 
         textRef.childNodes.forEach(child => {
-          const itsChild = Array.from(child.childNodes).includes(
+          const isChild = Array.from(child.childNodes).includes(
             comparativeNode as ChildNode,
           );
 
-          if (comparativeNode !== child && !itsChild) {
+          if (comparativeNode !== child && !isChild) {
             inputNodes.push(child);
             return;
           }
@@ -81,53 +82,17 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
           const content = child.textContent || '';
           const updatedText: string[] = [];
 
-          if (property.type === 'tag') {
-            if (start >= 0 && end >= 0) {
-              const { name } = property;
-              const styles =
-                child.firstChild?.parentElement?.getAttribute('style');
+          if (property.type === 'tag')
+            inputNodes.push(cases.tag({ start, end }, property.name, child));
+          else {
+            const { code } = property;
 
-              if (start !== 0) {
-                updatedText.push(content.slice(0, start));
-              }
-
-              const sameTagName = name === child.nodeName.toLowerCase();
-              const tagContent = content.slice(start, end);
-
-              if (sameTagName && !styles) {
-                updatedText.push(tagContent);
-              } else {
-                const tagName = sameTagName ? 'span' : name;
-
-                updatedText.push(
-                  `<${tagName}${
-                    styles ? ` style="${styles}"` : ''
-                  }>${tagContent}</${tagName}>`,
-                );
-              }
-
-              updatedText.push(content.slice(end));
-
-              inputNodes.push(updatedText.join(''));
-            }
-          } else {
-            const { cssProp, value } = property.code;
+            const hasJustText = parentNode === textRef;
 
             if (parentNode === textRef) {
-              // Has just text.
-              if (start !== 0) {
-                updatedText.push(content.slice(0, start));
-              }
-
-              updatedText.push(
-                `<span style="${cssProp}:${value};">${content.slice(
-                  start,
-                  end,
-                )}</span>`,
+              inputNodes.push(
+                cases.style.justText({ start, end }, code, child),
               );
-              updatedText.push(content.slice(end));
-
-              inputNodes.push(updatedText.join(''));
               return;
             }
 
@@ -135,40 +100,16 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
             const element = child.firstChild?.parentElement;
 
             if (element) {
-              if (!itsChild) {
-                const selectedText = selection.toString();
-
-                if (selectedText !== element.innerText) {
-                  element.innerHTML = element.innerHTML.replace(
-                    selectedText,
-                    `<span style="${cssProp}:${value};">${selectedText}</span>`,
-                  );
-                } else {
-                  const hasProp = element.style.getPropertyValue(cssProp);
-
-                  if (hasProp && value === hasProp) {
-                    element.style.removeProperty(cssProp);
-                  } else {
-                    element.style.setProperty(cssProp, value);
-                  }
-                }
-              } else {
-                const childIndex = Array.from(element.children).findIndex(
-                  indexChild => indexChild === comparativeNode,
+              if (!isChild) {
+                cases.style.hasTag.notChild(
+                  { child, code },
+                  selection.toString(),
                 );
-
-                const childElement =
-                  element.children[childIndex].firstChild?.parentElement;
-
-                if (childElement) {
-                  const hasProp = childElement.style.getPropertyValue(cssProp);
-
-                  if (hasProp && value === hasProp) {
-                    childElement.style.removeProperty(cssProp);
-                  } else {
-                    childElement.style.setProperty(cssProp, value);
-                  }
-                }
+              } else {
+                cases.style.hasTag.isChild(
+                  { child, code },
+                  comparativeNode as Node,
+                );
               }
 
               inputNodes.push(element);
