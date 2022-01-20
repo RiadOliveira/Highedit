@@ -61,16 +61,19 @@ const SideBar: React.FC<SideBarProps> = ({
           parentNode !== textRef ? parentNode : selection.anchorNode;
 
         textRef.childNodes.forEach(child => {
-          if (comparativeNode !== child) {
+          const itsChild = Array.from(child.childNodes).includes(
+            comparativeNode as ChildNode,
+          );
+
+          if (comparativeNode !== child && !itsChild) {
             inputNodes.push(child);
             return;
           }
 
           const content = child.textContent || '';
+          const updatedText: string[] = [];
 
           if (property.type === 'tag') {
-            const updatedText: string[] = [];
-
             if (start >= 0 && end >= 0) {
               const { name } = property;
               const styles =
@@ -104,7 +107,6 @@ const SideBar: React.FC<SideBarProps> = ({
 
             if (parentNode === textRef) {
               // Has just text.
-              const updatedText: string[] = [];
 
               if (start !== 0) {
                 updatedText.push(content.slice(0, start));
@@ -123,16 +125,37 @@ const SideBar: React.FC<SideBarProps> = ({
             }
 
             // Already has tag.
-            const styledChild = child.firstChild?.parentElement;
-            const hasProp = styledChild?.style.getPropertyValue(cssProp);
+            const element = child.firstChild?.parentElement;
 
-            if (hasProp && value === hasProp) {
-              styledChild?.style.removeProperty(cssProp);
-            } else {
-              styledChild?.style.setProperty(cssProp, value);
+            if (element) {
+              if (!itsChild) {
+                const selectedText = selection.toString();
+
+                element.innerHTML = element.innerHTML.replace(
+                  selectedText,
+                  `<span style="${cssProp}:${value};">${selectedText}</span>`,
+                );
+              } else {
+                const childIndex = Array.from(element.children).findIndex(
+                  indexChild => indexChild === comparativeNode,
+                );
+
+                const childElement =
+                  element.children[childIndex].firstChild?.parentElement;
+
+                if (childElement) {
+                  const hasProp = childElement.style.getPropertyValue(cssProp);
+
+                  if (hasProp && value === hasProp) {
+                    childElement.style.removeProperty(cssProp);
+                  } else {
+                    childElement.style.setProperty(cssProp, value);
+                  }
+                }
+              }
+
+              inputNodes.push(element);
             }
-
-            inputNodes.push(styledChild?.outerHTML || '');
           }
         });
       }
