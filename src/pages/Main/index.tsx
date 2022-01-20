@@ -107,9 +107,11 @@ const Main: React.FC = () => {
         const findedChild = childrenArray.find(
           child => child.nodeName === 'DIV',
         );
+
+        const divText = findedChild?.textContent;
         inputRef.removeChild(findedChild as Node);
 
-        inputRef.innerHTML += '<br><br>';
+        inputRef.innerHTML += `<br>${divText || '<br>'}`;
 
         const linesQuantity =
           childrenArray.filter(child => child.nodeName === '#text').length * 2;
