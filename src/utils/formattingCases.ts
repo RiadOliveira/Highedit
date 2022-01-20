@@ -8,11 +8,6 @@ interface Code {
   value: string;
 }
 
-interface StyleHasTagProps {
-  code: Code;
-  element: HTMLElement;
-}
-
 const getContentTools = ({
   textContent,
 }: ChildNode): { updatedText: string[]; content: string } => ({
@@ -76,31 +71,32 @@ const justText = (
 };
 
 const hasTagIsChild = (
-  // Child of a create element.
-  { element, code: { cssProp, value } }: StyleHasTagProps,
+  // Child of a created element.
+  element: HTMLElement,
   comparativeNode: Node,
+  { cssProp, value }: Code,
 ): void => {
   const childIndex = Array.from(element.children).findIndex(
     indexChild => indexChild === comparativeNode,
   );
 
-  const childElement =
-    element.children[childIndex].firstChild?.parentElement ||
-    document.createElement('span');
+  const childElement = element.children[childIndex].firstChild?.parentElement;
 
-  const hasProp = childElement.style.getPropertyValue(cssProp);
+  if (childElement) {
+    const { style } = childElement;
+    const hasProp = style.getPropertyValue(cssProp);
 
-  if (hasProp && value === hasProp) {
-    childElement.style.removeProperty(cssProp);
-  } else {
-    childElement.style.setProperty(cssProp, value);
+    if (hasProp && value === hasProp) style.removeProperty(cssProp);
+    else style.setProperty(cssProp, value);
   }
 };
 
 const hasTagNotChild = (
-  { element, code: { cssProp, value } }: StyleHasTagProps,
+  element: HTMLElement,
   selectedText: string,
-): void => {
+  { start, end }: Selection,
+  { cssProp, value }: Code,
+): string | Node => {
   switch (selectedText) {
     case element.innerText: {
       // All text of the tag.
@@ -111,16 +107,37 @@ const hasTagNotChild = (
       } else {
         element.style.setProperty(cssProp, value);
       }
-      break;
+
+      return element;
     }
 
     default: {
       // Part of tag's text.
-      // eslint-disable-next-line no-param-reassign
-      element.innerHTML = element.innerHTML.replace(
-        selectedText,
-        `<span style="${cssProp}:${value};">${selectedText}</span>`,
-      );
+      let finalElement = '';
+
+      if (element.style.getPropertyValue(cssProp)) {
+        const { content, updatedText } = getContentTools(element);
+        const template = element.outerHTML.replace(element.innerText, '?');
+
+        if (start !== 0) {
+          updatedText.push(template.replace('?', content.slice(0, start)));
+        }
+
+        updatedText.push(content.slice(start, end + 1));
+
+        if (end !== content.length) {
+          updatedText.push(template.replace('?', content.slice(end + 1)));
+        }
+
+        finalElement = updatedText.join('');
+      } else {
+        finalElement = element.innerHTML.replace(
+          selectedText,
+          `<span style="${cssProp}:${value};">${selectedText}</span>`,
+        );
+      }
+
+      return finalElement;
     }
   }
 };

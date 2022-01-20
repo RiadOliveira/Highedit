@@ -59,6 +59,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
 
       if (selection && textRef) {
         const { anchorOffset: start, focusOffset: end, anchorNode } = selection;
+        const points = { start, end };
         const parentNode = anchorNode?.parentNode;
 
         const comparativeNode: Node | null | undefined =
@@ -76,27 +77,33 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
 
           switch (property.type) {
             case 'tag':
-              inputNodes.push(cases.tag({ start, end }, property.name, child));
+              inputNodes.push(cases.tag(points, property.name, child));
               break;
 
             default: {
-              const hasJustText = parentNode === textRef;
-              const element =
-                child.firstChild?.parentElement ||
-                document.createElement('span');
               const { code } = property;
-
               const {
                 style: { hasTag, justText },
               } = cases;
 
-              if (hasJustText)
-                inputNodes.push(justText({ start, end }, code, child));
-              else if (isChild)
-                hasTag.isChild({ element, code }, comparativeNode as Node);
-              else hasTag.notChild({ element, code }, selection.toString());
+              if (parentNode === textRef) {
+                inputNodes.push(justText(points, code, child));
+                return;
+              }
 
-              inputNodes.push(element);
+              const element = child.firstChild?.parentElement;
+
+              if (element) {
+                if (isChild) {
+                  hasTag.isChild(element, comparativeNode as Node, code);
+                  inputNodes.push(element);
+                  return;
+                }
+
+                inputNodes.push(
+                  hasTag.notChild(element, selection.toString(), points, code),
+                );
+              }
             }
           }
         });

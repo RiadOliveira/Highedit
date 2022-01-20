@@ -124,6 +124,7 @@ const Main: React.FC = () => {
   return (
     <Container ref={containerRef}>
       <h1>Highedit</h1>
+
       <EditableArea>
         <TextArea
           ref={textInputRef}
