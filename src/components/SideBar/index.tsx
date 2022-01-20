@@ -21,12 +21,23 @@ const SideBar: React.FC<SideBarProps> = ({
       const props: SelectableProp[] = [];
       const { nodeName } = selectedElement;
 
-      if (nodeName !== 'p') {
+      const itsChild = selectedElement.parentElement !== inputRef.current;
+
+      if (nodeName !== 'SPAN') {
         props.push(nodeName.toLowerCase() as SelectableProp);
+      } else if (itsChild) {
+        props.push(
+          selectedElement.parentElement?.nodeName.toLowerCase() as SelectableProp,
+        );
       }
 
-      const elementStyle =
+      let elementStyle =
         selectedElement?.firstChild?.parentElement?.getAttribute('style');
+
+      if (itsChild) {
+        elementStyle +=
+          selectedElement.parentElement?.getAttribute('style') || '';
+      }
 
       properties.forEach(subprops =>
         subprops.forEach(property => {
@@ -43,7 +54,7 @@ const SideBar: React.FC<SideBarProps> = ({
 
       setActiveProps(props);
     }
-  }, [selectedElement]);
+  }, [inputRef, selectedElement]);
 
   const getNodes = useCallback(
     (property: Property): (Node | string)[] => {
@@ -107,7 +118,6 @@ const SideBar: React.FC<SideBarProps> = ({
 
             if (parentNode === textRef) {
               // Has just text.
-
               if (start !== 0) {
                 updatedText.push(content.slice(0, start));
               }

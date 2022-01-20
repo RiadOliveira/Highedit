@@ -75,7 +75,23 @@ const App: React.FC = () => {
         const comparativeNode: Node | null | undefined =
           parentNode !== textRef ? parentNode : selection.anchorNode;
 
-        const findedNode = nodes.find(node => node === comparativeNode);
+        let findedNode: ChildNode | undefined;
+
+        // eslint-disable-next-line no-restricted-syntax
+        for (const node of nodes) {
+          if (node === comparativeNode) {
+            findedNode = node;
+            break;
+          }
+
+          const childNode = Array.from(node.childNodes).find(
+            child => child === comparativeNode,
+          );
+
+          findedNode = childNode;
+          break;
+        }
+
         if (findedNode !== selectedElement) setSelectedElement(findedNode);
       }
     },
