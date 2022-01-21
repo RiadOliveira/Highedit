@@ -136,27 +136,11 @@ const Main: React.FC = () => {
 
   const handleBackspacePress = useCallback(
     (childNodes: NodeListOf<ChildNode>, inputRef: HTMLPreElement) => {
-      const selection = window.getSelection();
+      const childrenArray = Array.from(childNodes);
+      const index = childrenArray.findIndex(child => child.nodeName === 'BR');
 
-      if (selection && selection.focusNode && selection.anchorOffset === 0) {
-        const index = Array.from(childNodes).findIndex(
-          child => child === selection.focusNode,
-        );
-        const findedChild = childNodes[index];
-        const previousChild = childNodes[index - 2]; // Exists <br> tag in middle.
-
-        if (previousChild && previousChild.nodeName === '#text') {
-          const { textContent } = findedChild;
-
-          setTimeout(() => {
-            const previousText = previousChild.textContent as string;
-
-            previousChild.textContent += textContent as string;
-            inputRef.removeChild(findedChild);
-            selection.setPosition(previousChild, previousText.length);
-          }, 1);
-        }
-      }
+      inputRef.removeChild(childrenArray[index]);
+      childrenArray[index - 1].textContent += '\n';
     },
     [],
   );
@@ -170,7 +154,7 @@ const Main: React.FC = () => {
 
         if (key === 'Enter') handleEnterPress(childNodes, inputRef);
         else if (key === 'Backspace')
-          handleBackspacePress(childNodes, inputRef);
+          setTimeout(() => handleBackspacePress(childNodes, inputRef), 1);
       }
     },
     [handleBackspacePress, handleEnterPress],
