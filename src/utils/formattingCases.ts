@@ -28,18 +28,20 @@ const tagFormat = (
   const childTagName = child.nodeName.toLowerCase();
   const sameTagName = propertyName === childTagName;
 
-  if (hasTag && selectedText !== child.textContent) {
+  if (hasTag && selectedText !== child.textContent?.trim()) {
     const element = child.firstChild?.parentElement as HTMLElement;
     const template = element.outerHTML.replace(element.innerText, '?');
 
     if (start !== 0)
       updatedText.push(template.replace('?', content.slice(0, start)));
 
-    const tagName = sameTagName ? 'span' : propertyName;
+    if (styles) {
+      const tagName = sameTagName ? 'span' : propertyName;
 
-    updatedText.push(
-      template.replaceAll(childTagName, tagName).replace('?', selectedText),
-    );
+      updatedText.push(
+        template.replaceAll(childTagName, tagName).replace('?', selectedText),
+      );
+    } else updatedText.push(selectedText);
 
     if (end !== content.length)
       updatedText.push(template.replace('?', content.slice(end)));
@@ -111,7 +113,8 @@ const hasTagNotChild = (
   const elementText = element.innerText;
 
   switch (selectedText) {
-    case elementText: {
+    case elementText:
+    case elementText.trim(): {
       // All text of the tag.
       const hasProp = element.style.getPropertyValue(cssProp);
 
