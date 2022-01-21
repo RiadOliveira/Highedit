@@ -43,7 +43,7 @@ const tagFormat = (
       );
     } else updatedText.push(selectedText);
 
-    if (end !== content.length)
+    if (end !== content.length && content.slice(end) !== ' ')
       updatedText.push(template.replace('?', content.slice(end)));
   } else {
     if (start !== 0) updatedText.push(content.slice(0, start));
@@ -144,7 +144,7 @@ const hasTagNotChild = (
 
         updatedText.push(selectedText);
 
-        if (end !== content.length)
+        if (end !== content.length && content.slice(end) !== ' ')
           updatedText.push(template.replace('?', content.slice(end)));
 
         finalElement = updatedText.join('');

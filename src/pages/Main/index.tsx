@@ -50,10 +50,31 @@ const Main: React.FC = () => {
     if (inputRef) {
       inputRef.innerHTML = '';
 
-      updatedChildren.forEach(child => {
-        if (typeof child === 'string') inputRef.innerHTML += child;
-        else inputRef.appendChild(child);
-      });
+      const isText = (child: Node | string): string => {
+        if (typeof child === 'string') return child;
+        if (child instanceof Node && child.nodeName === '#text')
+          return child.textContent || '';
+
+        return '';
+      };
+
+      for (let ind = 0; ind < updatedChildren.length; ind++) {
+        const child = updatedChildren[ind];
+        let finalText = isText(child);
+
+        if (finalText) {
+          if (updatedChildren[ind + 1]) {
+            for (let i = ind + 1; i < updatedChildren.length; i++, ind++) {
+              const verify = isText(updatedChildren[i]);
+
+              if (updatedChildren[i] && verify) finalText += verify;
+              else break;
+            }
+          }
+
+          inputRef.innerHTML += finalText;
+        } else inputRef.appendChild(child as Node);
+      }
     }
   }, []);
 
