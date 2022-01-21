@@ -15,6 +15,33 @@ const getContentTools = ({
   content: textContent || '',
 });
 
+const getExtremePointsFromTemplate = (
+  template: HTMLElement | string,
+  content: string,
+  start: number,
+  end: number,
+): { start: string; end: string } => {
+  const verifiedTemplate =
+    typeof template === 'string'
+      ? template
+      : template.outerHTML.replace(template.innerText, '?');
+
+  const finalTexts = {
+    start: '',
+    end: '',
+  };
+
+  const startText = content.slice(0, start);
+  if (start !== 0 && startText.trim())
+    finalTexts.start = verifiedTemplate.replace('?', startText);
+
+  const endText = content.slice(end);
+  if (end !== content.length && endText.trim())
+    finalTexts.end = verifiedTemplate.replace('?', endText);
+
+  return finalTexts;
+};
+
 const tagFormat = (
   { start, end }: Selection,
   selectedText: string,
@@ -29,11 +56,17 @@ const tagFormat = (
   const sameTagName = propertyName === childTagName;
 
   if (hasTag && selectedText !== child.textContent?.trim()) {
+    // Part of tag's text.
     const element = child.firstChild?.parentElement as HTMLElement;
     const template = element.outerHTML.replace(element.innerText, '?');
+    const { start: startText, end: endText } = getExtremePointsFromTemplate(
+      template,
+      content,
+      start,
+      end,
+    );
 
-    if (start !== 0)
-      updatedText.push(template.replace('?', content.slice(0, start)));
+    if (startText) updatedText.push(startText);
 
     if (styles) {
       const tagName = sameTagName ? 'span' : propertyName;
@@ -43,9 +76,9 @@ const tagFormat = (
       );
     } else updatedText.push(selectedText);
 
-    if (end !== content.length && content.slice(end) !== ' ')
-      updatedText.push(template.replace('?', content.slice(end)));
+    if (endText) updatedText.push(endText);
   } else {
+    // All tag's text.
     if (start !== 0) updatedText.push(content.slice(0, start));
 
     if (sameTagName && !styles) updatedText.push(selectedText);
@@ -137,15 +170,16 @@ const hasTagNotChild = (
       if (element.style.getPropertyValue(cssProp)) {
         // Removing property.
         const { content, updatedText } = getContentTools(element);
-        const template = element.outerHTML.replace(elementText, '?');
+        const { start: startText, end: endText } = getExtremePointsFromTemplate(
+          element,
+          content,
+          start,
+          end,
+        );
 
-        if (start !== 0)
-          updatedText.push(template.replace('?', content.slice(0, start)));
-
+        if (startText) updatedText.push(startText);
         updatedText.push(selectedText);
-
-        if (end !== content.length && content.slice(end) !== ' ')
-          updatedText.push(template.replace('?', content.slice(end)));
+        if (endText) updatedText.push(endText);
 
         finalElement = updatedText.join('');
       } else {
