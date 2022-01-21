@@ -99,29 +99,68 @@ const Main: React.FC = () => {
     [selectedElement, updateElement],
   );
 
-  const handleNewLineAdd = useCallback((key: string) => {
-    const inputRef = textInputRef.current;
+  const handleEnterPress = useCallback(
+    (childNodes: NodeListOf<ChildNode>, inputRef: HTMLDivElement) => {
+      const childrenArray = Array.from(childNodes);
 
-    if (key === 'Enter' && inputRef) {
-      setTimeout(() => {
-        const childrenArray = Array.from(inputRef.childNodes);
+      const findedChild = childrenArray.find(child => child.nodeName === 'DIV');
 
-        const findedChild = childrenArray.find(
-          child => child.nodeName === 'DIV',
+      const divText = findedChild?.textContent;
+      inputRef.removeChild(findedChild as Node);
+
+      // eslint-disable-next-line no-param-reassign
+      inputRef.innerHTML += `<br>${divText || '<br>'}`;
+
+      const linesQuantity =
+        childrenArray.filter(child => child.nodeName === '#text').length * 2;
+
+      window.getSelection()?.setPosition(inputRef, linesQuantity);
+    },
+    [],
+  );
+
+  const handleBackspacePress = useCallback(
+    (childNodes: NodeListOf<ChildNode>, inputRef: HTMLDivElement) => {
+      const selection = window.getSelection();
+
+      if (selection && selection.focusNode && selection.anchorOffset === 0) {
+        const index = Array.from(childNodes).findIndex(
+          child => child === selection.focusNode,
         );
+        const findedChild = childNodes[index];
+        const previousChild = childNodes[index - 2]; // Exists <br> tag in middle.
 
-        const divText = findedChild?.textContent;
-        inputRef.removeChild(findedChild as Node);
+        if (previousChild && previousChild.nodeName === '#text') {
+          const { textContent } = findedChild;
 
-        inputRef.innerHTML += `<br>${divText || '<br>'}`;
+          setTimeout(() => {
+            const previousText = previousChild.textContent as string;
 
-        const linesQuantity =
-          childrenArray.filter(child => child.nodeName === '#text').length * 2;
+            previousChild.textContent += textContent as string;
+            inputRef.removeChild(findedChild);
+            selection.setPosition(previousChild, previousText.length);
+          }, 1);
+        }
+      }
+    },
+    [],
+  );
 
-        window.getSelection()?.setPosition(inputRef, linesQuantity);
-      }, 1);
-    }
-  }, []);
+  const handleLineChange = useCallback(
+    (key: string) => {
+      const inputRef = textInputRef.current;
+
+      if (inputRef) {
+        const { childNodes } = inputRef;
+
+        if (key === 'Enter')
+          setTimeout(() => handleEnterPress(childNodes, inputRef), 1);
+        else if (key === 'Backspace')
+          handleBackspacePress(childNodes, inputRef);
+      }
+    },
+    [handleBackspacePress, handleEnterPress],
+  );
 
   return (
     <Container ref={containerRef}>
@@ -134,7 +173,7 @@ const Main: React.FC = () => {
           onInput={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          onKeyDown={({ key }) => handleNewLineAdd(key)}
+          onKeyDown={({ key }) => handleLineChange(key)}
           onSelect={({ currentTarget: { childNodes } }) =>
             handleContentSelect(Array.from(childNodes))
           }
