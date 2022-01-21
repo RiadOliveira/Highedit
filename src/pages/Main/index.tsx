@@ -179,7 +179,10 @@ const Main: React.FC = () => {
       const { focusNode } = window.getSelection() as Selection;
       const content = focusNode?.firstChild?.parentElement?.innerText;
 
-      if (content?.charAt(content.length - 1) === '\n') {
+      if (
+        content?.charAt(content.length - 1) === '\n' &&
+        focusNode?.nodeName === '#text'
+      ) {
         const childrenArray = Array.from(childNodes);
         const index = childrenArray.findIndex(child => child.nodeName === 'BR');
 
