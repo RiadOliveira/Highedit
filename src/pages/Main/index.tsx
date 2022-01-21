@@ -136,11 +136,16 @@ const Main: React.FC = () => {
 
   const handleBackspacePress = useCallback(
     (childNodes: NodeListOf<ChildNode>, inputRef: HTMLPreElement) => {
-      const childrenArray = Array.from(childNodes);
-      const index = childrenArray.findIndex(child => child.nodeName === 'BR');
+      const { focusNode } = window.getSelection() as Selection;
+      const content = focusNode?.firstChild?.parentElement?.innerText as string;
 
-      inputRef.removeChild(childrenArray[index]);
-      childrenArray[index - 1].textContent += '\n';
+      if (content.charAt(content.length - 1) === '\n') {
+        const childrenArray = Array.from(childNodes);
+        const index = childrenArray.findIndex(child => child.nodeName === 'BR');
+
+        inputRef.removeChild(childrenArray[index]);
+        childrenArray[index - 1].textContent += '\n';
+      }
     },
     [],
   );
