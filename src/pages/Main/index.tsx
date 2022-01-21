@@ -13,9 +13,7 @@ const Main: React.FC = () => {
   const { selectedElement, updateElement } = useElement();
 
   useEffect(() => {
-    if (textInputRef.current) {
-      textInputRef.current.innerHTML = placeHolder;
-    }
+    if (textInputRef.current) textInputRef.current.innerHTML = placeHolder;
   }, []);
 
   const handleInputChange = useCallback(() => {
@@ -43,9 +41,7 @@ const Main: React.FC = () => {
   const handleInputBlur = useCallback(() => {
     const inputRef = textInputRef.current;
 
-    if (inputRef && inputRef.innerHTML === '') {
-      inputRef.innerHTML = placeHolder;
-    }
+    if (inputRef && inputRef.innerHTML === '') inputRef.innerHTML = placeHolder;
   }, []);
 
   const setTextProperty = useCallback((updatedChildren: (Node | string)[]) => {
@@ -55,11 +51,8 @@ const Main: React.FC = () => {
       inputRef.innerHTML = '';
 
       updatedChildren.forEach(child => {
-        if (typeof child === 'string') {
-          inputRef.innerHTML += child;
-        } else {
-          inputRef.appendChild(child);
-        }
+        if (typeof child === 'string') inputRef.innerHTML += child;
+        else inputRef.appendChild(child);
       });
     }
   }, []);

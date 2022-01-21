@@ -17,30 +17,43 @@ const getContentTools = ({
 
 const tagFormat = (
   { start, end }: Selection,
+  selectedText: string,
   propertyName: string,
   child: ChildNode,
 ): string => {
   const { updatedText, content } = getContentTools(child);
+  const styles = child.firstChild?.parentElement?.getAttribute('style');
+  const hasTag = child.nodeName !== '#text';
 
-  if (start >= 0 && end >= 0) {
-    const styles = child.firstChild?.parentElement?.getAttribute('style');
+  const childTagName = child.nodeName.toLowerCase();
+  const sameTagName = propertyName === childTagName;
 
-    if (start !== 0) {
-      updatedText.push(content.slice(0, start));
-    }
+  if (hasTag && selectedText !== child.textContent) {
+    const element = child.firstChild?.parentElement as HTMLElement;
+    const template = element.outerHTML.replace(element.innerText, '?');
 
-    const sameTagName = propertyName === child.nodeName.toLowerCase();
-    const tagContent = content.slice(start, end);
+    if (start !== 0)
+      updatedText.push(template.replace('?', content.slice(0, start)));
 
-    if (sameTagName && !styles) {
-      updatedText.push(tagContent);
-    } else {
+    const tagName = sameTagName ? 'span' : propertyName;
+
+    updatedText.push(
+      template.replaceAll(childTagName, tagName).replace('?', selectedText),
+    );
+
+    if (end !== content.length)
+      updatedText.push(template.replace('?', content.slice(end)));
+  } else {
+    if (start !== 0) updatedText.push(content.slice(0, start));
+
+    if (sameTagName && !styles) updatedText.push(selectedText);
+    else {
       const tagName = sameTagName ? 'span' : propertyName;
 
       updatedText.push(
         `<${tagName}${
           styles ? ` style="${styles}"` : ''
-        }>${tagContent}</${tagName}>`,
+        }>${selectedText}</${tagName}>`,
       );
     }
 
@@ -58,9 +71,7 @@ const justText = (
 ): string => {
   const { updatedText, content } = getContentTools(child);
 
-  if (start !== 0) {
-    updatedText.push(content.slice(0, start));
-  }
+  if (start !== 0) updatedText.push(content.slice(0, start));
 
   updatedText.push(
     `<span style="${cssProp}:${value};">${content.slice(start, end)}</span>`,
@@ -107,12 +118,11 @@ const hasTagNotChild = (
       if (hasProp && value === hasProp) {
         element.style.removeProperty(cssProp);
 
-        if (!element.getAttribute('style') && element.nodeName === 'span') {
-          return elementText;
-        }
-      } else {
-        element.style.setProperty(cssProp, value);
-      }
+        const isEmptySpan =
+          !element.getAttribute('style') && element.nodeName === 'span';
+
+        if (isEmptySpan) return elementText;
+      } else element.style.setProperty(cssProp, value);
 
       return element;
     }
@@ -122,21 +132,21 @@ const hasTagNotChild = (
       let finalElement = '';
 
       if (element.style.getPropertyValue(cssProp)) {
+        // Removing property.
         const { content, updatedText } = getContentTools(element);
         const template = element.outerHTML.replace(elementText, '?');
 
-        if (start !== 0) {
+        if (start !== 0)
           updatedText.push(template.replace('?', content.slice(0, start)));
-        }
 
-        updatedText.push(content.slice(start, end));
+        updatedText.push(selectedText);
 
-        if (end !== content.length) {
+        if (end !== content.length)
           updatedText.push(template.replace('?', content.slice(end)));
-        }
 
         finalElement = updatedText.join('');
       } else {
+        // Adding property.
         finalElement = element.outerHTML.replace(
           selectedText,
           `<span style="${cssProp}:${value};">${selectedText}</span>`,

@@ -21,17 +21,14 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
 
       const isChild = selectedElement.parentElement !== inputRef.current;
 
-      if (nodeName !== 'SPAN') {
+      if (nodeName !== 'SPAN')
         props.push(nodeName.toLowerCase() as SelectableProp);
-      } else if (isChild) {
+      else if (isChild)
         props.push(parentElement?.nodeName.toLowerCase() as SelectableProp);
-      }
 
       let elementStyle = firstChild?.parentElement?.getAttribute('style');
 
-      if (isChild) {
-        elementStyle += parentElement?.getAttribute('style') || '';
-      }
+      if (isChild) elementStyle += parentElement?.getAttribute('style') || '';
 
       properties.forEach(subprops =>
         subprops.forEach(property => {
@@ -80,7 +77,9 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
 
           switch (property.type) {
             case 'tag':
-              inputNodes.push(cases.tag(points, property.name, child));
+              inputNodes.push(
+                cases.tag(points, selection.toString(), property.name, child),
+              );
               break;
 
             default: {
@@ -122,10 +121,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
 
   const handleButtonClick = useCallback(
     (property: Property) => {
-      if (!inputRef.current?.onfocus) {
-        inputRef.current?.focus();
-      }
-
+      if (!inputRef.current?.onfocus) inputRef.current?.focus();
       setTextProperty(getNodes(property));
     },
     [getNodes, inputRef, setTextProperty],
