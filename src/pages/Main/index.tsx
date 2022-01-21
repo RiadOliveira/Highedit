@@ -98,28 +98,47 @@ const Main: React.FC = () => {
 
       const { anchorOffset: start, focusNode: node } = selection;
 
-      if (node && node.textContent) {
+      if (node && node.textContent && node.parentNode) {
         const cuttedString = node.textContent.slice(
           start,
           node.textContent.length,
         );
 
         const { length } = node.textContent as string;
+        const { nodeName, parentNode } = node;
+
+        const withoutTag =
+          nodeName === '#text' && parentNode.nodeName === 'PRE';
 
         setTimeout(() => {
           const childrenArray = Array.from(childNodes);
 
           if (cuttedString) {
-            const index = childrenArray.findIndex(
-              child => child.nodeName === 'DIV',
-            );
+            let index = 0;
+
+            if (withoutTag)
+              index = childrenArray.findIndex(
+                child => child.nodeName === 'DIV',
+              );
+            else index = childrenArray.findIndex(child => child === node) + 2;
+
             inputRef.removeChild(childrenArray[index] as Node);
 
             const lastChar = cuttedString?.charAt(cuttedString.length - 1);
+            const selectedChild = childrenArray[index - 1];
 
-            childrenArray[index - 1].textContent += `\n${
+            selectedChild.textContent += `\n${
               lastChar !== '\n' ? cuttedString : ''
             }`;
+
+            const selectedNode = withoutTag
+              ? selectedChild
+              : selectedChild.firstChild;
+
+            selection.setPosition(
+              selectedNode,
+              length - cuttedString.length + 1,
+            );
           } else {
             childrenArray.forEach(
               child => child.nodeName === 'DIV' && inputRef.removeChild(child),
@@ -137,9 +156,9 @@ const Main: React.FC = () => {
   const handleBackspacePress = useCallback(
     (childNodes: NodeListOf<ChildNode>, inputRef: HTMLPreElement) => {
       const { focusNode } = window.getSelection() as Selection;
-      const content = focusNode?.firstChild?.parentElement?.innerText as string;
+      const content = focusNode?.firstChild?.parentElement?.innerText;
 
-      if (content.charAt(content.length - 1) === '\n') {
+      if (content?.charAt(content.length - 1) === '\n') {
         const childrenArray = Array.from(childNodes);
         const index = childrenArray.findIndex(child => child.nodeName === 'BR');
 
