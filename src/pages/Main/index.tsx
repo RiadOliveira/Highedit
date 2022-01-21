@@ -8,7 +8,7 @@ const placeHolder =
 
 const Main: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const textInputRef = useRef<HTMLDivElement>(null);
+  const textInputRef = useRef<HTMLPreElement>(null);
 
   const { selectedElement, updateElement } = useElement();
 
@@ -100,27 +100,49 @@ const Main: React.FC = () => {
   );
 
   const handleEnterPress = useCallback(
-    (childNodes: NodeListOf<ChildNode>, inputRef: HTMLDivElement) => {
-      const childrenArray = Array.from(childNodes);
+    (childNodes: NodeListOf<ChildNode>, inputRef: HTMLPreElement) => {
+      const selection = window.getSelection() as Selection;
 
-      const findedChild = childrenArray.find(child => child.nodeName === 'DIV');
+      const { anchorOffset: start, focusNode: node } = selection;
 
-      const divText = findedChild?.textContent;
-      inputRef.removeChild(findedChild as Node);
+      if (node && node.textContent) {
+        const cuttedString = node.textContent.slice(
+          start,
+          node.textContent.length,
+        );
 
-      // eslint-disable-next-line no-param-reassign
-      inputRef.innerHTML += `<br>${divText || '<br>'}`;
+        const { length } = node.textContent as string;
 
-      const linesQuantity =
-        childrenArray.filter(child => child.nodeName === '#text').length * 2;
+        setTimeout(() => {
+          const childrenArray = Array.from(childNodes);
 
-      window.getSelection()?.setPosition(inputRef, linesQuantity);
+          if (cuttedString) {
+            const index = childrenArray.findIndex(
+              child => child.nodeName === 'DIV',
+            );
+            inputRef.removeChild(childrenArray[index] as Node);
+
+            const lastChar = cuttedString?.charAt(cuttedString.length - 1);
+
+            childrenArray[index - 1].textContent += `\n${
+              lastChar !== '\n' ? cuttedString : ''
+            }`;
+          } else {
+            childrenArray.forEach(
+              child => child.nodeName === 'DIV' && inputRef.removeChild(child),
+            );
+
+            node.textContent += '\n\n';
+            selection.setPosition(node, length + 1);
+          }
+        }, 1);
+      }
     },
     [],
   );
 
   const handleBackspacePress = useCallback(
-    (childNodes: NodeListOf<ChildNode>, inputRef: HTMLDivElement) => {
+    (childNodes: NodeListOf<ChildNode>, inputRef: HTMLPreElement) => {
       const selection = window.getSelection();
 
       if (selection && selection.focusNode && selection.anchorOffset === 0) {
@@ -153,8 +175,7 @@ const Main: React.FC = () => {
       if (inputRef) {
         const { childNodes } = inputRef;
 
-        if (key === 'Enter')
-          setTimeout(() => handleEnterPress(childNodes, inputRef), 1);
+        if (key === 'Enter') handleEnterPress(childNodes, inputRef);
         else if (key === 'Backspace')
           handleBackspacePress(childNodes, inputRef);
       }

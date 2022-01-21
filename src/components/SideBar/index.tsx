@@ -6,7 +6,7 @@ import properties, { Property, SelectableProp } from '../../utils/properties';
 import cases from '../../utils/formattingCases';
 
 interface SideBarProps {
-  inputRef: React.RefObject<HTMLDivElement>;
+  inputRef: React.RefObject<HTMLPreElement>;
   setTextProperty: (updatedChildren: (Node | string)[]) => void;
 }
 

@@ -48,7 +48,7 @@ export const EditableArea = styled.main`
   }
 `;
 
-export const TextArea = styled.div`
+export const TextArea = styled.pre`
   width: 70%;
 
   border: 0;
