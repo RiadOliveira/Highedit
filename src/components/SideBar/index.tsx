@@ -96,15 +96,19 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
               const element = child.firstChild?.parentElement;
 
               if (element) {
-                if (isChild) {
-                  hasTag.isChild(element, comparativeNode as Node, code);
-                  inputNodes.push(element);
-                  return;
-                }
-
-                inputNodes.push(
-                  hasTag.notChild(element, selection.toString(), points, code),
-                );
+                if (isChild)
+                  inputNodes.push(
+                    hasTag.isChild(element, comparativeNode as Node, code),
+                  );
+                else
+                  inputNodes.push(
+                    hasTag.notChild(
+                      element,
+                      selection.toString(),
+                      points,
+                      code,
+                    ),
+                  );
               }
             }
           }

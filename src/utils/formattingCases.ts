@@ -121,7 +121,7 @@ const hasTagIsChild = (
   element: HTMLElement,
   comparativeNode: Node,
   { cssProp, value }: Code,
-): void => {
+): string | Node => {
   const childIndex = Array.from(element.children).findIndex(
     indexChild => indexChild === comparativeNode,
   );
@@ -132,9 +132,17 @@ const hasTagIsChild = (
     const { style } = childElement;
     const hasProp = style.getPropertyValue(cssProp);
 
-    if (hasProp && value === hasProp) style.removeProperty(cssProp);
-    else style.setProperty(cssProp, value);
+    if (hasProp && value === hasProp) {
+      style.removeProperty(cssProp);
+
+      const isEmptySpan =
+        !childElement.getAttribute('style') && childElement.nodeName === 'SPAN';
+
+      if (isEmptySpan) childElement.outerHTML = childElement.innerText;
+    } else style.setProperty(cssProp, value);
   }
+
+  return element;
 };
 
 const hasTagNotChild = (
@@ -155,7 +163,7 @@ const hasTagNotChild = (
         element.style.removeProperty(cssProp);
 
         const isEmptySpan =
-          !element.getAttribute('style') && element.nodeName === 'span';
+          !element.getAttribute('style') && element.nodeName === 'SPAN';
 
         if (isEmptySpan) return elementText;
       } else element.style.setProperty(cssProp, value);
