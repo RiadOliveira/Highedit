@@ -16,7 +16,7 @@ const SideBarButton: React.FC<ButtonProps> = ({
 }) => {
   return (
     <Container active={active} {...props}>
-      {Icon ? <Icon size={14} /> : (name || '').toUpperCase()}
+      {Icon ? <Icon size={16} /> : (name || '').toUpperCase()}
     </Container>
   );
 };

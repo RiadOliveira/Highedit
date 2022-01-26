@@ -1,4 +1,13 @@
-import { FaBold, FaItalic, FaUnderline, FaStrikethrough } from 'react-icons/fa';
+import {
+  FaBold,
+  FaItalic,
+  FaUnderline,
+  FaStrikethrough,
+  FaAlignCenter,
+  FaAlignJustify,
+  FaAlignLeft,
+  FaAlignRight,
+} from 'react-icons/fa';
 import { IconType } from 'react-icons/lib';
 
 export type SelectableProp = 'h1' | 'h2' | 'h3' | 'h4' | 'b' | 'i' | 'u' | 's';
@@ -77,6 +86,46 @@ export default [
         value: 'line-through',
       },
       icon: FaStrikethrough,
+    },
+  ],
+  [
+    {
+      name: 'center',
+      type: 'style',
+      code: {
+        cssProp: 'text-align',
+        value: 'center',
+      },
+      icon: FaAlignCenter,
+    },
+    {
+      name: 'justify',
+      type: 'style',
+      code: {
+        cssProp: 'text-align',
+        value: 'justify',
+      },
+      icon: FaAlignJustify,
+    },
+  ],
+  [
+    {
+      name: 'left',
+      type: 'style',
+      code: {
+        cssProp: 'text-align',
+        value: 'left',
+      },
+      icon: FaAlignLeft,
+    },
+    {
+      name: 'right',
+      type: 'style',
+      code: {
+        cssProp: 'text-align',
+        value: 'right',
+      },
+      icon: FaAlignRight,
     },
   ],
 ] as Property[][];

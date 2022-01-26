@@ -21,7 +21,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
 
       const isChild = selectedElement.parentElement !== inputRef.current;
 
-      if (nodeName !== 'SPAN')
+      if (nodeName !== 'SPAN' && nodeName !== 'DIV')
         props.push(nodeName.toLowerCase() as SelectableProp);
       else if (isChild)
         props.push(parentElement?.nodeName.toLowerCase() as SelectableProp);
