@@ -69,7 +69,8 @@ const tagFormat = (
     if (startText) updatedText.push(startText);
 
     if (styles) {
-      const tagName = sameTagName ? 'span' : propertyName;
+      const tagWhenRemove = styles?.includes('text-align') ? 'div' : 'span';
+      const tagName = sameTagName ? tagWhenRemove : propertyName;
 
       updatedText.push(
         template.replaceAll(childTagName, tagName).replace('?', selectedText),
@@ -83,7 +84,8 @@ const tagFormat = (
 
     if (sameTagName && !styles) updatedText.push(selectedText);
     else {
-      const tagName = sameTagName ? 'span' : propertyName;
+      const tagWhenRemove = styles?.includes('text-align') ? 'div' : 'span';
+      const tagName = sameTagName ? tagWhenRemove : propertyName;
 
       updatedText.push(
         `<${tagName}${
@@ -108,8 +110,13 @@ const justText = (
 
   if (start !== 0) updatedText.push(content.slice(0, start));
 
+  const tagName = cssProp === 'text-align' ? 'div' : 'span';
+
   updatedText.push(
-    `<span style="${cssProp}:${value};">${content.slice(start, end)}</span>`,
+    `<${tagName} style="${cssProp}:${value};">${content.slice(
+      start,
+      end,
+    )}</${tagName}>`,
   );
   updatedText.push(content.slice(end));
 
@@ -135,10 +142,12 @@ const hasTagIsChild = (
     if (hasProp && value === hasProp) {
       style.removeProperty(cssProp);
 
-      const isEmptySpan =
-        !childElement.getAttribute('style') && childElement.nodeName === 'SPAN';
+      const { nodeName } = childElement;
+      const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'DIV';
 
-      if (isEmptySpan) childElement.outerHTML = childElement.innerText;
+      const isEmptyTag = !childElement.getAttribute('style') && verifyEmptyTag;
+
+      if (isEmptyTag) childElement.outerHTML = childElement.innerText;
     } else style.setProperty(cssProp, value);
   }
 
@@ -151,22 +160,26 @@ const hasTagNotChild = (
   { start, end }: Selection,
   { cssProp, value }: Code,
 ): string | Node => {
-  const elementText = element.innerText;
+  // If the property is align, modify all parent tag.
+  const { style, innerText } = element;
+  const elementText = cssProp === 'text-align' ? selectedText : innerText;
 
   switch (selectedText) {
     case elementText:
     case elementText.trim(): {
       // All text of the tag.
-      const hasProp = element.style.getPropertyValue(cssProp);
+      const { nodeName } = element;
+      const hasProp = style.getPropertyValue(cssProp);
 
       if (hasProp && value === hasProp) {
-        element.style.removeProperty(cssProp);
+        style.removeProperty(cssProp);
 
-        const isEmptySpan =
-          !element.getAttribute('style') && element.nodeName === 'SPAN';
+        const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'DIV';
 
-        if (isEmptySpan) return elementText;
-      } else element.style.setProperty(cssProp, value);
+        const isEmptyTag = !element.getAttribute('style') && verifyEmptyTag;
+
+        if (isEmptyTag) return elementText;
+      } else style.setProperty(cssProp, value);
 
       return element;
     }
@@ -175,7 +188,7 @@ const hasTagNotChild = (
       // Part of tag's text.
       let finalElement = '';
 
-      if (element.style.getPropertyValue(cssProp)) {
+      if (style.getPropertyValue(cssProp)) {
         // Removing property.
         const { content, updatedText } = getContentTools(element);
         const { start: startText, end: endText } = getExtremePointsFromTemplate(
