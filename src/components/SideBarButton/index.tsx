@@ -7,11 +7,16 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   active: boolean;
 }
 
-const SideBarButton: React.FC<ButtonProps> = ({ Icon, active, ...props }) => {
+const SideBarButton: React.FC<ButtonProps> = ({
+  Icon,
+  active,
+  name,
+  ...props
+}) => {
   return (
-    <Container active={active} {...props}>
+    <Container active={active} type="button" propName={name || ''} {...props}>
       {typeof Icon === 'string' ? (
-        Icon.charAt(0).toUpperCase() + Icon.slice(1)
+        <span>{Icon.charAt(0).toUpperCase() + Icon.slice(1)}</span>
       ) : (
         <Icon size={16} />
       )}

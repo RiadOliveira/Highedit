@@ -138,6 +138,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
           {positions.map((position: Property) => (
             <SideBarButton
               key={position.name}
+              name={position.name}
               Icon={position.icon || position.name}
               active={activeProps.includes(position.name as SelectableProp)}
               onClick={() => handleButtonClick(position)}
