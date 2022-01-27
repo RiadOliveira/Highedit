@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import SideBarButton from 'components/SideBarButton';
 import { useElement } from 'hooks/element';
 import { ButtonPair, Container } from './styles';
-import properties, { Property, SelectableProp } from '../../utils/properties';
+import properties, { Property, PropertyName } from '../../utils/properties';
 import cases from '../../utils/formattingCases';
 
 interface SideBarProps {
@@ -11,20 +11,20 @@ interface SideBarProps {
 }
 
 const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
-  const [activeProps, setActiveProps] = useState<SelectableProp[]>([]);
+  const [activeProps, setActiveProps] = useState<PropertyName[]>([]);
   const { selectedElement, updateElement } = useElement();
 
   useEffect(() => {
     if (selectedElement && selectedElement.nodeName !== 'text') {
-      const props: SelectableProp[] = [];
+      const props: PropertyName[] = [];
       const { nodeName, parentElement, firstChild } = selectedElement;
 
       const isChild = selectedElement.parentElement !== inputRef.current;
 
       if (nodeName !== 'SPAN' && nodeName !== 'DIV')
-        props.push(nodeName.toLowerCase() as SelectableProp);
+        props.push(nodeName.toLowerCase() as PropertyName);
       else if (isChild)
-        props.push(parentElement?.nodeName.toLowerCase() as SelectableProp);
+        props.push(parentElement?.nodeName.toLowerCase() as PropertyName);
 
       let elementStyle = firstChild?.parentElement?.getAttribute('style');
 
@@ -140,7 +140,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
               key={position.name}
               name={position.name}
               Icon={position.icon || position.name}
-              active={activeProps.includes(position.name as SelectableProp)}
+              active={activeProps.includes(position.name as PropertyName)}
               onClick={() => handleButtonClick(position)}
             />
           ))}

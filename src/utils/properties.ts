@@ -14,10 +14,9 @@ import {
 } from 'react-icons/fa';
 import { IconType } from 'react-icons/lib';
 
-export type SelectableTag = 'h1' | 'h2' | 'h3' | 'h4' | 'a' | 'img' | 'save';
+export type SpecialProperty = 'a' | 'img' | '#' | 'font' | 'Aa' | 'save';
+export type SelectableTag = 'h1' | 'h2' | 'h3' | 'h4';
 export type SelectableProp =
-  | 'font'
-  | 'Aa' // Font-size
   | 'b'
   | 'i'
   | 'u'
@@ -25,17 +24,18 @@ export type SelectableProp =
   | 'center'
   | 'justify'
   | 'left'
-  | 'right'
-  | '#'; // Color
+  | 'right';
+
+export type PropertyName = SpecialProperty | SelectableProp | SelectableProp;
 
 export type Property =
   | {
-      name: SelectableTag;
+      name: SelectableTag | SpecialProperty;
       type: 'tag';
       icon?: IconType;
     }
   | {
-      name: SelectableProp;
+      name: SelectableProp | SpecialProperty;
       type: 'style';
       code: {
         cssProp: string;
