@@ -7,15 +7,32 @@ import {
   FaAlignJustify,
   FaAlignLeft,
   FaAlignRight,
+  FaLink,
+  FaImage,
+  FaSave,
+  FaFont,
 } from 'react-icons/fa';
 import { IconType } from 'react-icons/lib';
 
-export type SelectableProp = 'h1' | 'h2' | 'h3' | 'h4' | 'b' | 'i' | 'u' | 's';
+export type SelectableTag = 'h1' | 'h2' | 'h3' | 'h4' | 'a' | 'img' | 'save';
+export type SelectableProp =
+  | 'font'
+  | 'Aa' // Font-size
+  | 'b'
+  | 'i'
+  | 'u'
+  | 's'
+  | 'center'
+  | 'justify'
+  | 'left'
+  | 'right'
+  | '#'; // Color
 
 export type Property =
   | {
-      name: string;
+      name: SelectableTag;
       type: 'tag';
+      icon?: IconType;
     }
   | {
       name: SelectableProp;
@@ -24,7 +41,7 @@ export type Property =
         cssProp: string;
         value: string;
       };
-      icon: IconType;
+      icon?: IconType;
     };
 
 export default [
@@ -46,6 +63,37 @@ export default [
     {
       name: 'h4',
       type: 'tag',
+    },
+  ],
+  [
+    {
+      name: 'a',
+      type: 'tag',
+      icon: FaLink,
+    },
+    {
+      name: 'img',
+      type: 'tag',
+      icon: FaImage,
+    },
+  ],
+  [
+    {
+      name: 'font',
+      type: 'style',
+      code: {
+        cssProp: 'font-family',
+        value: 'Arial',
+      },
+      icon: FaFont,
+    },
+    {
+      name: 'Aa',
+      type: 'style',
+      code: {
+        cssProp: 'font-size',
+        value: '42px',
+      },
     },
   ],
   [
@@ -126,6 +174,21 @@ export default [
         value: 'right',
       },
       icon: FaAlignRight,
+    },
+  ],
+  [
+    {
+      name: '#',
+      type: 'style',
+      code: {
+        cssProp: 'color',
+        value: 'blue',
+      },
+    },
+    {
+      name: 'save',
+      type: 'tag',
+      icon: FaSave,
     },
   ],
 ] as Property[][];

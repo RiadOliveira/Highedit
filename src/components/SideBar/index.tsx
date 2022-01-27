@@ -7,10 +7,10 @@ import cases from '../../utils/formattingCases';
 
 interface SideBarProps {
   inputRef: React.RefObject<HTMLPreElement>;
-  setTextProperty: (updatedChildren: (Node | string)[]) => void;
+  setUpdatedText: (updatedChildren: (Node | string)[]) => void;
 }
 
-const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
+const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
   const [activeProps, setActiveProps] = useState<SelectableProp[]>([]);
   const { selectedElement, updateElement } = useElement();
 
@@ -126,9 +126,9 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
   const handleButtonClick = useCallback(
     (property: Property) => {
       if (!inputRef.current?.onfocus) inputRef.current?.focus();
-      setTextProperty(getNodes(property));
+      setUpdatedText(getNodes(property));
     },
-    [getNodes, inputRef, setTextProperty],
+    [getNodes, inputRef, setUpdatedText],
   );
 
   return (
@@ -138,8 +138,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setTextProperty }) => {
           {positions.map((position: Property) => (
             <SideBarButton
               key={position.name}
-              name={position.name}
-              Icon={position.type === 'style' ? position.icon : undefined}
+              Icon={position.icon || position.name}
               active={activeProps.includes(position.name as SelectableProp)}
               onClick={() => handleButtonClick(position)}
             />

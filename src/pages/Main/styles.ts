@@ -36,7 +36,7 @@ export const EditableArea = styled.main`
   &::after {
     content: '';
     position: absolute;
-    top: -30px;
+    top: -2%;
 
     width: 70%;
     height: 2px;
@@ -60,4 +60,8 @@ export const TextArea = styled.pre`
 
   font-family: 'Poppins', sans-serif;
   font-size: 26px;
+
+  @media (max-width: 1280px) {
+    font-size: 24px;
+  }
 `;

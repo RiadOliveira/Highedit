@@ -14,10 +14,10 @@ export const Container = styled.aside`
   top: 25%;
 
   display: flex;
-  align-items: center;
+  justify-content: center;
   flex-direction: column;
 
-  height: 50%;
+  height: 42%;
   width: 5%;
   background-color: #fffa6b;
 
@@ -26,11 +26,17 @@ export const Container = styled.aside`
 
   transition: 0.4s;
 
-  ${ButtonPair} {
-    margin-top: 20px;
-  }
-
   ${ButtonPair} + ${ButtonPair} {
     margin-top: 12px;
+  }
+
+  @media (max-width: 1600px) {
+    height: 52%;
+    width: 6.8%;
+  }
+
+  @media (max-width: 1280px) {
+    width: 90px;
+    height: 400px;
   }
 `;

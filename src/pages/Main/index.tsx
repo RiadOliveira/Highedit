@@ -44,7 +44,7 @@ const Main: React.FC = () => {
     if (inputRef && inputRef.innerHTML === '') inputRef.innerHTML = placeHolder;
   }, []);
 
-  const setTextProperty = useCallback((updatedChildren: (Node | string)[]) => {
+  const setUpdatedText = useCallback((updatedChildren: (Node | string)[]) => {
     const inputRef = textInputRef.current;
 
     if (inputRef) {
@@ -228,7 +228,7 @@ const Main: React.FC = () => {
 
       <SideBar
         inputRef={textInputRef}
-        setTextProperty={updatedText => setTextProperty(updatedText)}
+        setUpdatedText={updatedText => setUpdatedText(updatedText)}
       />
     </Container>
   );
