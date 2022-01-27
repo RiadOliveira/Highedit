@@ -50,6 +50,7 @@ const Main: React.FC = () => {
     if (inputRef) {
       inputRef.innerHTML = '';
 
+      // Function to get text content of only text tags.
       const isText = (child: Node | string): string => {
         if (typeof child === 'string') return child;
         if (child instanceof Node && child.nodeName === '#text')
@@ -58,15 +59,18 @@ const Main: React.FC = () => {
         return '';
       };
 
+      // Iterate over children
       for (let ind = 0; ind < updatedChildren.length; ind++) {
         const child = updatedChildren[ind];
         let finalText = isText(child);
 
         if (finalText) {
+          // If has other tags with only text, and they aren't together.
           if (updatedChildren[ind + 1]) {
             for (let i = ind + 1; i < updatedChildren.length; i++, ind++) {
               const verify = isText(updatedChildren[i]);
 
+              // Join texts.
               if (updatedChildren[i] && verify) finalText += verify;
               else break;
             }
@@ -92,11 +96,13 @@ const Main: React.FC = () => {
 
         // eslint-disable-next-line no-restricted-syntax
         for (const node of nodes) {
+          // Loop to find which node is (Can be child).
           if (node === comparativeNode) {
             findedNode = node;
             break;
           }
 
+          // In case that the element is a child of the node.
           const childNode = Array.from(node.childNodes).find(
             child => child === comparativeNode,
           );
@@ -107,23 +113,24 @@ const Main: React.FC = () => {
           }
         }
 
+        // If it's a different element, update it.
         if (findedNode !== selectedElement) updateElement(findedNode);
       }
     },
     [selectedElement, updateElement],
   );
 
+  // Function to insert '\n' instead of create a new <div> and <br>. (To facilitate texts handling)
   const handleEnterPress = useCallback(
     (childNodes: NodeListOf<ChildNode>, inputRef: HTMLPreElement) => {
       const selection = window.getSelection() as Selection;
-
       const { anchorOffset: start, focusNode: node } = selection;
 
       if (node && node.textContent && node.parentNode) {
         const cuttedString = node.textContent.slice(
           start,
           node.textContent.length,
-        );
+        ); // If has string after the point where Enter was pressed.
 
         const { length } = node.textContent as string;
         const { nodeName, parentNode } = node;
@@ -131,12 +138,15 @@ const Main: React.FC = () => {
         const withoutTag =
           nodeName === '#text' && parentNode.nodeName === 'PRE';
 
+        // Timeout to exclude the create <div>.
         setTimeout(() => {
           const childrenArray = Array.from(childNodes);
 
           if (cuttedString) {
             let index = 0;
 
+            /* If has tag, a div isn't created (When has cuttedString),
+               is created a copy of the tag. */
             if (withoutTag)
               index = childrenArray.findIndex(
                 child => child.nodeName === 'DIV',
@@ -156,6 +166,7 @@ const Main: React.FC = () => {
               ? selectedChild
               : selectedChild.firstChild;
 
+            // Sets cursor position on the new line
             selection.setPosition(
               selectedNode,
               length - cuttedString.length + 1,
@@ -179,9 +190,12 @@ const Main: React.FC = () => {
       const { focusNode } = window.getSelection() as Selection;
       const content = focusNode?.firstChild?.parentElement?.innerText;
 
+      const comparativeNode =
+        focusNode?.nodeName === 'PRE' ? focusNode.firstChild : focusNode;
+
       if (
         content?.charAt(content.length - 1) === '\n' &&
-        focusNode?.nodeName === '#text'
+        comparativeNode?.nodeName === '#text'
       ) {
         const childrenArray = Array.from(childNodes);
         const index = childrenArray.findIndex(child => child.nodeName === 'BR');

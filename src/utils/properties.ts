@@ -14,6 +14,7 @@ import {
 } from 'react-icons/fa';
 import { IconType } from 'react-icons/lib';
 
+// # = color ; Aa = font-size ; save = save result of edition
 export type SpecialProperty = 'a' | 'img' | '#' | 'font' | 'Aa' | 'save';
 export type SelectableTag = 'h1' | 'h2' | 'h3' | 'h4';
 export type SelectableProp =
@@ -30,12 +31,12 @@ export type PropertyName = SpecialProperty | SelectableProp | SelectableProp;
 
 export type Property =
   | {
-      name: SelectableTag;
+      name: SelectableTag; // Tags Props (h1, h2, h3 and h4)
       type: 'tag';
       icon?: IconType;
     }
   | {
-      name: SelectableProp;
+      name: SelectableProp; // Styles props (bold, italic, align ...)
       type: 'style';
       code: {
         cssProp: string;
@@ -44,7 +45,7 @@ export type Property =
       icon?: IconType;
     }
   | {
-      name: SpecialProperty;
+      name: SpecialProperty; // Props with unique handling
       type: 'special';
       code?: {
         cssProp: string;
@@ -54,6 +55,7 @@ export type Property =
     };
 
 export default [
+  // All possibly buttons of the app (Separated in arrays in order to facilitate exhibition)
   [
     {
       name: 'h1',
