@@ -1,17 +1,34 @@
-import React from 'react';
+import React, { AllHTMLAttributes, useCallback, useState } from 'react';
 import Input from 'components/Input';
 import Select from 'components/Select';
+import { AnimatedProps } from 'react-spring';
+import { useModal } from 'hooks/modal';
 import { Container, ContentBox, Button } from './styles';
 
-const Modal: React.FC = () => {
-  return (
-    <Container>
-      <ContentBox>
-        <p>Selecione o tamanho desejado</p>
-        <Input />
-        <Select />
+type ModalProps = AnimatedProps<AllHTMLAttributes<HTMLDivElement>>;
 
-        <Button type="button">Confirmar</Button>
+const Modal: React.FC<ModalProps> = ({ style }) => {
+  const {
+    modalProps: { text, type, actionFunction },
+    hideModal,
+  } = useModal();
+
+  const [selectedText, setSelectedText] = useState('');
+
+  const confirmModal = useCallback(() => {
+    hideModal();
+    actionFunction(selectedText);
+  }, [actionFunction, hideModal, selectedText]);
+
+  return (
+    <Container style={style}>
+      <ContentBox>
+        <p>{text}</p>
+        {type === 'input' ? <Input /> : <Select />}
+
+        <Button onClick={confirmModal} type="button">
+          Confirmar
+        </Button>
       </ContentBox>
     </Container>
   );
