@@ -30,13 +30,13 @@ export const ContentBox = styled.div`
   p {
     font-size: 22px;
     font-weight: bold;
-    font-family: Poppins;
+    font-family: 'Poppins', sans-serif;
     color: #2b2929;
 
     margin: 20px 0;
   }
 
-  & > * {
+  * {
     margin: 20px 0;
   }
 `;
@@ -51,7 +51,7 @@ export const Button = styled.button`
   width: 150px;
   height: 45px;
 
-  font-family: Poppins;
+  font-family: 'Poppins', sans-serif;
   font-weight: bold;
   font-size: 16px;
 

@@ -24,8 +24,8 @@ interface IModalContextData {
 const modalContext = createContext<IModalContextData>({} as IModalContextData);
 
 const initialData: IModalProps = {
-  isVisible: true,
-  type: 'select',
+  isVisible: false,
+  type: 'input',
   actionFunction: () => null,
   options: [],
 };

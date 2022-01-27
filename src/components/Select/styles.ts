@@ -19,7 +19,7 @@ export const Option = styled.button`
   width: 100%;
   cursor: pointer;
 
-  font-family: Poppins;
+  font-family: 'Poppins', sans-serif;
 
   display: flex;
   justify-content: center;
