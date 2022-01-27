@@ -24,7 +24,11 @@ const Modal: React.FC<ModalProps> = ({ style }) => {
     <Container style={style}>
       <ContentBox>
         <p>{text}</p>
-        {type === 'input' ? <Input /> : <Select />}
+        {type === 'input' ? (
+          <Input onChange={({ target: { value } }) => setSelectedText(value)} />
+        ) : (
+          <Select setFunction={setSelectedText} />
+        )}
 
         <Button onClick={confirmModal} type="button">
           Confirmar

@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import SideBarButton from 'components/SideBarButton';
 import { useElement } from 'hooks/element';
+import properties, { Property, PropertyName } from 'utils/properties';
+import cases from 'utils/formattingCases';
+import specialFunctions from 'utils/specialTags';
 import { ButtonPair, Container } from './styles';
-import properties, { Property, PropertyName } from '../../utils/properties';
-import cases from '../../utils/formattingCases';
-import specialFunctions from '../../utils/specialTags';
 
 interface SideBarProps {
   inputRef: React.RefObject<HTMLPreElement>;

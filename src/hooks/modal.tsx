@@ -2,11 +2,17 @@ import React, { createContext, useState, useContext, useCallback } from 'react';
 import Modal from 'components/Modal';
 import { useTransition } from 'react-spring';
 
+interface Option {
+  label: string;
+  value: string;
+}
+
 interface IModalProps {
   isVisible: boolean;
   text?: string;
   actionFunction: (modalText: string) => void;
   type: 'select' | 'input';
+  options: Option[];
 }
 
 interface IModalContextData {
@@ -18,9 +24,10 @@ interface IModalContextData {
 const modalContext = createContext<IModalContextData>({} as IModalContextData);
 
 const initialData: IModalProps = {
-  isVisible: false,
-  type: 'input',
+  isVisible: true,
+  type: 'select',
   actionFunction: () => null,
+  options: [],
 };
 
 const ModalContext: React.FC = ({ children }) => {
