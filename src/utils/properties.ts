@@ -30,14 +30,23 @@ export type PropertyName = SpecialProperty | SelectableProp | SelectableProp;
 
 export type Property =
   | {
-      name: SelectableTag | SpecialProperty;
+      name: SelectableTag;
       type: 'tag';
       icon?: IconType;
     }
   | {
-      name: SelectableProp | SpecialProperty;
+      name: SelectableProp;
       type: 'style';
       code: {
+        cssProp: string;
+        value: string;
+      };
+      icon?: IconType;
+    }
+  | {
+      name: SpecialProperty;
+      type: 'special';
+      code?: {
         cssProp: string;
         value: string;
       };
@@ -68,19 +77,19 @@ export default [
   [
     {
       name: 'a',
-      type: 'tag',
+      type: 'special',
       icon: FaLink,
     },
     {
       name: 'img',
-      type: 'tag',
+      type: 'special',
       icon: FaImage,
     },
   ],
   [
     {
       name: 'font',
-      type: 'style',
+      type: 'special',
       code: {
         cssProp: 'font-family',
         value: 'Arial',
@@ -89,7 +98,7 @@ export default [
     },
     {
       name: 'Aa',
-      type: 'style',
+      type: 'special',
       code: {
         cssProp: 'font-size',
         value: '42px',
@@ -179,7 +188,7 @@ export default [
   [
     {
       name: '#',
-      type: 'style',
+      type: 'special',
       code: {
         cssProp: 'color',
         value: 'blue',
@@ -187,7 +196,7 @@ export default [
     },
     {
       name: 'save',
-      type: 'tag',
+      type: 'special',
       icon: FaSave,
     },
   ],

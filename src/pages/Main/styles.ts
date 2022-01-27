@@ -61,6 +61,16 @@ export const TextArea = styled.pre`
   font-family: 'Poppins', sans-serif;
   font-size: 26px;
 
+  a:link {
+    text-decoration: inherit;
+    color: inherit;
+  }
+
+  a:visited {
+    text-decoration: inherit;
+    color: inherit;
+  }
+
   @media (max-width: 1280px) {
     font-size: 24px;
   }

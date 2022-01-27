@@ -4,6 +4,7 @@ import { useElement } from 'hooks/element';
 import { ButtonPair, Container } from './styles';
 import properties, { Property, PropertyName } from '../../utils/properties';
 import cases from '../../utils/formattingCases';
+import specialFunctions from '../../utils/specialTags';
 
 interface SideBarProps {
   inputRef: React.RefObject<HTMLPreElement>;
@@ -79,6 +80,16 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
             case 'tag':
               inputNodes.push(
                 cases.tag(points, selection.toString(), property.name, child),
+              );
+              break;
+
+            case 'special':
+              inputNodes.push(
+                specialFunctions.link(
+                  child,
+                  comparativeNode as Node,
+                  selection.toString(),
+                ),
               );
               break;
 
