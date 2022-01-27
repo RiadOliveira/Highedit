@@ -15,6 +15,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
   const [activeProps, setActiveProps] = useState<PropertyName[]>([]);
   const { selectedElement, updateElement } = useElement();
 
+  // To handle selection change and highlight props of selected text.
   useEffect(() => {
     if (selectedElement && selectedElement.nodeName !== 'text') {
       const props: PropertyName[] = [];
@@ -22,6 +23,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
       const isChild = selectedElement.parentElement !== inputRef.current;
 
+      // To verify and get tags applied and highlighted it (Except div and span).
       if (nodeName !== 'SPAN' && nodeName !== 'DIV')
         props.push(nodeName.toLowerCase() as PropertyName);
       else if (isChild)
@@ -29,8 +31,10 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
       let elementStyle = firstChild?.parentElement?.getAttribute('style');
 
+      // To get parent's styles highlighted too.
       if (isChild) elementStyle += parentElement?.getAttribute('style') || '';
 
+      // Gets all style props that a text has.
       properties.forEach(subprops =>
         subprops.forEach(property => {
           if (property.type === 'style') {
@@ -48,11 +52,13 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
     }
   }, [inputRef, selectedElement]);
 
+  // Function to return all nodes, including the updated node with the property pressed.
   const getNodes = useCallback(
     (property: Property): (Node | string)[] => {
       const selection = window.getSelection();
       const textRef = inputRef.current;
 
+      // Will store all nodes.
       const inputNodes: (Node | string)[] = [];
 
       if (selection && textRef) {
@@ -63,14 +69,17 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
         };
         const parentNode = anchorNode?.parentNode;
 
+        // Gets selectedNode without error.
         const comparativeNode: Node | null | undefined =
           parentNode !== textRef ? parentNode : anchorNode;
 
+        // Iterate through all children of the created text.
         textRef.childNodes.forEach(child => {
           const isChild = Array.from(child.childNodes).includes(
             comparativeNode as ChildNode,
           );
 
+          // If the child isn't the selected, return it without changes.
           if (comparativeNode !== child && !isChild) {
             inputNodes.push(child);
             return;
@@ -126,6 +135,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
         });
       }
 
+      // Resets all activeProps and selectedElement.
       setActiveProps([]);
       updateElement(undefined);
 

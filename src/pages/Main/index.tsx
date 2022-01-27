@@ -89,6 +89,8 @@ const Main: React.FC = () => {
 
       if (selection && textRef) {
         const parentNode = selection.anchorNode?.parentNode;
+
+        // Gets selectedNode without error.
         const comparativeNode: Node | null | undefined =
           parentNode !== textRef ? parentNode : selection.anchorNode;
 

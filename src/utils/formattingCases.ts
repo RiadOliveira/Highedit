@@ -15,7 +15,8 @@ const getContentTools = ({
   content: textContent || '',
 });
 
-const getExtremePointsFromTemplate = (
+// Used when removes a style/tag on some part of text.
+const getExtremePointsWithTemplate = (
   template: HTMLElement | string,
   content: string,
   start: number,
@@ -56,10 +57,10 @@ const tagFormat = (
   const sameTagName = propertyName === childTagName;
 
   if (hasTag && selectedText !== child.textContent?.trim()) {
-    // Part of tag's text.
+    // Part of tag's text, removing its tag.
     const element = child.firstChild?.parentElement as HTMLElement;
     const template = element.outerHTML.replace(element.innerText, '?');
-    const { start: startText, end: endText } = getExtremePointsFromTemplate(
+    const { start: startText, end: endText } = getExtremePointsWithTemplate(
       template,
       content,
       start,
@@ -68,6 +69,7 @@ const tagFormat = (
 
     if (startText) updatedText.push(startText);
 
+    // Keep styles with another tag.
     if (styles) {
       const tagWhenRemove = styles?.includes('text-align') ? 'div' : 'span';
       const tagName = sameTagName ? tagWhenRemove : propertyName;
@@ -82,8 +84,10 @@ const tagFormat = (
     // All tag's text.
     if (start !== 0) updatedText.push(content.slice(0, start));
 
+    // Remove the tag.
     if (sameTagName && !styles) updatedText.push(selectedText);
     else {
+      // If has styles, keep them with another tag.
       const tagWhenRemove = styles?.includes('text-align') ? 'div' : 'span';
       const tagName = sameTagName ? tagWhenRemove : propertyName;
 
@@ -123,8 +127,8 @@ const justText = (
   return updatedText.join('');
 };
 
+// Child of a created element.
 const hasTagIsChild = (
-  // Child of a created element.
   element: HTMLElement,
   comparativeNode: Node,
   { cssProp, value }: Code,
@@ -139,6 +143,7 @@ const hasTagIsChild = (
     const { style } = childElement;
     const hasProp = style.getPropertyValue(cssProp);
 
+    // If already has property, remove it.
     if (hasProp && value === hasProp) {
       style.removeProperty(cssProp);
 
@@ -154,14 +159,16 @@ const hasTagIsChild = (
   return element;
 };
 
+// Has tag, but it's just text selected, without children tags.
 const hasTagNotChild = (
   element: HTMLElement,
   selectedText: string,
   { start, end }: Selection,
   { cssProp, value }: Code,
 ): string | Node => {
-  // If the property is align, modify all parent tag.
   const { style, innerText } = element;
+
+  // If the property is align, modify all parent tag style.
   const elementText = cssProp === 'text-align' ? selectedText : innerText;
 
   switch (selectedText) {
@@ -171,6 +178,7 @@ const hasTagNotChild = (
       const { nodeName } = element;
       const hasProp = style.getPropertyValue(cssProp);
 
+      // If already has property, remove it.
       if (hasProp && value === hasProp) {
         style.removeProperty(cssProp);
 
@@ -191,7 +199,7 @@ const hasTagNotChild = (
       if (style.getPropertyValue(cssProp)) {
         // Removing property.
         const { content, updatedText } = getContentTools(element);
-        const { start: startText, end: endText } = getExtremePointsFromTemplate(
+        const { start: startText, end: endText } = getExtremePointsWithTemplate(
           element,
           content,
           start,

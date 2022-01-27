@@ -38,13 +38,9 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
         selectRef.current.scrollTo({ top: selectedOption * 60 });
 
         selectRef.current.addEventListener('keydown', event => {
-          if (event.code === 'Space') {
-            event.preventDefault();
-          }
+          if (event.code === 'Space') event.preventDefault();
         });
-      } else {
-        selectRef.current?.removeEventListener('keydown', () => null);
-      }
+      } else selectRef.current?.removeEventListener('keydown', () => null);
     }
   }, [selectedOption, isShowingOptions]);
 
@@ -54,6 +50,7 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
     }
   }, [options, selectedOption, setFunction]);
 
+  // Search system through select.
   const handleKeyPress = (key: string) =>
     setSelectedOption(() => {
       let searchText: string;
@@ -64,18 +61,20 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
       } else {
         searchText = key.toLowerCase();
 
+        // If the difference in time of the last input and the current is lower
+        // than 1, add the key to the search text.
         if (
           searchedTextProps.time &&
           differenceInSeconds(new Date(Date.now()), searchedTextProps.time) < 1
-        ) {
+        )
           searchText = (searchedTextProps.text + key).toLowerCase();
-        }
       }
 
       const findedIndex = options.findIndex(({ label }) =>
         label.toLowerCase().startsWith(searchText),
       );
 
+      // If not find any option with the searched text, resets it.
       if (findedIndex === -1) {
         setSearchedTextProps({ text: '', time: new Date(Date.now()) });
         return 0;
