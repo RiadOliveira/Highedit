@@ -53,8 +53,9 @@ const Main: React.FC = () => {
       // Function to get text content of only text tags.
       const isText = (child: Node | string): string => {
         if (typeof child === 'string') return child;
-        if (child instanceof Node && child.nodeName === '#text')
+        if (child instanceof Node && child.nodeName === '#text') {
           return child.textContent || '';
+        }
 
         return '';
       };

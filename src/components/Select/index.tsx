@@ -45,9 +45,7 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
   }, [selectedOption, isShowingOptions]);
 
   useEffect(() => {
-    if (options.length > 0) {
-      setFunction(options[selectedOption].value);
-    }
+    if (options.length > 0) setFunction(options[selectedOption].value);
   }, [options, selectedOption, setFunction]);
 
   // Search system through select.
@@ -66,8 +64,9 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
         if (
           searchedTextProps.time &&
           differenceInSeconds(new Date(Date.now()), searchedTextProps.time) < 1
-        )
+        ) {
           searchText = (searchedTextProps.text + key).toLowerCase();
+        }
       }
 
       const findedIndex = options.findIndex(({ label }) =>
