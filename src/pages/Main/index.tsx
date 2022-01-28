@@ -129,8 +129,8 @@ const Main: React.FC = () => {
       const selection = window.getSelection() as Selection;
       const { anchorOffset: start, focusNode: node } = selection;
 
-      if (node && node.textContent && node.parentNode) {
-        const cuttedString = node.textContent.slice(
+      if (node && node.parentNode) {
+        const cuttedString = node.textContent?.slice(
           start,
           node.textContent.length,
         ); // If has string after the point where Enter was pressed.
@@ -144,8 +144,10 @@ const Main: React.FC = () => {
         // Timeout to exclude the create <div>.
         setTimeout(() => {
           const childrenArray = Array.from(childNodes);
+          const isNotBreak =
+            cuttedString?.charAt(cuttedString.length - 1) !== '\n';
 
-          if (cuttedString) {
+          if (cuttedString && isNotBreak) {
             let index = 0;
 
             /* If has tag, a div isn't created (When has cuttedString),
@@ -179,8 +181,14 @@ const Main: React.FC = () => {
               child => child.nodeName === 'DIV' && inputRef.removeChild(child),
             );
 
-            node.textContent += '\n\n';
-            selection.setPosition(node, length + 1);
+            const { firstChild } = node;
+            const selectionNode =
+              nodeName === 'PRE' && firstChild ? firstChild : node;
+
+            if (selectionNode) {
+              selectionNode.textContent += `\n${isNotBreak ? '\n' : ''}`;
+              selection.setPosition(selectionNode, length + Number(isNotBreak));
+            }
           }
         }, 1);
       }
