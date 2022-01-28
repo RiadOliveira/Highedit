@@ -3,19 +3,46 @@ const link = (
   comparativeNode: Node,
   selectedLink: string,
 ): string => {
-  const childText = child.textContent || '';
+  const comparativeElement = comparativeNode.firstChild?.parentElement;
+  const nodeText = comparativeElement?.outerHTML || '';
 
   // Removing tag.
-  if (child.nodeName === 'A') return childText;
+  if (child.nodeName === 'A') {
+    const hasAlign = comparativeElement?.style.getPropertyValue('text-align');
+    const withoutTagName = hasAlign ? 'div' : 'span';
+
+    return nodeText
+      .replace('<a', `<${withoutTagName}`)
+      .replace('a>', `${withoutTagName}>`);
+  }
 
   // Replace selectedText to a link.
-  const replaceToLink = (elementText: string) =>
-    elementText.replace(
-      selectedLink,
-      `<a style="text-decoration: underline; color: blue;" href="${selectedLink}">${selectedLink}</a>`,
+  const replaceToLink = (elementText: string) => {
+    const isPropertyTag = comparativeNode.nodeName !== 'SPAN';
+    const textToReplace = isPropertyTag ? selectedLink : nodeText;
+
+    let textColor = 'color: blue; ';
+    let textDecoration = 'text-decoration: underline; ';
+    let extraStyles = '';
+
+    if (!isPropertyTag) {
+      const elementStyles = comparativeElement?.getAttribute('style');
+      extraStyles = elementStyles || '';
+
+      if (extraStyles.includes('color')) textColor = '';
+      if (extraStyles.includes('text-decoration')) textDecoration = '';
+    }
+
+    const finalStyle = textDecoration + textColor + extraStyles;
+
+    return elementText.replace(
+      textToReplace,
+      `<a style="${finalStyle}" href="${selectedLink}">${selectedLink}</a>`,
     );
+  };
 
   // If has just text, replace the selected part for the link.
+  const childText = child.textContent || '';
   if (child.nodeName === '#text') return replaceToLink(childText);
 
   // If has a tag (h1, h2, h3, h4, span, div).
@@ -25,8 +52,6 @@ const link = (
 
   // Removing subtag 'A' if already has.
   if (comparativeNode.nodeName === 'A') {
-    const nodeText = comparativeNode.firstChild?.parentElement?.outerHTML || '';
-
     return parentElement.outerHTML.replace(
       nodeText,
       comparativeNode.textContent || '',
