@@ -151,7 +151,6 @@ const hasTagIsChild = (
 
       const { nodeName } = childElement;
       const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'DIV';
-
       const isEmptyTag = !childElement.getAttribute('style') && verifyEmptyTag;
 
       if (isEmptyTag) childElement.outerHTML = childElement.innerText;
@@ -171,7 +170,8 @@ const hasTagNotChild = (
   const { style, innerText } = element;
 
   // If the property is align, modify all parent tag style.
-  const elementText = cssProp === 'text-align' ? selectedText : innerText;
+  const isAlign = cssProp === 'text-align';
+  const elementText = isAlign ? selectedText : innerText;
 
   switch (selectedText) {
     case elementText:
@@ -185,11 +185,21 @@ const hasTagNotChild = (
         style.removeProperty(cssProp);
 
         const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'DIV';
-
         const isEmptyTag = !element.getAttribute('style') && verifyEmptyTag;
 
         if (isEmptyTag) return elementText;
-      } else style.setProperty(cssProp, value);
+      } else {
+        if ((isAlign && nodeName === 'SPAN') || nodeName === 'A') {
+          const updatedElement = document.createElement('div');
+
+          updatedElement.style.setProperty(cssProp, value);
+          updatedElement.appendChild(element);
+
+          return updatedElement;
+        }
+
+        style.setProperty(cssProp, value);
+      }
 
       return element;
     }
