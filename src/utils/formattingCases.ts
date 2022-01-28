@@ -73,7 +73,7 @@ const tagFormat = (
 
     // Keep styles with another tag.
     if (styles) {
-      const tagWhenRemove = styles?.includes('text-align') ? 'div' : 'span';
+      const tagWhenRemove = styles?.includes('text-align') ? 'section' : 'span';
       const tagName = sameTagName ? tagWhenRemove : propertyName;
 
       updatedText.push(
@@ -90,7 +90,7 @@ const tagFormat = (
     if (sameTagName && !styles) updatedText.push(selectedText);
     else {
       // If has styles, keep them with another tag.
-      const tagWhenRemove = styles?.includes('text-align') ? 'div' : 'span';
+      const tagWhenRemove = styles?.includes('text-align') ? 'section' : 'span';
       const tagName = sameTagName ? tagWhenRemove : propertyName;
 
       updatedText.push(
@@ -116,7 +116,7 @@ const justText = (
 
   if (start !== 0) updatedText.push(content.slice(0, start));
 
-  const tagName = cssProp === 'text-align' ? 'div' : 'span';
+  const tagName = cssProp === 'text-align' ? 'section' : 'span';
 
   updatedText.push(
     `<${tagName} style="${cssProp}:${value};">${content.slice(
@@ -150,7 +150,7 @@ const hasTagIsChild = (
       style.removeProperty(cssProp);
 
       const { nodeName } = childElement;
-      const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'DIV';
+      const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
       const isEmptyTag = !childElement.getAttribute('style') && verifyEmptyTag;
 
       if (isEmptyTag) childElement.outerHTML = childElement.innerText;
@@ -184,13 +184,13 @@ const hasTagNotChild = (
       if (hasProp && value === hasProp) {
         style.removeProperty(cssProp);
 
-        const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'DIV';
+        const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
         const isEmptyTag = !element.getAttribute('style') && verifyEmptyTag;
 
         if (isEmptyTag) return elementText;
       } else {
         if ((isAlign && nodeName === 'SPAN') || nodeName === 'A') {
-          const updatedElement = document.createElement('div');
+          const updatedElement = document.createElement('section');
 
           updatedElement.style.setProperty(cssProp, value);
           updatedElement.appendChild(element);

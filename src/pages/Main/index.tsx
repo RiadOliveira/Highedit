@@ -141,7 +141,7 @@ const Main: React.FC = () => {
         const withoutTag =
           nodeName === '#text' && parentNode.nodeName === 'PRE';
 
-        // Timeout to exclude the create <div>.
+        // Timeout to exclude created <div>.
         setTimeout(() => {
           const childrenArray = Array.from(childNodes);
           const isNotBreak =

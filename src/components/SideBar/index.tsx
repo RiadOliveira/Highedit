@@ -22,8 +22,8 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
       const isChild = selectedElement.parentElement !== inputRef.current;
 
-      // To verify and get tags applied and highlighted it (Except div and span).
-      if (nodeName !== 'SPAN' && nodeName !== 'DIV') {
+      // To verify and get tags applied and highlighted it (Except section and span).
+      if (nodeName !== 'SPAN' && nodeName !== 'SECTION') {
         props.push(nodeName.toLowerCase() as PropertyName);
       }
 

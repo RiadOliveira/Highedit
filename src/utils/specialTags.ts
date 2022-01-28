@@ -9,7 +9,7 @@ const link = (
   // Removing tag.
   if (child.nodeName === 'A') {
     const hasAlign = comparativeElement?.style.getPropertyValue('text-align');
-    const withoutTagName = hasAlign ? 'div' : 'span';
+    const withoutTagName = hasAlign ? 'section' : 'span';
 
     return nodeText
       .replace('<a', `<${withoutTagName}`)
@@ -45,7 +45,7 @@ const link = (
   const childText = child.textContent || '';
   if (child.nodeName === '#text') return replaceToLink(childText);
 
-  // If has a tag (h1, h2, h3, h4, span, div).
+  // If has a tag (h1, h2, h3, h4, span, section).
   // ----------------------------------------
 
   const parentElement = child.firstChild?.parentElement as HTMLElement;
