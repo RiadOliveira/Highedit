@@ -206,9 +206,9 @@ const hasTagNotChild = (
     default: {
       // Part of tag's text.
       let finalElement = '';
+      const propertyValue = style.getPropertyValue(cssProp);
 
-      if (style.getPropertyValue(cssProp)) {
-        // Removing property.
+      if (propertyValue) {
         const { content, updatedText } = getContentTools(element);
         const { start: startText, end: endText } = getExtremePointsWithTemplate(
           element,
@@ -218,7 +218,15 @@ const hasTagNotChild = (
         );
 
         if (startText) updatedText.push(startText);
-        updatedText.push(selectedText);
+
+        // If has different value, update it, else, remove all styles.
+        if (propertyValue !== value) {
+          const tagName = isAlign ? 'section' : 'span';
+          updatedText.push(
+            `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
+          );
+        } else updatedText.push(selectedText);
+
         if (endText) updatedText.push(endText);
 
         finalElement = updatedText.join('');
