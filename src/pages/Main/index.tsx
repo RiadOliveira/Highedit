@@ -134,11 +134,8 @@ const Main: React.FC = () => {
     parentNodeName: string,
     cuttedString: string,
   ) => {
-    const { nodeName, textContent } = node;
-    const { length } = textContent || '';
-
     const inputRef = textInputRef.current as HTMLPreElement;
-    const withoutTag = nodeName === '#text' && parentNodeName === 'PRE';
+    const withoutTag = node.nodeName === '#text' && parentNodeName === 'PRE';
 
     let index = 0;
 
@@ -153,11 +150,11 @@ const Main: React.FC = () => {
     const selectedChild = childrenArray[index - 1];
 
     selectedChild.textContent += `\n${lastChar !== '\n' ? cuttedString : ''}`;
-
+    const childLength = selectedChild.textContent?.length || 0;
     const selectedNode = withoutTag ? selectedChild : selectedChild.firstChild;
 
-    // Sets cursor position on the new line
-    selection.setPosition(selectedNode, length - cuttedString.length + 1);
+    // Sets cursor position on the new line.
+    selection.setPosition(selectedNode, childLength - cuttedString.length);
   };
 
   const enterPressWithoutContent = (
@@ -194,7 +191,7 @@ const Main: React.FC = () => {
       // If has string after the point where Enter was pressed.
       const cuttedString = textContent?.slice(start, textContent.length) || '';
       const handlersProps: EnterPressHandlersProps = {
-        node: node.cloneNode(true),
+        node,
         selection,
         childrenArray: [],
       };
