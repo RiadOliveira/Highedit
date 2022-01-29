@@ -137,12 +137,15 @@ const Main: React.FC = () => {
     const inputRef = textInputRef.current as HTMLPreElement;
     const withoutTag = node.nodeName === '#text' && parentNodeName === 'PRE';
 
+    const { parentNode } = node;
+    const comparativeNode = parentNodeName !== 'PRE' ? parentNode : node;
+
     let index = 0;
 
     // If has tag, a div isn't created (When has cuttedString), is created a copy of the tag.
     if (withoutTag) {
       index = childrenArray.findIndex(child => child.nodeName === 'DIV');
-    } else index = childrenArray.findIndex(child => child === node) + 2;
+    } else index = childrenArray.findIndex(child => child === comparativeNode);
 
     inputRef.removeChild(childrenArray[index] as Node);
 
