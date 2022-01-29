@@ -161,14 +161,20 @@ const Main: React.FC = () => {
     { childrenArray, selection, node }: EnterPressHandlersProps,
     isNotBreak: boolean,
   ) => {
-    const { nodeName, textContent } = node;
+    const { nodeName, textContent, parentNode } = node;
     const { length } = textContent || '';
 
     const inputRef = textInputRef.current as HTMLPreElement;
 
-    childrenArray.forEach(
-      child => child.nodeName === 'DIV' && inputRef.removeChild(child),
-    );
+    if (parentNode?.nodeName === 'SECTION') {
+      childrenArray.forEach(
+        child => child.textContent === '' && inputRef.removeChild(child),
+      );
+    } else {
+      childrenArray.forEach(
+        child => child.nodeName === 'DIV' && inputRef.removeChild(child),
+      );
+    }
 
     const { firstChild } = node;
     const selectionNode = nodeName === 'PRE' && firstChild ? firstChild : node;
