@@ -131,13 +131,14 @@ const Main: React.FC = () => {
 
   const enterPressWithContent = (
     { childrenArray, selection, node }: EnterPressHandlersProps,
+    parentNodeName: string,
     cuttedString: string,
   ) => {
-    const { nodeName, parentNode, textContent } = node;
+    const { nodeName, textContent } = node;
     const { length } = textContent || '';
 
     const inputRef = textInputRef.current as HTMLPreElement;
-    const withoutTag = nodeName === '#text' && parentNode?.nodeName === 'PRE';
+    const withoutTag = nodeName === '#text' && parentNodeName === 'PRE';
 
     let index = 0;
 
@@ -187,27 +188,28 @@ const Main: React.FC = () => {
     const { anchorOffset: start, focusNode: node } = selection;
 
     if (node) {
-      const { childNodes } = textInputRef.current as HTMLPreElement;
+      const { textContent, parentNode } = node;
+      const { nodeName: parentNodeName } = parentNode as ParentNode;
 
       // If has string after the point where Enter was pressed.
-      const cuttedString =
-        node.textContent?.slice(start, node.textContent.length) || '';
+      const cuttedString = textContent?.slice(start, textContent.length) || '';
+      const handlersProps: EnterPressHandlersProps = {
+        node: node.cloneNode(true),
+        selection,
+        childrenArray: [],
+      };
 
       // Timeout to exclude created <div>.
       setTimeout(() => {
-        const childrenArray = Array.from(childNodes);
+        const { childNodes } = textInputRef.current as HTMLPreElement;
+        handlersProps.childrenArray = Array.from(childNodes);
+
         const isNotBreak =
           cuttedString.charAt(cuttedString.length - 1) !== '\n';
         const hasContent = cuttedString && isNotBreak;
 
-        const handlersProps: EnterPressHandlersProps = {
-          childrenArray,
-          node,
-          selection,
-        };
-
-        if (hasContent) enterPressWithContent(handlersProps, cuttedString);
-        else enterPressWithoutContent(handlersProps, isNotBreak);
+        if (!hasContent) enterPressWithoutContent(handlersProps, isNotBreak);
+        else enterPressWithContent(handlersProps, parentNodeName, cuttedString);
       }, 1);
     }
   }, []);
