@@ -3,7 +3,7 @@ import specialFunctions from 'utils/specialTags';
 import { Property } from 'utils/properties';
 
 // Function to return all nodes, including the updated node with the property pressed.
-const getNodes = (
+const getUpdatedNodes = (
   inputRef: React.RefObject<HTMLPreElement>,
   property: Property,
 ): (Node | string)[] => {
@@ -85,4 +85,4 @@ const getNodes = (
   return inputNodes;
 };
 
-export default getNodes;
+export default getUpdatedNodes;

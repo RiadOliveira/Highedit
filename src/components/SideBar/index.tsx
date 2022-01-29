@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import SideBarButton from 'components/SideBarButton';
 import properties, { Property, PropertyName } from 'utils/properties';
-import getNodes from 'utils/getNodes';
+import getUpdatedNodes from 'utils/getUpdatedNodes';
 import { useElement } from 'hooks/element';
 import { ButtonPair, Container } from './styles';
 
@@ -57,7 +57,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
   const handleButtonClick = useCallback(
     (property: Property) => {
       if (!inputRef.current?.onfocus) inputRef.current?.focus();
-      setUpdatedText(getNodes(inputRef, property));
+      setUpdatedText(getUpdatedNodes(inputRef, property));
 
       // Resets all activeProps and selectedElement.
       setActiveProps([]);
