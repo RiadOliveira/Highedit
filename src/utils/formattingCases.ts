@@ -167,11 +167,10 @@ const hasTagNotChild = (
   { start, end }: Selection,
   { cssProp, value }: Code,
 ): string | Node => {
-  const { style, innerText } = element;
+  const { style, innerText: elementText } = element;
 
   // If the property is align, modify all parent tag style.
   const isAlign = cssProp === 'text-align';
-  const elementText = isAlign ? selectedText : innerText;
 
   switch (selectedText) {
     case elementText:
@@ -189,7 +188,7 @@ const hasTagNotChild = (
 
         if (isEmptyTag) return elementText;
       } else {
-        if ((isAlign && nodeName === 'SPAN') || nodeName === 'A') {
+        if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
           const updatedElement = document.createElement('section');
 
           updatedElement.style.setProperty(cssProp, value);
