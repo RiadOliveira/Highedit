@@ -103,8 +103,6 @@ const getUpdatedNodes = (
         const endNodeIndex = getExtremeIndex('end');
         if (index < startNodeIndex || index > endNodeIndex) return child;
       } else {
-        let updatedChild: string | Node = child;
-
         if (property.type === 'tag') {
           const selectedContent = Array.from(child.childNodes)
             .map(subChild => {
@@ -117,6 +115,7 @@ const getUpdatedNodes = (
 
           return cases.tag(points, selectedContent, property.name, child);
         }
+        let updatedChild: string | Node = child;
 
         Array.from(clonedNodes).forEach(clonedChild => {
           if (typeof updatedChild === 'string') {

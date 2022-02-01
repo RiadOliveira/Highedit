@@ -60,6 +60,8 @@ const tagFormat = (
 
   const childTagName = child.nodeName.toLowerCase();
   const sameTagName = propertyName === childTagName;
+
+  const childText = child.textContent || '';
   const childInnerHTML = childElement?.innerHTML || '';
   const childOuterHTML = childElement?.outerHTML || '';
 
@@ -93,7 +95,12 @@ const tagFormat = (
   }
 
   // All tag's text.
-  if (!hasTag) return `<${propertyName}>${selectedText}</${propertyName}>`;
+  if (!hasTag) {
+    return childText.replace(
+      selectedText,
+      `<${propertyName}>${selectedText}</${propertyName}>`,
+    );
+  }
 
   if (!sameTagName) {
     return replaceTagName(childOuterHTML, childTagName, propertyName);
