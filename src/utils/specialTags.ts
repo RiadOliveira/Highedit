@@ -6,15 +6,20 @@ const link = (
   selectedLink: string,
 ): string => {
   const comparativeElement = comparativeNode.firstChild?.parentElement;
-  const nodeText = comparativeElement?.outerHTML || '';
 
   // Removing tag.
   if (child.nodeName === 'A') {
     const hasAlign = comparativeElement?.style.getPropertyValue('text-align');
     const withoutTagName = hasAlign ? 'section' : 'span';
 
-    return replaceTagName(nodeText, 'a', withoutTagName);
+    comparativeElement?.style.removeProperty('color');
+    comparativeElement?.style.removeProperty('text-decoration');
+
+    const updatedElementContent = comparativeElement?.outerHTML || '';
+    return replaceTagName(updatedElementContent, 'a', withoutTagName);
   }
+
+  const nodeText = comparativeElement?.outerHTML || '';
 
   // Replace selectedText to a link.
   const replaceToLink = (elementText: string) => {
@@ -46,7 +51,7 @@ const link = (
   if (child.nodeName === '#text') return replaceToLink(childText);
 
   // If has a tag (h1, h2, h3, h4, span, section).
-  // ----------------------------------------
+  // --------------------------------------------
 
   const parentElement = child.firstChild?.parentElement as HTMLElement;
 

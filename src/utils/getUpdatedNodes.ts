@@ -115,6 +115,7 @@ const getUpdatedNodes = (
 
           return cases.tag(points, selectedContent, property.name, child);
         }
+
         let updatedChild: string | Node = child;
 
         Array.from(clonedNodes).forEach(clonedChild => {
@@ -140,9 +141,14 @@ const getUpdatedNodes = (
         return updatedChild;
       }
 
-      comparativeNode = clonedNodes.item(index);
+      const iterateClonedNode = clonedNodes.item(index);
+      const { firstChild } = iterateClonedNode;
 
-      const { textContent } = comparativeNode;
+      if (firstChild && firstChild.nodeName !== '#text') {
+        comparativeNode = firstChild;
+      } else comparativeNode = iterateClonedNode;
+
+      const { textContent } = comparativeNode as Node;
       selectedText = textContent || '';
     }
 
