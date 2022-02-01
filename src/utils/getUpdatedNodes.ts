@@ -2,6 +2,45 @@ import cases from 'utils/formattingCases';
 import specialFunctions from 'utils/specialTags';
 import { Property } from 'utils/properties';
 
+const formattingTypeSwtich = (
+  child: ChildNode,
+  comparativeNode: Node,
+  property: Property,
+  points: {
+    start: number;
+    end: number;
+  },
+  selectedText: string,
+  isChild: boolean,
+): string | Node => {
+  switch (property.type) {
+    case 'tag':
+      return cases.tag(points, selectedText, property.name, child);
+
+    case 'special':
+      return specialFunctions.link(child, comparativeNode, selectedText);
+
+    default: {
+      const { code } = property;
+      const {
+        style: { hasTag, justText },
+      } = cases;
+
+      if (child.nodeName === '#text') return justText(points, code, child);
+
+      const element = child.firstChild?.parentElement;
+
+      if (element) {
+        return isChild
+          ? hasTag.isChild(element, comparativeNode, code)
+          : hasTag.notChild(element, selectedText, points, code);
+      }
+    }
+  }
+
+  return '';
+};
+
 // Function to return all nodes, including the updated node with the property pressed.
 const getUpdatedNodes = (
   inputRef: React.RefObject<HTMLPreElement>,
@@ -26,22 +65,20 @@ const getUpdatedNodes = (
 
   // Iterate through all children of the created text.
   const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
+    const { anchorNode } = selection;
+    const { parentNode } = anchorNode as Node;
+
     let selectedText = '';
     let isChild = false;
-    let comparativeNode: Node | null | undefined;
+    let comparativeNode: Node | null | undefined =
+      parentNode !== textRef ? parentNode : anchorNode;
 
     const containersHaveSameParent =
       startContainer !== endContainer &&
       child.contains(startContainer) &&
       child.contains(endContainer);
 
-    if (clonedNodes.length === 1 || containersHaveSameParent) {
-      const { anchorNode } = selection;
-      const { parentNode } = anchorNode as Node;
-
-      if (containersHaveSameParent) comparativeNode = child;
-      else comparativeNode = parentNode !== textRef ? parentNode : anchorNode;
-
+    if (clonedNodes.length === 1) {
       isChild = Array.from(child.childNodes).includes(
         comparativeNode as ChildNode,
       );
@@ -51,20 +88,45 @@ const getUpdatedNodes = (
 
       selectedText = selection.toString();
     } else {
-      const getExtremeIndex = (point: 'begin' | 'end') => {
-        const container = point === 'begin' ? startContainer : endContainer;
+      if (!containersHaveSameParent) {
+        const getExtremeIndex = (point: 'begin' | 'end') => {
+          const container = point === 'begin' ? startContainer : endContainer;
 
-        return childrenArray.findIndex(
-          searchChild =>
-            searchChild === container ||
-            searchChild === (container.parentNode as Node),
-        );
-      };
+          return childrenArray.findIndex(
+            searchChild =>
+              searchChild === container ||
+              searchChild === (container.parentNode as Node),
+          );
+        };
 
-      const startNodeIndex = getExtremeIndex('begin');
-      const endNodeIndex = getExtremeIndex('end');
+        const startNodeIndex = getExtremeIndex('begin');
+        const endNodeIndex = getExtremeIndex('end');
+        if (index < startNodeIndex || index > endNodeIndex) return child;
+      } else {
+        let updatedChild: string | Node = child;
 
-      if (index < startNodeIndex || index > endNodeIndex) return child;
+        Array.from(clonedNodes).forEach(clonedChild => {
+          if (typeof updatedChild === 'string') {
+            const element = document.createElement('div');
+            element.innerHTML = updatedChild;
+
+            updatedChild = element.firstChild as Node;
+          }
+
+          const cloneWasChild = clonedChild.nodeName !== '#text';
+
+          updatedChild = formattingTypeSwtich(
+            updatedChild as ChildNode,
+            clonedChild as Node,
+            property,
+            points,
+            clonedChild.textContent || '',
+            cloneWasChild,
+          );
+        });
+
+        return updatedChild;
+      }
 
       comparativeNode = clonedNodes.item(index);
 
@@ -72,36 +134,14 @@ const getUpdatedNodes = (
       selectedText = textContent || '';
     }
 
-    switch (property.type) {
-      case 'tag':
-        return cases.tag(points, selectedText, property.name, child);
-
-      case 'special':
-        return specialFunctions.link(
-          child,
-          comparativeNode as Node,
-          selectedText,
-        );
-
-      default: {
-        const { code } = property;
-        const {
-          style: { hasTag, justText },
-        } = cases;
-
-        if (child.nodeName === '#text') return justText(points, code, child);
-
-        const element = child.firstChild?.parentElement;
-
-        if (element) {
-          return isChild
-            ? hasTag.isChild(element, comparativeNode as Node, code)
-            : hasTag.notChild(element, selectedText, points, code);
-        }
-      }
-    }
-
-    return '';
+    return formattingTypeSwtich(
+      child,
+      comparativeNode as Node,
+      property,
+      points,
+      selectedText,
+      isChild,
+    );
   });
 
   return inputNodes;

@@ -135,8 +135,11 @@ const hasTagIsChild = (
   comparativeNode: Node,
   { cssProp, value }: Code,
 ): string | Node => {
+  const comparativeNodeContent =
+    comparativeNode.firstChild?.parentElement?.outerHTML;
+
   const childIndex = Array.from(element.children).findIndex(
-    indexChild => indexChild === comparativeNode,
+    ({ outerHTML }) => outerHTML === comparativeNodeContent,
   );
 
   const childElement = element.children[childIndex].firstChild?.parentElement;
