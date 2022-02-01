@@ -9,9 +9,13 @@ const getUpdatedNodes = (
 ): (Node | string)[] => {
   const selection = window.getSelection() as Selection;
   const textRef = inputRef.current as HTMLPreElement;
-  const range = selection.getRangeAt(0);
-
   const childrenArray = Array.from(textRef.childNodes);
+
+  if (!selection.toString().trim()) return childrenArray;
+
+  const range = selection.getRangeAt(0);
+  const { startContainer, endContainer } = range;
+
   const clonedNodes = range.cloneContents().childNodes;
 
   const { anchorOffset: start, focusOffset: end } = selection;
@@ -26,11 +30,17 @@ const getUpdatedNodes = (
     let isChild = false;
     let comparativeNode: Node | null | undefined;
 
-    if (clonedNodes.length === 1) {
+    const containersHaveSameParent =
+      startContainer !== endContainer &&
+      child.contains(startContainer) &&
+      child.contains(endContainer);
+
+    if (clonedNodes.length === 1 || containersHaveSameParent) {
       const { anchorNode } = selection;
       const { parentNode } = anchorNode as Node;
 
-      comparativeNode = parentNode !== textRef ? parentNode : anchorNode;
+      if (containersHaveSameParent) comparativeNode = child;
+      else comparativeNode = parentNode !== textRef ? parentNode : anchorNode;
 
       isChild = Array.from(child.childNodes).includes(
         comparativeNode as ChildNode,
@@ -41,8 +51,6 @@ const getUpdatedNodes = (
 
       selectedText = selection.toString();
     } else {
-      const { startContainer, endContainer } = range;
-
       const getExtremeIndex = (point: 'begin' | 'end') => {
         const container = point === 'begin' ? startContainer : endContainer;
 
