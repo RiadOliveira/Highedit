@@ -4,8 +4,8 @@ import { Property } from 'utils/properties';
 
 const formattingTypeSwtich = (
   child: ChildNode,
-  comparativeNode: Node,
   property: Property,
+  comparativeNode: Node,
   points: {
     start: number;
     end: number;
@@ -105,6 +105,19 @@ const getUpdatedNodes = (
       } else {
         let updatedChild: string | Node = child;
 
+        if (property.type === 'tag') {
+          const selectedContent = Array.from(child.childNodes)
+            .map(subChild => {
+              const subChildHTML =
+                subChild.firstChild?.parentElement?.outerHTML;
+
+              return subChildHTML || subChild.textContent;
+            })
+            .join('');
+
+          return cases.tag(points, selectedContent, property.name, child);
+        }
+
         Array.from(clonedNodes).forEach(clonedChild => {
           if (typeof updatedChild === 'string') {
             const element = document.createElement('div');
@@ -117,8 +130,8 @@ const getUpdatedNodes = (
 
           updatedChild = formattingTypeSwtich(
             updatedChild as ChildNode,
-            clonedChild as Node,
             property,
+            clonedChild as Node,
             points,
             clonedChild.textContent || '',
             cloneWasChild,
@@ -136,8 +149,8 @@ const getUpdatedNodes = (
 
     return formattingTypeSwtich(
       child,
-      comparativeNode as Node,
       property,
+      comparativeNode as Node,
       points,
       selectedText,
       isChild,

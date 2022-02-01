@@ -1,3 +1,5 @@
+import replaceTagName from './replaceTagName';
+
 const link = (
   child: ChildNode,
   comparativeNode: Node,
@@ -11,9 +13,7 @@ const link = (
     const hasAlign = comparativeElement?.style.getPropertyValue('text-align');
     const withoutTagName = hasAlign ? 'section' : 'span';
 
-    return nodeText
-      .replace('<a', `<${withoutTagName}`)
-      .replace('a>', `${withoutTagName}>`);
+    return replaceTagName(nodeText, 'a', withoutTagName);
   }
 
   // Replace selectedText to a link.
