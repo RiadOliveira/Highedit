@@ -7,80 +7,70 @@ const getUpdatedNodes = (
   inputRef: React.RefObject<HTMLPreElement>,
   property: Property,
 ): (Node | string)[] => {
-  const selection = window.getSelection();
-  const textRef = inputRef.current;
+  const selection = window.getSelection() as Selection;
+  const textRef = inputRef.current as HTMLPreElement;
+  const { startContainer, endContainer } = selection.getRangeAt(0);
 
-  // Will store all nodes.
-  const inputNodes: (Node | string)[] = [];
+  const startNode =
+    startContainer.parentNode !== textRef
+      ? startContainer.parentNode
+      : startContainer;
 
-  if (selection && textRef) {
-    const { anchorOffset: start, focusOffset: end, anchorNode } = selection;
-    const points = {
-      start: Math.min(start, end),
-      end: Math.max(start, end),
-    };
-    const parentNode = anchorNode?.parentNode;
+  const endNode =
+    endContainer.parentNode !== textRef
+      ? endContainer.parentNode
+      : endContainer;
 
-    // Gets selectedNode without error.
-    const comparativeNode: Node | null | undefined =
-      parentNode !== textRef ? parentNode : anchorNode;
+  const childrenArray = Array.from(textRef.childNodes);
+  const firstIndexSelected = childrenArray.indexOf(startNode as ChildNode);
+  const lastIndexSelected = childrenArray.indexOf(endNode as ChildNode);
 
-    // Iterate through all children of the created text.
-    textRef.childNodes.forEach(child => {
-      const isChild = Array.from(child.childNodes).includes(
-        comparativeNode as ChildNode,
-      );
+  const { anchorOffset: start, focusOffset: end, anchorNode } = selection;
+  const points = {
+    start: Math.min(start, end),
+    end: Math.max(start, end),
+  };
+  const parentNode = anchorNode?.parentNode;
 
-      // If the child isn't the selected, return it without changes.
-      if (comparativeNode !== child && !isChild) {
-        inputNodes.push(child);
-        return;
-      }
+  // Iterate through all children of the created text.
+  const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
+    if (index < firstIndexSelected || index > lastIndexSelected) return child;
 
-      switch (property.type) {
-        case 'tag':
-          inputNodes.push(
-            cases.tag(points, selection.toString(), property.name, child),
-          );
-          break;
+    const isChild = Array.from(child.childNodes).includes(
+      startContainer as ChildNode,
+    );
 
-        case 'special':
-          inputNodes.push(
-            specialFunctions.link(
-              child,
-              comparativeNode as Node,
-              selection.toString(),
-            ),
-          );
-          break;
+    switch (property.type) {
+      case 'tag':
+        return cases.tag(points, selection.toString(), property.name, child);
 
-        default: {
-          const { code } = property;
-          const {
-            style: { hasTag, justText },
-          } = cases;
+      case 'special':
+        return specialFunctions.link(
+          child,
+          startNode as Node,
+          selection.toString(),
+        );
 
-          if (parentNode === textRef) {
-            inputNodes.push(justText(points, code, child));
-            return;
-          }
+      default: {
+        const { code } = property;
+        const {
+          style: { hasTag, justText },
+        } = cases;
 
-          const element = child.firstChild?.parentElement;
+        if (parentNode === textRef) return justText(points, code, child);
 
-          if (element) {
-            if (isChild)
-              inputNodes.push(
-                hasTag.isChild(element, comparativeNode as Node, code),
-              );
-            else
-              inputNodes.push(
-                hasTag.notChild(element, selection.toString(), points, code),
-              );
-          }
+        const element = child.firstChild?.parentElement;
+
+        if (element) {
+          return isChild
+            ? hasTag.isChild(element, startNode as Node, code)
+            : hasTag.notChild(element, selection.toString(), points, code);
         }
       }
-    });
-  }
+    }
+
+    return '';
+  });
 
   return inputNodes;
 };
