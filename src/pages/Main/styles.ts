@@ -11,11 +11,9 @@ export const Container = styled.div`
 
   overflow-y: auto;
 
-  h1 {
+  & > h1 {
     font-family: 'Poppins', sans-serif;
-    font-weight: 500;
-    font-size: 42px;
-
+    font-size: 48px;
     color: #ffffff;
 
     margin: 40px 0;
@@ -32,6 +30,13 @@ export const EditableArea = styled.main`
 
   margin-bottom: 3%;
   position: relative;
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: initial;
+  }
 
   &::after {
     content: '';
