@@ -57,6 +57,9 @@ const getUpdatedNodes = (
   const { startContainer, endContainer } = range;
 
   const clonedNodes = range.cloneContents().childNodes;
+  const initialClonedNodePosition = childrenArray.findIndex(child =>
+    child.isEqualNode(clonedNodes[0]),
+  );
 
   const { anchorOffset: start, focusOffset: end } = selection;
   const points = {
@@ -123,7 +126,9 @@ const getUpdatedNodes = (
         );
       }
 
-      const iterateClonedNode = clonedNodes.item(index);
+      const iterateClonedNode = clonedNodes.item(
+        index - initialClonedNodePosition,
+      );
       const { firstChild } = iterateClonedNode;
 
       if (firstChild && firstChild.nodeName !== '#text') {

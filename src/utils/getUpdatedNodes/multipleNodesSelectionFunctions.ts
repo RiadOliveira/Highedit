@@ -28,7 +28,6 @@ const tagType = (child: ChildNode): string => {
   const selectedContent = Array.from(child.childNodes)
     .map(subChild => {
       const subChildHTML = subChild.firstChild?.parentElement?.outerHTML;
-
       return subChildHTML || subChild.textContent;
     })
     .join('');

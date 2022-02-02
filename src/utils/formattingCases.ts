@@ -10,12 +10,30 @@ interface Code {
   value: string;
 }
 
-const getContentTools = ({
-  textContent,
-}: ChildNode): { updatedText: string[]; content: string } => ({
-  updatedText: [],
-  content: textContent || '',
-});
+const getContentTools = (
+  child: ChildNode,
+): { updatedText: string[]; content: string } => {
+  let content = '';
+  const hasOneChild = child.childNodes.length === 1;
+
+  if (hasOneChild && child.childNodes.item(0).nodeName === '#text') {
+    content = child.textContent || '';
+  } else {
+    const childrenArray = Array.from(child.childNodes);
+
+    content = childrenArray
+      .map(({ firstChild, textContent }) => {
+        const subChildHTML = firstChild?.parentElement?.outerHTML;
+        return subChildHTML || textContent;
+      })
+      .join('');
+  }
+
+  return {
+    updatedText: [],
+    content,
+  };
+};
 
 // Used when removes a style/tag on some part of text.
 const getExtremePointsWithTemplate = (
@@ -70,7 +88,7 @@ const tagFormat = (
     const { updatedText, content } = getContentTools(child);
 
     const element = child.firstChild?.parentElement as HTMLElement;
-    const template = element.outerHTML.replace(element.innerText, '?');
+    const template = element.outerHTML.replace(childInnerHTML, '?');
     const { start: startText, end: endText } = getExtremePointsWithTemplate(
       template,
       content,
