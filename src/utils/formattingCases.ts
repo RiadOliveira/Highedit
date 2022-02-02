@@ -14,9 +14,8 @@ const getContentTools = (
   child: ChildNode,
 ): { updatedText: string[]; content: string } => {
   let content = '';
-  const hasOneChild = child.childNodes.length === 1;
 
-  if (hasOneChild && child.childNodes.item(0).nodeName === '#text') {
+  if (!child.childNodes.length) {
     content = child.textContent || '';
   } else {
     const childrenArray = Array.from(child.childNodes);
