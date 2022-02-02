@@ -1,7 +1,7 @@
 import cases from 'utils/formattingCases';
 import specialFunctions from 'utils/specialTags';
 import { Property } from 'utils/properties';
-import multipleNodesFunctions from './multipleNodesSelected';
+import multipleNodesSelectionFunctions from './multipleNodesSelectionFunctions';
 
 const formattingTypeSwtich = (
   child: ChildNode,
@@ -91,7 +91,8 @@ const getUpdatedNodes = (
       selectedText = selection.toString();
     } else {
       if (!containersHaveSameParent) {
-        const indexChildIsSelected = multipleNodesFunctions.differentParents(
+        const { differentParents } = multipleNodesSelectionFunctions;
+        const indexChildIsSelected = differentParents(
           { startContainer, endContainer },
           childrenArray,
           index,
@@ -101,7 +102,7 @@ const getUpdatedNodes = (
       } else {
         const {
           sameParents: { tagType, otherTypes },
-        } = multipleNodesFunctions;
+        } = multipleNodesSelectionFunctions;
 
         if (property.type === 'tag') {
           return cases.tag(points, tagType(child), property.name, child);
