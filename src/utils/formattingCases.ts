@@ -82,7 +82,7 @@ const tagFormat = (
   const childInnerHTML = childElement?.innerHTML || '';
   const childOuterHTML = childElement?.outerHTML || '';
 
-  if (hasTag && selectedText !== childInnerHTML.trim()) {
+  if (hasTag && selectedText.trim() !== childInnerHTML.trim()) {
     // Part of tag's text, removing its tag.
     const { updatedText, content } = getContentTools(child);
 
