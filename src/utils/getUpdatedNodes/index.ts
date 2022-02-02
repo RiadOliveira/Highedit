@@ -1,6 +1,7 @@
 import cases from 'utils/formattingCases';
 import specialFunctions from 'utils/specialTags';
 import { Property } from 'utils/properties';
+import multipleNodesFunctions from './multipleNodesSelected';
 
 const formattingTypeSwtich = (
   child: ChildNode,
@@ -78,6 +79,7 @@ const getUpdatedNodes = (
       child.contains(startContainer) &&
       child.contains(endContainer);
 
+    // Only one child selected.
     if (clonedNodes.length === 1) {
       isChild = Array.from(child.childNodes).includes(
         comparativeNode as ChildNode,
@@ -89,56 +91,35 @@ const getUpdatedNodes = (
       selectedText = selection.toString();
     } else {
       if (!containersHaveSameParent) {
-        const getExtremeIndex = (point: 'begin' | 'end') => {
-          const container = point === 'begin' ? startContainer : endContainer;
+        const indexChildIsSelected = multipleNodesFunctions.differentParents(
+          { startContainer, endContainer },
+          childrenArray,
+          index,
+        );
 
-          return childrenArray.findIndex(
-            searchChild =>
-              searchChild === container ||
-              searchChild === (container.parentNode as Node),
-          );
-        };
-
-        const startNodeIndex = getExtremeIndex('begin');
-        const endNodeIndex = getExtremeIndex('end');
-        if (index < startNodeIndex || index > endNodeIndex) return child;
+        if (!indexChildIsSelected) return child;
       } else {
+        const {
+          sameParents: { tagType, otherTypes },
+        } = multipleNodesFunctions;
+
         if (property.type === 'tag') {
-          const selectedContent = Array.from(child.childNodes)
-            .map(subChild => {
-              const subChildHTML =
-                subChild.firstChild?.parentElement?.outerHTML;
-
-              return subChildHTML || subChild.textContent;
-            })
-            .join('');
-
-          return cases.tag(points, selectedContent, property.name, child);
+          return cases.tag(points, tagType(child), property.name, child);
         }
 
-        let updatedChild: string | Node = child;
-
-        Array.from(clonedNodes).forEach(clonedChild => {
-          if (typeof updatedChild === 'string') {
-            const element = document.createElement('div');
-            element.innerHTML = updatedChild;
-
-            updatedChild = element.firstChild as Node;
-          }
-
-          const cloneWasChild = clonedChild.nodeName !== '#text';
-
-          updatedChild = formattingTypeSwtich(
-            updatedChild as ChildNode,
-            property,
-            clonedChild as Node,
-            points,
-            clonedChild.textContent || '',
-            cloneWasChild,
-          );
-        });
-
-        return updatedChild;
+        return otherTypes(
+          child,
+          clonedNodes,
+          (updatedChild, clonedChild, childText, cloneWasChild) =>
+            formattingTypeSwtich(
+              updatedChild,
+              property,
+              clonedChild,
+              points,
+              childText,
+              cloneWasChild,
+            ),
+        );
       }
 
       const iterateClonedNode = clonedNodes.item(index);
