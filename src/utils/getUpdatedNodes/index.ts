@@ -94,6 +94,10 @@ const getUpdatedNodes = (
 
       selectedText = selection.toString();
     } else {
+      const iterateClonedNode = clonedNodes.item(
+        index - initialClonedNodePosition,
+      );
+
       if (!containersHaveSameParent) {
         const { differentParents } = multipleNodesSelectionFunctions;
         const indexChildIsSelected = differentParents(
@@ -103,6 +107,15 @@ const getUpdatedNodes = (
         );
 
         if (!indexChildIsSelected) return child;
+
+        const clonedNodeContent = iterateClonedNode.textContent;
+        if (index > initialClonedNodePosition && clonedNodeContent) {
+          const startIndex = child.textContent?.indexOf(clonedNodeContent) || 0;
+          const endIndex = startIndex + clonedNodeContent.length;
+
+          points.start = startIndex;
+          points.end = endIndex;
+        }
       } else {
         const {
           sameParents: { tagType, otherTypes },
@@ -127,13 +140,11 @@ const getUpdatedNodes = (
         );
       }
 
-      const iterateClonedNode = clonedNodes.item(
-        index - initialClonedNodePosition,
-      );
       const { firstChild } = iterateClonedNode;
 
       if (firstChild && firstChild.nodeName !== '#text') {
         comparativeNode = firstChild;
+        isChild = true;
       } else comparativeNode = iterateClonedNode;
 
       const { textContent } = comparativeNode as Node;

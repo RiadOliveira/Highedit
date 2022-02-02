@@ -169,10 +169,10 @@ const hasTagIsChild = (
 
   if (childElement) {
     const { style } = childElement;
-    const hasProp = style.getPropertyValue(cssProp);
+    const styleProp = style.getPropertyValue(cssProp);
 
     // If already has property, remove it.
-    if (hasProp && value === hasProp) {
+    if (styleProp && value === styleProp) {
       style.removeProperty(cssProp);
 
       const { nodeName } = childElement;
