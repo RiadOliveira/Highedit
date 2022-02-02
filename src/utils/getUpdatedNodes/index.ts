@@ -57,7 +57,7 @@ const getUpdatedNodes = (
   const { startContainer, endContainer } = range;
 
   const initialClonedNodePosition = childrenArray.findIndex(
-    child => child === startContainer || child === startContainer.parentElement,
+    child => child === startContainer || child.contains(startContainer),
   );
 
   const clonedNodes = range.cloneContents().childNodes;
