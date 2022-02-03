@@ -75,7 +75,7 @@ const getUpdatedNodes = (
 
     let selectedText = '';
     let isChild = false;
-    let comparativeNode: Node | null | undefined =
+    const comparativeNode: Node | null | undefined =
       parentNode !== textRef ? parentNode : anchorNode;
 
     const containersHaveSameParent =
@@ -141,13 +141,14 @@ const getUpdatedNodes = (
       }
 
       const { firstChild } = iterateClonedNode;
+      let comparativeClonedNode = iterateClonedNode;
 
       if (firstChild && firstChild.nodeName !== '#text') {
-        comparativeNode = firstChild;
+        comparativeClonedNode = firstChild;
         isChild = true;
-      } else comparativeNode = iterateClonedNode;
+      }
 
-      const { textContent } = comparativeNode as Node;
+      const { textContent } = comparativeClonedNode;
       selectedText = textContent || '';
     }
 
