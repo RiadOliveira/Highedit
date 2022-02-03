@@ -18,6 +18,10 @@ interface HasTagFunctionProps {
   code: Code;
 }
 
+// -----------
+// Auxiliaries
+// -----------
+
 const getContentTools = (
   child: ChildNode,
 ): { updatedText: string[]; content: string } => {
@@ -72,11 +76,55 @@ const getExtremePointsWithTemplate = (
   return finalTexts;
 };
 
-const tagFormat = (
+const handleHasTagWithoutFullText = (
+  childElement: HTMLElement,
+  childText: string,
+  selectedText: string,
+  { cssProp, value }: Code,
   { start, end }: Selection,
+) => {
+  const { style } = childElement;
+  const propertyValue = style.getPropertyValue(cssProp);
+
+  if (propertyValue) {
+    const updatedText: string[] = [];
+    const { start: startText, end: endText } = getExtremePointsWithTemplate(
+      childElement,
+      childText,
+      start,
+      end,
+    );
+
+    if (startText) updatedText.push(startText);
+
+    // If has different value, update it, else, remove all styles.
+    if (propertyValue !== value) {
+      const tagName = cssProp === 'text-align' ? 'section' : 'span';
+      updatedText.push(
+        `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
+      );
+    } else updatedText.push(selectedText);
+
+    if (endText) updatedText.push(endText);
+    return updatedText.join('');
+  }
+
+  // Adding property.
+  return childElement.outerHTML.replace(
+    selectedText,
+    `<span style="${cssProp}:${value};">${selectedText}</span>`,
+  );
+};
+
+// --------------------
+// Formatting functions
+// --------------------
+
+const tagFormat = (
+  child: ChildNode,
   selectedText: string,
   propertyName: string,
-  child: ChildNode,
+  { start, end }: Selection,
 ): string => {
   const childElement = child.firstChild?.parentElement;
 
@@ -139,9 +187,9 @@ const tagFormat = (
 
 // Styles formatting
 const justText = (
+  child: ChildNode,
   { start, end }: Selection,
   { cssProp, value }: Code,
-  child: ChildNode,
 ): string => {
   const { updatedText, content } = getContentTools(child);
 
@@ -162,27 +210,21 @@ const justText = (
 
 // Child of a created element.
 const hasTagIsChild = (
-  {
-    element,
-    selectedText,
-    code: { cssProp, value },
-    points: { start, end },
-  }: HasTagFunctionProps,
+  { element, selectedText, code, points }: HasTagFunctionProps,
   comparativeNode: Node,
 ): string | Node => {
   const childText = comparativeNode.textContent || '';
   const childElement = comparativeNode.firstChild?.parentElement as HTMLElement;
 
-  const { style } = childElement;
-  const propertyValue = style.getPropertyValue(cssProp);
-  const isAlign = cssProp === 'text-align';
-
   switch (selectedText) {
     case childText:
     case childText.trim(): {
       // All text of the tag.
-      const { nodeName } = childElement;
+      const { cssProp, value } = code;
+      const { nodeName, style } = childElement;
+
       const hasProp = style.getPropertyValue(cssProp);
+      const isAlign = cssProp === 'text-align';
 
       // If already has property, remove it.
       if (hasProp && value === hasProp) {
@@ -214,36 +256,13 @@ const hasTagIsChild = (
     }
 
     default: {
-      let finalElement = '';
-
-      if (propertyValue) {
-        const updatedText: string[] = [];
-        const { start: startText, end: endText } = getExtremePointsWithTemplate(
-          childElement,
-          childText,
-          start,
-          end,
-        );
-
-        if (startText) updatedText.push(startText);
-
-        // If has different value, update it, else, remove all styles.
-        if (propertyValue !== value) {
-          const tagName = isAlign ? 'section' : 'span';
-          updatedText.push(
-            `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
-          );
-        } else updatedText.push(selectedText);
-
-        if (endText) updatedText.push(endText);
-        finalElement = updatedText.join('');
-      } else {
-        // Adding property.
-        finalElement = childElement.outerHTML.replace(
-          selectedText,
-          `<span style="${cssProp}:${value};">${selectedText}</span>`,
-        );
-      }
+      const finalElement = handleHasTagWithoutFullText(
+        childElement,
+        childText,
+        selectedText,
+        code,
+        points,
+      );
 
       const childContent = childElement.outerHTML;
       return element.outerHTML.replace(childContent, finalElement);
@@ -255,20 +274,20 @@ const hasTagIsChild = (
 const hasTagNotChild = ({
   element,
   selectedText,
-  code: { cssProp, value },
-  points: { start, end },
+  code,
+  points,
 }: HasTagFunctionProps): string | Node => {
-  const { style, innerText: elementText } = element;
-
-  // If the property is align, modify all parent tag style.
-  const isAlign = cssProp === 'text-align';
+  const { innerText: elementText } = element;
 
   switch (selectedText) {
     case elementText:
     case elementText.trim(): {
       // All text of the tag.
-      const { nodeName } = element;
+      const { cssProp, value } = code;
+      const { nodeName, style } = element;
       const hasProp = style.getPropertyValue(cssProp);
+
+      // If the property is align, modify all parent tag style.
 
       // If already has property, remove it.
       if (hasProp && value === hasProp) {
@@ -279,6 +298,8 @@ const hasTagNotChild = ({
 
         if (isEmptyTag) return elementText;
       } else {
+        const isAlign = cssProp === 'text-align';
+
         if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
           const updatedElement = document.createElement('section');
 
@@ -294,43 +315,14 @@ const hasTagNotChild = ({
       return element;
     }
 
-    default: {
-      // Part of tag's text.
-      let finalElement = '';
-      const propertyValue = style.getPropertyValue(cssProp);
-
-      if (propertyValue) {
-        const updatedText: string[] = [];
-        const { start: startText, end: endText } = getExtremePointsWithTemplate(
-          element,
-          elementText,
-          start,
-          end,
-        );
-
-        if (startText) updatedText.push(startText);
-
-        // If has different value, update it, else, remove all styles.
-        if (propertyValue !== value) {
-          const tagName = isAlign ? 'section' : 'span';
-          updatedText.push(
-            `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
-          );
-        } else updatedText.push(selectedText);
-
-        if (endText) updatedText.push(endText);
-
-        finalElement = updatedText.join('');
-      } else {
-        // Adding property.
-        finalElement = element.outerHTML.replace(
-          selectedText,
-          `<span style="${cssProp}:${value};">${selectedText}</span>`,
-        );
-      }
-
-      return finalElement;
-    }
+    default:
+      return handleHasTagWithoutFullText(
+        element,
+        elementText,
+        selectedText,
+        code,
+        points,
+      );
   }
 };
 

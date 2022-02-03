@@ -16,7 +16,7 @@ const formattingTypeSwtich = (
 ): string | Node => {
   switch (property.type) {
     case 'tag':
-      return cases.tag(points, selectedText, property.name, child);
+      return cases.tag(child, selectedText, property.name, points);
 
     case 'special':
       return specialFunctions.link(child, comparativeNode, selectedText);
@@ -27,7 +27,7 @@ const formattingTypeSwtich = (
         style: { hasTag, justText },
       } = cases;
 
-      if (child.nodeName === '#text') return justText(points, code, child);
+      if (child.nodeName === '#text') return justText(child, points, code);
 
       const element = child.firstChild?.parentElement as HTMLElement;
       const hasTagProps = {
@@ -104,7 +104,7 @@ const getUpdatedNodes = (
         } = multipleNodesSelectionFunctions;
 
         if (property.type === 'tag') {
-          return cases.tag(points, tagType(child), property.name, child);
+          return tagType(child, property.name, points);
         }
 
         return otherTypes(child, property, clonedNodes);
