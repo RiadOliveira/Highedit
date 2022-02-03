@@ -1,6 +1,14 @@
+import { Property } from 'utils/properties';
+import { formattingTypeSwtich } from '.';
+
 interface Containers {
   startContainer: Node;
   endContainer: Node;
+}
+
+interface Selection {
+  start: number;
+  end: number;
 }
 
 const differentParents = (
@@ -37,17 +45,19 @@ const tagType = (child: ChildNode): string => {
 
 const otherTypes = (
   child: ChildNode,
+  property: Property,
   clonedNodes: NodeListOf<ChildNode>,
-  formatSwitch: (
-    updatedChild: ChildNode,
-    clonedChild: Node,
-    childText: string,
-    cloneWasChild: boolean,
-  ) => string | Node,
+  startContainer: Node,
+  points: Selection,
 ): string | Node => {
   let updatedChild: string | Node = child;
+  const childrenArray = Array.from(child.childNodes);
 
-  Array.from(clonedNodes).forEach(clonedChild => {
+  const initialClonedNodePosition = childrenArray.findIndex(
+    subChild => subChild === startContainer,
+  );
+
+  Array.from(clonedNodes).forEach((clonedChild, index) => {
     if (typeof updatedChild === 'string') {
       const element = document.createElement('div');
       element.innerHTML = updatedChild;
@@ -56,10 +66,24 @@ const otherTypes = (
     }
 
     const cloneWasChild = clonedChild.nodeName !== '#text';
+    const updatedPoints = points;
 
-    updatedChild = formatSwitch(
+    const clonedNodeContent = clonedChild.textContent;
+    if (index > initialClonedNodePosition && clonedNodeContent) {
+      const subChild = childrenArray[index];
+
+      const startIndex = subChild.textContent?.indexOf(clonedNodeContent) || 0;
+      const endIndex = startIndex + clonedNodeContent.length;
+
+      updatedPoints.start = startIndex;
+      updatedPoints.end = endIndex;
+    }
+
+    updatedChild = formattingTypeSwtich(
       updatedChild as ChildNode,
-      clonedChild as Node,
+      property,
+      updatedChild.childNodes.item(index),
+      updatedPoints,
       clonedChild.textContent || '',
       cloneWasChild,
     );

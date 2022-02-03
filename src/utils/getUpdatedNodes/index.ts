@@ -68,20 +68,20 @@ const getUpdatedNodes = (
     end: Math.max(start, end),
   };
 
-  // Iterate through all children of the created text.
-  const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
+  let comparativeNode: Node | null | undefined;
+  let selectedText = '';
+
+  if (clonedNodes.length === 1) {
     const { anchorNode } = selection;
     const { parentNode } = anchorNode as Node;
 
-    let selectedText = '';
-    let isChild = false;
-    const comparativeNode: Node | null | undefined =
-      parentNode !== textRef ? parentNode : anchorNode;
+    comparativeNode = parentNode !== textRef ? parentNode : anchorNode;
+    selectedText = selection.toString();
+  }
 
-    const containersHaveSameParent =
-      startContainer !== endContainer &&
-      child.contains(startContainer) &&
-      child.contains(endContainer);
+  // Iterate through all children of the created text.
+  const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
+    let isChild = false;
 
     // Only one child selected.
     if (clonedNodes.length === 1) {
@@ -91,32 +91,13 @@ const getUpdatedNodes = (
 
       // If the child isn't the selected, return it without changes.
       if (comparativeNode !== child && !isChild) return child;
-
-      selectedText = selection.toString();
     } else {
-      const iterateClonedNode = clonedNodes.item(
-        index - initialClonedNodePosition,
-      );
+      const containersHaveSameParent =
+        startContainer !== endContainer &&
+        child.contains(startContainer) &&
+        child.contains(endContainer);
 
-      if (!containersHaveSameParent) {
-        const { differentParents } = multipleNodesSelectionFunctions;
-        const indexChildIsSelected = differentParents(
-          { startContainer, endContainer },
-          childrenArray,
-          index,
-        );
-
-        if (!indexChildIsSelected) return child;
-
-        const clonedNodeContent = iterateClonedNode.textContent;
-        if (index > initialClonedNodePosition && clonedNodeContent) {
-          const startIndex = child.textContent?.indexOf(clonedNodeContent) || 0;
-          const endIndex = startIndex + clonedNodeContent.length;
-
-          points.start = startIndex;
-          points.end = endIndex;
-        }
-      } else {
+      if (containersHaveSameParent) {
         const {
           sameParents: { tagType, otherTypes },
         } = multipleNodesSelectionFunctions;
@@ -125,19 +106,29 @@ const getUpdatedNodes = (
           return cases.tag(points, tagType(child), property.name, child);
         }
 
-        return otherTypes(
-          child,
-          clonedNodes,
-          (updatedChild, clonedChild, childText, cloneWasChild) =>
-            formattingTypeSwtich(
-              updatedChild,
-              property,
-              clonedChild,
-              points,
-              childText,
-              cloneWasChild,
-            ),
-        );
+        return otherTypes(child, property, clonedNodes, startContainer, points);
+      }
+
+      const { differentParents } = multipleNodesSelectionFunctions;
+      const indexChildIsSelected = differentParents(
+        { startContainer, endContainer },
+        childrenArray,
+        index,
+      );
+
+      if (!indexChildIsSelected) return child;
+
+      const iterateClonedNode = clonedNodes.item(
+        index - initialClonedNodePosition,
+      );
+
+      const clonedNodeContent = iterateClonedNode.textContent;
+      if (index > initialClonedNodePosition && clonedNodeContent) {
+        const startIndex = child.textContent?.indexOf(clonedNodeContent) || 0;
+        const endIndex = startIndex + clonedNodeContent.length;
+
+        points.start = startIndex;
+        points.end = endIndex;
       }
 
       const { firstChild } = iterateClonedNode;
@@ -150,6 +141,7 @@ const getUpdatedNodes = (
 
       const { textContent } = comparativeClonedNode;
       selectedText = textContent || '';
+      comparativeNode = child.parentNode !== textRef ? child.parentNode : child;
     }
 
     return formattingTypeSwtich(
@@ -166,3 +158,4 @@ const getUpdatedNodes = (
 };
 
 export default getUpdatedNodes;
+export { formattingTypeSwtich };

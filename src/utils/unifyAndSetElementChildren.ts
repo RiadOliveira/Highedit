@@ -10,10 +10,10 @@ const isText = (child: Node | string): string => {
 
 const unifyAndSetElementChildren = (
   updatedChildren: (Node | string)[],
-  element: HTMLElement,
+  element: Node,
 ): void => {
-  // eslint-disable-next-line no-param-reassign
-  element.innerHTML = '';
+  const elementHTML = element.firstChild?.parentElement as HTMLElement;
+  elementHTML.innerHTML = '';
 
   for (let ind = 0; ind < updatedChildren.length; ind++) {
     const child = updatedChildren[ind];
@@ -31,8 +31,7 @@ const unifyAndSetElementChildren = (
         }
       }
 
-      // eslint-disable-next-line no-param-reassign
-      element.innerHTML += finalText;
+      elementHTML.innerHTML += finalText;
     } else element.appendChild(child as Node);
   }
 };
