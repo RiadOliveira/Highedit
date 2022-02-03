@@ -106,7 +106,7 @@ const getUpdatedNodes = (
           return cases.tag(points, tagType(child), property.name, child);
         }
 
-        return otherTypes(child, property, clonedNodes, startContainer, points);
+        return otherTypes(child, property, clonedNodes);
       }
 
       const { differentParents } = multipleNodesSelectionFunctions;
@@ -123,7 +123,7 @@ const getUpdatedNodes = (
       );
 
       const clonedNodeContent = iterateClonedNode.textContent;
-      if (index > initialClonedNodePosition && clonedNodeContent) {
+      if (clonedNodeContent) {
         const startIndex = child.textContent?.indexOf(clonedNodeContent) || 0;
         const endIndex = startIndex + clonedNodeContent.length;
 

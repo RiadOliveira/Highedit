@@ -6,11 +6,6 @@ interface Containers {
   endContainer: Node;
 }
 
-interface Selection {
-  start: number;
-  end: number;
-}
-
 const differentParents = (
   { startContainer, endContainer }: Containers,
   childrenArray: ChildNode[],
@@ -47,15 +42,10 @@ const otherTypes = (
   child: ChildNode,
   property: Property,
   clonedNodes: NodeListOf<ChildNode>,
-  startContainer: Node,
-  points: Selection,
 ): string | Node => {
   let updatedChild: string | Node = child;
   const childrenArray = Array.from(child.childNodes);
-
-  const initialClonedNodePosition = childrenArray.findIndex(
-    subChild => subChild === startContainer,
-  );
+  const updatedPoints = { start: 0, end: 0 };
 
   Array.from(clonedNodes).forEach((clonedChild, index) => {
     if (typeof updatedChild === 'string') {
@@ -66,10 +56,9 @@ const otherTypes = (
     }
 
     const cloneWasChild = clonedChild.nodeName !== '#text';
-    const updatedPoints = points;
 
     const clonedNodeContent = clonedChild.textContent;
-    if (index > initialClonedNodePosition && clonedNodeContent) {
+    if (clonedNodeContent) {
       const subChild = childrenArray[index];
 
       const startIndex = subChild.textContent?.indexOf(clonedNodeContent) || 0;
@@ -79,10 +68,14 @@ const otherTypes = (
       updatedPoints.end = endIndex;
     }
 
+    const comparativeNode = Array.from(updatedChild.childNodes).find(subChild =>
+      subChild.isEqualNode(childrenArray[index]),
+    );
+
     updatedChild = formattingTypeSwtich(
       updatedChild as ChildNode,
       property,
-      updatedChild.childNodes.item(index),
+      comparativeNode as Node,
       updatedPoints,
       clonedChild.textContent || '',
       cloneWasChild,

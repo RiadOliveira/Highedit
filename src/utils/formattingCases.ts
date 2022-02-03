@@ -53,12 +53,12 @@ const getExtremePointsWithTemplate = (
   };
 
   const startText = content.slice(0, start);
-  if (start !== 0 && startText) {
+  if (start !== 0 && startText.trim()) {
     finalTexts.start = verifiedTemplate.replace('?', startText);
   }
 
   const endText = content.slice(end);
-  if (end !== content.length && endText) {
+  if (end !== content.length && endText.trim()) {
     finalTexts.end = verifiedTemplate.replace('?', endText);
   }
 
