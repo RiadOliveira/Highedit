@@ -33,6 +33,10 @@ const differentParents = (
   return index >= startNodeIndex && index <= endNodeIndex;
 };
 
+// ------------
+// Same parents
+// ------------
+
 const tagType = (
   child: ChildNode,
   propertyName: string,
@@ -52,10 +56,16 @@ const otherTypes = (
   child: ChildNode,
   property: Property,
   clonedNodes: NodeListOf<ChildNode>,
+  startContainer: Node,
 ): string | Node => {
   let updatedChild: string | Node = child;
   const childrenArray = Array.from(child.childNodes);
   const updatedPoints = { start: 0, end: 0 };
+
+  const initialClonedNodePosition = childrenArray.findIndex(
+    subChild =>
+      subChild === startContainer || subChild === startContainer.parentElement,
+  );
 
   Array.from(clonedNodes).forEach((clonedChild, index) => {
     if (typeof updatedChild === 'string') {
@@ -79,7 +89,7 @@ const otherTypes = (
     }
 
     const comparativeNode = Array.from(updatedChild.childNodes).find(subChild =>
-      subChild.isEqualNode(childrenArray[index]),
+      subChild.isEqualNode(childrenArray[initialClonedNodePosition + index]),
     );
 
     updatedChild = formattingTypeSwtich(

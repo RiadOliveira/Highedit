@@ -107,7 +107,7 @@ const getUpdatedNodes = (
           return tagType(child, property.name, points);
         }
 
-        return otherTypes(child, property, clonedNodes);
+        return otherTypes(child, property, clonedNodes, startContainer);
       }
 
       const { differentParents } = multipleNodesSelectionFunctions;
