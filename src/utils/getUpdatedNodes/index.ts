@@ -30,15 +30,15 @@ const formattingTypeSwtich = (
       if (child.nodeName === '#text') return justText(child, points, code);
 
       const element = child.firstChild?.parentElement as HTMLElement;
-      const hasTagProps = {
+
+      return hasTag(
         element,
         selectedText,
         points,
         code,
-      };
-
-      if (isChild) return hasTag.isChild(hasTagProps, comparativeNode);
-      return hasTag.notChild(hasTagProps);
+        comparativeNode,
+        isChild,
+      );
     }
   }
 };

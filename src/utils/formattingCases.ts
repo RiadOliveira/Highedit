@@ -1,5 +1,4 @@
 import replaceTagName from './replaceTagName';
-import unifyAndSetElementChildren from './unifyAndSetElementChildren';
 
 interface Selection {
   start: number;
@@ -9,13 +8,6 @@ interface Selection {
 interface Code {
   cssProp: string;
   value: string;
-}
-
-interface HasTagFunctionProps {
-  element: HTMLElement;
-  selectedText: string;
-  points: Selection;
-  code: Code;
 }
 
 // -----------
@@ -85,10 +77,16 @@ const handleHasTagWithoutFullText = (
 ) => {
   const { style } = childElement;
   const propertyValue = style.getPropertyValue(cssProp);
-
   const updatedText: string[] = [];
 
-  if (start !== 0) updatedText.push(childText.slice(0, start));
+  const { start: startText, end: endText } = getExtremePointsWithTemplate(
+    childElement,
+    childText,
+    start,
+    end,
+  );
+
+  if (startText) updatedText.push(startText);
 
   // If has different value (or no value), update it, else, remove all styles.
   if (propertyValue !== value) {
@@ -98,12 +96,9 @@ const handleHasTagWithoutFullText = (
     );
   } else updatedText.push(selectedText);
 
-  if (end !== childText.length) updatedText.push(childText.slice(end));
+  if (endText) updatedText.push(endText);
 
-  return childElement.outerHTML.replace(
-    childElement.innerHTML,
-    updatedText.join(''),
-  );
+  return updatedText.join('');
 };
 
 // --------------------
@@ -198,131 +193,40 @@ const justText = (
   return updatedText.join('');
 };
 
-// Child of a created element.
-const hasTagIsChild = (
-  { element, selectedText, code, points }: HasTagFunctionProps,
+const hasTag = (
+  element: HTMLElement,
+  selectedText: string,
+  points: Selection,
+  code: Code,
   comparativeNode: Node,
+  isChild: boolean,
 ): string | Node => {
-  const childText = comparativeNode.textContent || '';
-  const childElement = comparativeNode.firstChild?.parentElement as HTMLElement;
+  let childElement = element;
+  let childText = element.innerText;
 
-  switch (selectedText) {
-    case childText:
-    case childText.trim(): {
-      // All text of the tag.
-      const { cssProp, value } = code;
-      const { nodeName, style } = childElement;
-
-      const hasProp = style.getPropertyValue(cssProp);
-      const isAlign = cssProp === 'text-align';
-
-      // If already has property, remove it.
-      if (hasProp && value === hasProp) {
-        style.removeProperty(cssProp);
-
-        const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
-        const isEmptyTag =
-          !childElement.getAttribute('style') && verifyEmptyTag;
-
-        if (isEmptyTag) {
-          element.replaceChild(
-            document.createTextNode(childText),
-            comparativeNode,
-          );
-
-          const nodesArray = Array.from(element.childNodes);
-          unifyAndSetElementChildren(nodesArray, element);
-        }
-      } else if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
-        const updatedElement = document.createElement('section');
-
-        updatedElement.style.setProperty(cssProp, value);
-        updatedElement.appendChild(childElement);
-
-        element.replaceChild(updatedElement, comparativeNode);
-      } else style.setProperty(cssProp, value);
-
-      return element;
-    }
-
-    default: {
-      const finalElement = handleHasTagWithoutFullText(
-        childElement,
-        childText,
-        selectedText,
-        code,
-        points,
-      );
-
-      const childContent = childElement.outerHTML;
-      return element.outerHTML.replace(childContent, finalElement);
-    }
+  if (isChild) {
+    childElement = comparativeNode.firstChild?.parentElement as HTMLElement;
+    childText = comparativeNode.textContent || '';
   }
-};
 
-// Has tag, but it's just text selected, without children tags.
-const hasTagNotChild = ({
-  element,
-  selectedText,
-  code,
-  points,
-}: HasTagFunctionProps): string | Node => {
-  const { innerText: elementText } = element;
+  const finalElement = handleHasTagWithoutFullText(
+    childElement,
+    childText,
+    selectedText,
+    code,
+    points,
+  );
 
-  switch (selectedText) {
-    case elementText:
-    case elementText.trim(): {
-      // All text of the tag.
-      const { cssProp, value } = code;
-      const { nodeName, style } = element;
-      const hasProp = style.getPropertyValue(cssProp);
+  if (!isChild) return finalElement;
 
-      // If the property is align, modify all parent tag style.
-
-      // If already has property, remove it.
-      if (hasProp && value === hasProp) {
-        style.removeProperty(cssProp);
-
-        const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
-        const isEmptyTag = !element.getAttribute('style') && verifyEmptyTag;
-
-        if (isEmptyTag) return elementText;
-      } else {
-        const isAlign = cssProp === 'text-align';
-
-        if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
-          const updatedElement = document.createElement('section');
-
-          updatedElement.style.setProperty(cssProp, value);
-          updatedElement.appendChild(element);
-
-          return updatedElement;
-        }
-
-        style.setProperty(cssProp, value);
-      }
-
-      return element;
-    }
-
-    default:
-      return handleHasTagWithoutFullText(
-        element,
-        elementText,
-        selectedText,
-        code,
-        points,
-      );
-  }
+  const childContent = childElement.outerHTML;
+  return element.outerHTML.replace(childContent, finalElement);
 };
 
 export default {
   tag: tagFormat,
   style: {
     justText,
-    hasTag: {
-      isChild: hasTagIsChild,
-      notChild: hasTagNotChild,
-    },
+    hasTag,
   },
 };
