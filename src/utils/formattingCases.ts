@@ -162,45 +162,81 @@ const hasTagIsChild = (
 ): string | Node => {
   const childText = comparativeNode.textContent || '';
   const childElement = comparativeNode.firstChild?.parentElement as HTMLElement;
-  const childContent = childElement.outerHTML;
-  let finalElement = '';
 
   const { style } = childElement;
   const propertyValue = style.getPropertyValue(cssProp);
+  const isAlign = cssProp === 'text-align';
 
-  if (propertyValue) {
-    const updatedText: string[] = [];
-    const isAlign = cssProp === 'text-align';
+  switch (selectedText) {
+    case childText:
+    case childText.trim(): {
+      // All text of the tag.
+      const { nodeName } = childElement;
+      const hasProp = style.getPropertyValue(cssProp);
 
-    const { start: startText, end: endText } = getExtremePointsWithTemplate(
-      childElement,
-      childText,
-      start,
-      end,
-    );
+      // If already has property, remove it.
+      if (hasProp && value === hasProp) {
+        style.removeProperty(cssProp);
 
-    if (startText) updatedText.push(startText);
+        const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
+        const isEmptyTag =
+          !childElement.getAttribute('style') && verifyEmptyTag;
 
-    // If has different value, update it, else, remove all styles.
-    if (propertyValue !== value) {
-      const tagName = isAlign ? 'section' : 'span';
-      updatedText.push(
-        `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
-      );
-    } else updatedText.push(selectedText);
+        if (isEmptyTag) {
+          element.replaceChild(
+            document.createTextNode(childText),
+            comparativeNode,
+          );
+        }
+      } else if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
+        const updatedElement = document.createElement('section');
 
-    if (endText) updatedText.push(endText);
+        updatedElement.style.setProperty(cssProp, value);
+        updatedElement.appendChild(childElement);
 
-    finalElement = updatedText.join('');
-  } else {
-    // Adding property.
-    finalElement = childElement.outerHTML.replace(
-      selectedText,
-      `<span style="${cssProp}:${value};">${selectedText}</span>`,
-    );
+        element.replaceChild(updatedElement, comparativeNode);
+      } else style.setProperty(cssProp, value);
+
+      return element;
+    }
+
+    default: {
+      let finalElement = '';
+
+      if (propertyValue) {
+        const updatedText: string[] = [];
+        const { start: startText, end: endText } = getExtremePointsWithTemplate(
+          childElement,
+          childText,
+          start,
+          end,
+        );
+
+        if (startText) updatedText.push(startText);
+
+        // If has different value, update it, else, remove all styles.
+        if (propertyValue !== value) {
+          const tagName = isAlign ? 'section' : 'span';
+          updatedText.push(
+            `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
+          );
+        } else updatedText.push(selectedText);
+
+        if (endText) updatedText.push(endText);
+
+        finalElement = updatedText.join('');
+      } else {
+        // Adding property.
+        finalElement = childElement.outerHTML.replace(
+          selectedText,
+          `<span style="${cssProp}:${value};">${selectedText}</span>`,
+        );
+      }
+
+      const childContent = childElement.outerHTML;
+      return element.outerHTML.replace(childContent, finalElement);
+    }
   }
-
-  return element.outerHTML.replace(childContent, finalElement);
 };
 
 // Has tag, but it's just text selected, without children tags.
@@ -252,10 +288,10 @@ const hasTagNotChild = (
       const propertyValue = style.getPropertyValue(cssProp);
 
       if (propertyValue) {
-        const { content, updatedText } = getContentTools(element);
+        const updatedText: string[] = [];
         const { start: startText, end: endText } = getExtremePointsWithTemplate(
           element,
-          content,
+          elementText,
           start,
           end,
         );
