@@ -1,4 +1,5 @@
 import replaceTagName from './replaceTagName';
+import unifyAndSetElementChildren from './unifyAndSetElementChildren';
 
 interface Selection {
   start: number;
@@ -187,6 +188,9 @@ const hasTagIsChild = (
             document.createTextNode(childText),
             comparativeNode,
           );
+
+          const nodesArray = Array.from(element.childNodes);
+          unifyAndSetElementChildren(nodesArray, element);
         }
       } else if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
         const updatedElement = document.createElement('section');
@@ -223,7 +227,6 @@ const hasTagIsChild = (
         } else updatedText.push(selectedText);
 
         if (endText) updatedText.push(endText);
-
         finalElement = updatedText.join('');
       } else {
         // Adding property.

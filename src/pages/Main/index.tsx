@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import SideBar from 'components/SideBar';
 import { useElement } from 'hooks/element';
+import unifyAndSetElementChildren from 'utils/unifyAndSetElementChildren';
 import { Container, EditableArea, TextArea } from './styles';
 
 interface EnterPressHandlersProps {
@@ -52,41 +53,7 @@ const Main: React.FC = () => {
 
   const setUpdatedText = useCallback((updatedChildren: (Node | string)[]) => {
     const inputRef = textInputRef.current;
-
-    if (inputRef) {
-      inputRef.innerHTML = '';
-
-      // Function to get text content of only text tags.
-      const isText = (child: Node | string): string => {
-        if (typeof child === 'string') return child;
-        if (child instanceof Node && child.nodeName === '#text') {
-          return child.textContent || '';
-        }
-
-        return '';
-      };
-
-      // Iterate over children
-      for (let ind = 0; ind < updatedChildren.length; ind++) {
-        const child = updatedChildren[ind];
-        let finalText = isText(child);
-
-        if (finalText) {
-          // If has other tags with only text, and they aren't together.
-          if (updatedChildren[ind + 1]) {
-            for (let i = ind + 1; i < updatedChildren.length; i++, ind++) {
-              const verify = isText(updatedChildren[i]);
-
-              // Join texts.
-              if (updatedChildren[i] && verify) finalText += verify;
-              else break;
-            }
-          }
-
-          inputRef.innerHTML += finalText;
-        } else inputRef.appendChild(child as Node);
-      }
-    }
+    if (inputRef) unifyAndSetElementChildren(updatedChildren, inputRef);
   }, []);
 
   const handleContentSelect = useCallback(
