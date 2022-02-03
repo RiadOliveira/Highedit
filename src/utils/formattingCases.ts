@@ -86,33 +86,23 @@ const handleHasTagWithoutFullText = (
   const { style } = childElement;
   const propertyValue = style.getPropertyValue(cssProp);
 
-  if (propertyValue) {
-    const updatedText: string[] = [];
-    const { start: startText, end: endText } = getExtremePointsWithTemplate(
-      childElement,
-      childText,
-      start,
-      end,
+  const updatedText: string[] = [];
+
+  if (start !== 0) updatedText.push(childText.slice(0, start));
+
+  // If has different value (or no value), update it, else, remove all styles.
+  if (propertyValue !== value) {
+    const tagName = cssProp === 'text-align' ? 'section' : 'span';
+    updatedText.push(
+      `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
     );
+  } else updatedText.push(selectedText);
 
-    if (startText) updatedText.push(startText);
+  if (end !== childText.length) updatedText.push(childText.slice(end));
 
-    // If has different value, update it, else, remove all styles.
-    if (propertyValue !== value) {
-      const tagName = cssProp === 'text-align' ? 'section' : 'span';
-      updatedText.push(
-        `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
-      );
-    } else updatedText.push(selectedText);
-
-    if (endText) updatedText.push(endText);
-    return updatedText.join('');
-  }
-
-  // Adding property.
   return childElement.outerHTML.replace(
-    selectedText,
-    `<span style="${cssProp}:${value};">${selectedText}</span>`,
+    childElement.innerHTML,
+    updatedText.join(''),
   );
 };
 
