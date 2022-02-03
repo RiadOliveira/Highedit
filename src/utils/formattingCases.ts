@@ -155,35 +155,52 @@ const justText = (
 // Child of a created element.
 const hasTagIsChild = (
   element: HTMLElement,
-  comparativeNode: Node,
+  selectedText: string,
+  { start, end }: Selection,
   { cssProp, value }: Code,
+  comparativeNode: Node,
 ): string | Node => {
-  const comparativeNodeContent =
-    comparativeNode.firstChild?.parentElement?.outerHTML;
+  const childText = comparativeNode.textContent || '';
+  const childElement = comparativeNode.firstChild?.parentElement as HTMLElement;
+  const childContent = childElement.outerHTML;
+  let finalElement = '';
 
-  const childIndex = Array.from(element.children).findIndex(
-    ({ outerHTML }) => outerHTML === comparativeNodeContent,
-  );
+  const { style } = childElement;
+  const propertyValue = style.getPropertyValue(cssProp);
 
-  const childElement = element.children[childIndex].firstChild?.parentElement;
+  if (propertyValue) {
+    const updatedText: string[] = [];
+    const isAlign = cssProp === 'text-align';
 
-  if (childElement) {
-    const { style } = childElement;
-    const styleProp = style.getPropertyValue(cssProp);
+    const { start: startText, end: endText } = getExtremePointsWithTemplate(
+      childElement,
+      childText,
+      start,
+      end,
+    );
 
-    // If already has property, remove it.
-    if (styleProp && value === styleProp) {
-      style.removeProperty(cssProp);
+    if (startText) updatedText.push(startText);
 
-      const { nodeName } = childElement;
-      const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
-      const isEmptyTag = !childElement.getAttribute('style') && verifyEmptyTag;
+    // If has different value, update it, else, remove all styles.
+    if (propertyValue !== value) {
+      const tagName = isAlign ? 'section' : 'span';
+      updatedText.push(
+        `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
+      );
+    } else updatedText.push(selectedText);
 
-      if (isEmptyTag) childElement.outerHTML = childElement.innerText;
-    } else style.setProperty(cssProp, value);
+    if (endText) updatedText.push(endText);
+
+    finalElement = updatedText.join('');
+  } else {
+    // Adding property.
+    finalElement = childElement.outerHTML.replace(
+      selectedText,
+      `<span style="${cssProp}:${value};">${selectedText}</span>`,
+    );
   }
 
-  return element;
+  return element.outerHTML.replace(childContent, finalElement);
 };
 
 // Has tag, but it's just text selected, without children tags.

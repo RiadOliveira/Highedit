@@ -33,7 +33,7 @@ const formattingTypeSwtich = (
 
       if (element) {
         return isChild
-          ? hasTag.isChild(element, comparativeNode, code)
+          ? hasTag.isChild(element, selectedText, points, code, comparativeNode)
           : hasTag.notChild(element, selectedText, points, code);
       }
     }
