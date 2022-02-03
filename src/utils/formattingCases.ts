@@ -11,6 +11,13 @@ interface Code {
   value: string;
 }
 
+interface HasTagFunctionProps {
+  element: HTMLElement;
+  selectedText: string;
+  points: Selection;
+  code: Code;
+}
+
 const getContentTools = (
   child: ChildNode,
 ): { updatedText: string[]; content: string } => {
@@ -155,10 +162,12 @@ const justText = (
 
 // Child of a created element.
 const hasTagIsChild = (
-  element: HTMLElement,
-  selectedText: string,
-  { start, end }: Selection,
-  { cssProp, value }: Code,
+  {
+    element,
+    selectedText,
+    code: { cssProp, value },
+    points: { start, end },
+  }: HasTagFunctionProps,
   comparativeNode: Node,
 ): string | Node => {
   const childText = comparativeNode.textContent || '';
@@ -243,12 +252,12 @@ const hasTagIsChild = (
 };
 
 // Has tag, but it's just text selected, without children tags.
-const hasTagNotChild = (
-  element: HTMLElement,
-  selectedText: string,
-  { start, end }: Selection,
-  { cssProp, value }: Code,
-): string | Node => {
+const hasTagNotChild = ({
+  element,
+  selectedText,
+  code: { cssProp, value },
+  points: { start, end },
+}: HasTagFunctionProps): string | Node => {
   const { style, innerText: elementText } = element;
 
   // If the property is align, modify all parent tag style.

@@ -29,17 +29,18 @@ const formattingTypeSwtich = (
 
       if (child.nodeName === '#text') return justText(points, code, child);
 
-      const element = child.firstChild?.parentElement;
+      const element = child.firstChild?.parentElement as HTMLElement;
+      const hasTagProps = {
+        element,
+        selectedText,
+        points,
+        code,
+      };
 
-      if (element) {
-        return isChild
-          ? hasTag.isChild(element, selectedText, points, code, comparativeNode)
-          : hasTag.notChild(element, selectedText, points, code);
-      }
+      if (isChild) return hasTag.isChild(hasTagProps, comparativeNode);
+      return hasTag.notChild(hasTagProps);
     }
   }
-
-  return '';
 };
 
 // Function to return all nodes, including the updated node with the property pressed.
