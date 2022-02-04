@@ -6,14 +6,16 @@ import {
   sameParents,
 } from './multipleNodesSelectionFunctions';
 
+interface SelectionPoints {
+  start: number;
+  end: number;
+}
+
 const formattingTypeSwtich = (
   child: ChildNode,
   property: Property,
   comparativeNode: Node,
-  points: {
-    start: number;
-    end: number;
-  },
+  points: SelectionPoints,
   selectedText: string,
 ): string | Node => {
   switch (property.type) {
@@ -64,12 +66,12 @@ const getUpdatedNodes = (
   // Iterate through all children of the created text.
   const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
     const isTextTag = child.nodeName === 'SPAN' || child.nodeName === '#text';
-    const containersHaveSameParent =
+    const hasSubChildren =
       !isTextTag &&
       child.contains(startContainer) &&
       child.contains(endContainer);
 
-    if (containersHaveSameParent) {
+    if (hasSubChildren) {
       return sameParents(child, property, clonedNodes, startContainer);
     }
 

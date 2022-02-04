@@ -44,17 +44,18 @@ const sameParents = (
 
   Array.from(clonedNodes).forEach((clonedChild, index) => {
     if (typeof updatedChild === 'string') {
-      const element = document.createElement('div');
+      const element = document.createElement('template');
       element.innerHTML = updatedChild;
 
-      updatedChild = element.firstChild as Node;
+      updatedChild = element.content;
     }
+
+    const referredChild = childrenArray[initialClonedNodePosition + index];
 
     const clonedNodeContent = clonedChild.textContent;
     if (clonedNodeContent) {
-      const subChild = childrenArray[index];
-
-      const startIndex = subChild.textContent?.indexOf(clonedNodeContent) || 0;
+      const startIndex =
+        referredChild.textContent?.indexOf(clonedNodeContent) || 0;
       const endIndex = startIndex + clonedNodeContent.length;
 
       updatedPoints.start = startIndex;
@@ -62,7 +63,7 @@ const sameParents = (
     }
 
     const comparativeNode = Array.from(updatedChild.childNodes).find(subChild =>
-      subChild.isEqualNode(childrenArray[initialClonedNodePosition + index]),
+      subChild.isEqualNode(referredChild),
     );
 
     updatedChild = formattingTypeSwtich(

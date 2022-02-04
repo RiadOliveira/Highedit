@@ -231,50 +231,56 @@ const hasTag = (
   selectedText: string,
   points: Selection,
   comparativeNode: Node,
-  { cssProp, value }: Code,
+  code: Code,
 ): string | Node => {
   const isTextTag = comparativeNode.nodeName === 'SPAN';
   const hasTitleTag = element.nodeName !== 'SPAN';
-  const isAlign = cssProp === 'text-align';
+  const isAlign = code.cssProp === 'text-align';
 
   let childElement = element;
   let childText = element.innerText;
 
-  if (hasTitleTag) {
-    if (element === comparativeNode) {
-      const updatedText = justText(element.firstChild as ChildNode, points, {
-        cssProp,
-        value,
-      });
+  let finalElement = '';
 
-      return element.outerHTML.replace(childText, updatedText);
+  if (hasTitleTag) {
+    if (comparativeNode.nodeName === '#text') {
+      finalElement = justText(comparativeNode as ChildNode, points, code);
+
+      const updatedElement = document.createElement('template');
+      updatedElement.innerHTML = finalElement;
+      element.replaceChild(updatedElement.content, comparativeNode);
+
+      return element;
     }
 
     childElement = comparativeNode.firstChild?.parentElement as HTMLElement;
     childText = comparativeNode.textContent || '';
   }
 
-  let finalElement = '';
-
   if (selectedText === childText && (isTextTag || isAlign)) {
-    finalElement = handleHasTagWithFullText(childElement, childText, isAlign, {
-      cssProp,
-      value,
-    });
+    finalElement = handleHasTagWithFullText(
+      childElement,
+      childText,
+      isAlign,
+      code,
+    );
   } else {
     finalElement = handleHasTagWithoutFullText(
       childElement,
       childText,
       selectedText,
-      { cssProp, value },
+      code,
       points,
     );
   }
 
   if (!hasTitleTag) return finalElement;
 
-  const childContent = childElement.outerHTML;
-  return element.outerHTML.replace(childContent, finalElement);
+  const updatedElement = document.createElement('template');
+  updatedElement.innerHTML = finalElement;
+  element.replaceChild(updatedElement.content, comparativeNode);
+
+  return element;
 };
 
 const styleFormat = {
