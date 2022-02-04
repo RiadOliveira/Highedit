@@ -10,6 +10,12 @@ interface Code {
   value: string;
 }
 
+interface HandleHasTagFunctionProps {
+  childElement: HTMLElement;
+  childText: string;
+  code: Code;
+}
+
 // -----------
 // Auxiliaries
 // -----------
@@ -56,23 +62,25 @@ const getExtremePointsWithTemplate = (
   };
 
   const startText = content.slice(0, start);
-  if (start !== 0 && startText.trim()) {
+  if (start !== 0 && startText) {
     finalTexts.start = verifiedTemplate.replace('?', startText);
   }
 
   const endText = content.slice(end);
-  if (end !== content.length && endText.trim()) {
+  if (end !== content.length && endText) {
     finalTexts.end = verifiedTemplate.replace('?', endText);
   }
 
   return finalTexts;
 };
 
-const handleHasTagWithFullText = (
-  element: HTMLElement,
-  elementText: string,
+const hasTagFullTextSelected = (
   isAlign: boolean,
-  { cssProp, value }: Code,
+  {
+    childElement: element,
+    childText,
+    code: { cssProp, value },
+  }: HandleHasTagFunctionProps,
 ): string => {
   // All text of the tag.
   const { nodeName, style } = element;
@@ -85,7 +93,7 @@ const handleHasTagWithFullText = (
     const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
     const isEmptyTag = !element.getAttribute('style') && verifyEmptyTag;
 
-    if (isEmptyTag) return elementText;
+    if (isEmptyTag) return childText;
   } else {
     if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
       const updatedElement = document.createElement('section');
@@ -102,11 +110,13 @@ const handleHasTagWithFullText = (
   return element.outerHTML;
 };
 
-const handleHasTagWithoutFullText = (
-  childElement: HTMLElement,
-  childText: string,
+const hasTagPartOfTextSelected = (
   selectedText: string,
-  { cssProp, value }: Code,
+  {
+    childElement,
+    childText,
+    code: { cssProp, value },
+  }: HandleHasTagFunctionProps,
   { start, end }: Selection,
 ) => {
   const { start: startText, end: endText } = getExtremePointsWithTemplate(
@@ -233,48 +243,32 @@ const hasTag = (
   comparativeNode: Node,
   code: Code,
 ): string | Node => {
-  const isTextTag = comparativeNode.nodeName === 'SPAN';
-  const hasTitleTag = element.nodeName !== 'SPAN';
-  const isAlign = code.cssProp === 'text-align';
+  const getFinalElement = (childElement: HTMLElement) => {
+    const childText = comparativeNode.textContent || '';
+    const isTextTag = comparativeNode.nodeName === 'SPAN';
+    const isAlign = code.cssProp === 'text-align';
 
-  let childElement = element;
-  let childText = element.innerText;
+    const handleHasTagProps: HandleHasTagFunctionProps = {
+      childElement,
+      childText,
+      code,
+    };
+    const isFullText = selectedText === childText && (isTextTag || isAlign);
 
-  let finalElement = '';
+    if (isFullText) return hasTagFullTextSelected(isAlign, handleHasTagProps);
+    return hasTagPartOfTextSelected(selectedText, handleHasTagProps, points);
+  };
 
-  if (hasTitleTag) {
+  if (element.nodeName === 'SPAN') return getFinalElement(element);
+
+  const finalElement = (() => {
     if (comparativeNode.nodeName === '#text') {
-      finalElement = justText(comparativeNode as ChildNode, points, code);
-
-      const updatedElement = document.createElement('template');
-      updatedElement.innerHTML = finalElement;
-      element.replaceChild(updatedElement.content, comparativeNode);
-
-      return element;
+      return justText(comparativeNode as ChildNode, points, code);
     }
 
-    childElement = comparativeNode.firstChild?.parentElement as HTMLElement;
-    childText = comparativeNode.textContent || '';
-  }
-
-  if (selectedText === childText && (isTextTag || isAlign)) {
-    finalElement = handleHasTagWithFullText(
-      childElement,
-      childText,
-      isAlign,
-      code,
-    );
-  } else {
-    finalElement = handleHasTagWithoutFullText(
-      childElement,
-      childText,
-      selectedText,
-      code,
-      points,
-    );
-  }
-
-  if (!hasTitleTag) return finalElement;
+    const childElement = comparativeNode.firstChild?.parentElement;
+    return getFinalElement(childElement as HTMLElement);
+  })();
 
   const updatedElement = document.createElement('template');
   updatedElement.innerHTML = finalElement;

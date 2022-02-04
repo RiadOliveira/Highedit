@@ -92,7 +92,7 @@ const getUpdatedNodes = (
   const textRef = inputRef.current as HTMLPreElement;
   const childrenArray = Array.from(textRef.childNodes);
 
-  if (!selection.toString().trim()) return childrenArray;
+  if (!selection.toString()) return childrenArray;
 
   const { selectedNodes, childIndex } = getSelectedNodes(
     selection,
