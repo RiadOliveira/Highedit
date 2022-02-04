@@ -73,12 +73,12 @@ const formattingTypeSwtich = (
 
     default: {
       const { code } = property;
-      const { hasTag, justText } = styleFormat;
+      const { withTag, justText } = styleFormat;
 
       if (child.nodeName === '#text') return justText(child, points, code);
 
       const element = child.firstChild?.parentElement as HTMLElement;
-      return hasTag(element, selectedText, points, comparativeNode, code);
+      return withTag(element, selectedText, points, comparativeNode, code);
     }
   }
 };

@@ -10,7 +10,7 @@ interface Code {
   value: string;
 }
 
-interface HandleHasTagFunctionProps {
+interface HandleWithTagFunctionProps {
   childElement: HTMLElement;
   childText: string;
   code: Code;
@@ -74,13 +74,13 @@ const getExtremePointsWithTemplate = (
   return finalTexts;
 };
 
-const hasTagFullTextSelected = (
+const withTagFullTextSelected = (
   isAlign: boolean,
   {
     childElement: element,
     childText,
     code: { cssProp, value },
-  }: HandleHasTagFunctionProps,
+  }: HandleWithTagFunctionProps,
 ): string => {
   // All text of the tag.
   const { nodeName, style } = element;
@@ -110,13 +110,13 @@ const hasTagFullTextSelected = (
   return element.outerHTML;
 };
 
-const hasTagPartOfTextSelected = (
+const withTagPartOfTextSelected = (
   selectedText: string,
   {
     childElement,
     childText,
     code: { cssProp, value },
-  }: HandleHasTagFunctionProps,
+  }: HandleWithTagFunctionProps,
   { start, end }: Selection,
 ) => {
   const { start: startText, end: endText } = getExtremePointsWithTemplate(
@@ -214,6 +214,7 @@ const tagFormat = (
 };
 
 // Styles formatting
+
 const justText = (
   child: ChildNode,
   { start, end }: Selection,
@@ -236,7 +237,7 @@ const justText = (
   return updatedText.join('');
 };
 
-const hasTag = (
+const withTag = (
   element: HTMLElement,
   selectedText: string,
   points: Selection,
@@ -248,15 +249,15 @@ const hasTag = (
     const isTextTag = comparativeNode.nodeName === 'SPAN';
     const isAlign = code.cssProp === 'text-align';
 
-    const handleHasTagProps: HandleHasTagFunctionProps = {
+    const handleWithTagProps: HandleWithTagFunctionProps = {
       childElement,
       childText,
       code,
     };
     const isFullText = selectedText === childText && (isTextTag || isAlign);
 
-    if (isFullText) return hasTagFullTextSelected(isAlign, handleHasTagProps);
-    return hasTagPartOfTextSelected(selectedText, handleHasTagProps, points);
+    if (isFullText) return withTagFullTextSelected(isAlign, handleWithTagProps);
+    return withTagPartOfTextSelected(selectedText, handleWithTagProps, points);
   };
 
   if (element.nodeName === 'SPAN') return getFinalElement(element);
@@ -279,7 +280,7 @@ const hasTag = (
 
 const styleFormat = {
   justText,
-  hasTag,
+  withTag,
 };
 
 export { tagFormat, styleFormat };
