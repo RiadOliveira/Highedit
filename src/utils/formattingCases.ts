@@ -230,16 +230,26 @@ const hasTag = (
   element: HTMLElement,
   selectedText: string,
   points: Selection,
-  { cssProp, value }: Code,
   comparativeNode: Node,
-  isChild: boolean,
+  { cssProp, value }: Code,
 ): string | Node => {
-  let childElement = element;
-  let childText = element.innerText;
   const isTextTag = comparativeNode.nodeName === 'SPAN';
+  const hasTitleTag = element.nodeName !== 'SPAN';
   const isAlign = cssProp === 'text-align';
 
-  if (isChild) {
+  let childElement = element;
+  let childText = element.innerText;
+
+  if (hasTitleTag) {
+    if (element === comparativeNode) {
+      const updatedText = justText(element.firstChild as ChildNode, points, {
+        cssProp,
+        value,
+      });
+
+      return element.outerHTML.replace(childText, updatedText);
+    }
+
     childElement = comparativeNode.firstChild?.parentElement as HTMLElement;
     childText = comparativeNode.textContent || '';
   }
@@ -261,7 +271,7 @@ const hasTag = (
     );
   }
 
-  if (!isChild) return finalElement;
+  if (!hasTitleTag) return finalElement;
 
   const childContent = childElement.outerHTML;
   return element.outerHTML.replace(childContent, finalElement);

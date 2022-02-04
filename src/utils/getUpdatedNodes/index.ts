@@ -12,7 +12,6 @@ const formattingTypeSwtich = (
     end: number;
   },
   selectedText: string,
-  isChild: boolean,
 ): string | Node => {
   switch (property.type) {
     case 'tag':
@@ -31,14 +30,7 @@ const formattingTypeSwtich = (
 
       const element = child.firstChild?.parentElement as HTMLElement;
 
-      return hasTag(
-        element,
-        selectedText,
-        points,
-        code,
-        comparativeNode,
-        isChild,
-      );
+      return hasTag(element, selectedText, points, comparativeNode, code);
     }
   }
 };
@@ -69,81 +61,58 @@ const getUpdatedNodes = (
     end: Math.max(start, end),
   };
 
-  let comparativeNode: Node | null | undefined;
-  let selectedText = '';
-
-  if (clonedNodes.length === 1) {
-    const { anchorNode } = selection;
-    const { parentNode } = anchorNode as Node;
-
-    comparativeNode = parentNode !== textRef ? parentNode : anchorNode;
-    selectedText = selection.toString();
-  }
-
   // Iterate through all children of the created text.
   const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
-    let isChild = false;
+    const containersHaveSameParent =
+      startContainer !== endContainer &&
+      child.contains(startContainer) &&
+      child.contains(endContainer);
 
-    // Only one child selected.
-    if (clonedNodes.length === 1) {
-      isChild = Array.from(child.childNodes).includes(
-        comparativeNode as ChildNode,
-      );
+    if (containersHaveSameParent) {
+      const {
+        sameParents: { tagType, otherTypes },
+      } = multipleNodesSelectionFunctions;
 
-      // If the child isn't the selected, return it without changes.
-      if (comparativeNode !== child && !isChild) return child;
-    } else {
-      const containersHaveSameParent =
-        startContainer !== endContainer &&
-        child.contains(startContainer) &&
-        child.contains(endContainer);
-
-      if (containersHaveSameParent) {
-        const {
-          sameParents: { tagType, otherTypes },
-        } = multipleNodesSelectionFunctions;
-
-        if (property.type === 'tag') {
-          return tagType(child, property.name, points);
-        }
-
-        return otherTypes(child, property, clonedNodes, startContainer);
+      if (property.type === 'tag') {
+        return tagType(child, property.name, points);
       }
 
-      const { differentParents } = multipleNodesSelectionFunctions;
-      const indexChildIsSelected = differentParents(
-        { startContainer, endContainer },
-        childrenArray,
-        index,
-      );
-
-      if (!indexChildIsSelected) return child;
-
-      const iterateClonedNode = clonedNodes.item(
-        index - initialClonedNodePosition,
-      );
-
-      const clonedNodeContent = iterateClonedNode.textContent;
-      if (clonedNodeContent) {
-        const startIndex = child.textContent?.indexOf(clonedNodeContent) || 0;
-        const endIndex = startIndex + clonedNodeContent.length;
-
-        points.start = startIndex;
-        points.end = endIndex;
-      }
-
-      const { firstChild } = iterateClonedNode;
-      let comparativeClonedNode = iterateClonedNode;
-
-      if (firstChild && firstChild.nodeName !== '#text') {
-        comparativeClonedNode = firstChild;
-        isChild = true;
-      }
-
-      const { textContent } = comparativeClonedNode;
-      selectedText = textContent || '';
-      comparativeNode = child.parentNode !== textRef ? child.parentNode : child;
+      return otherTypes(child, property, clonedNodes, startContainer);
     }
+
+    const { differentParents } = multipleNodesSelectionFunctions;
+    const indexChildIsSelected = differentParents(
+      { startContainer, endContainer },
+      childrenArray,
+      index,
+    );
+
+    if (!indexChildIsSelected) return child;
+
+    const iterateClonedNode = clonedNodes.item(
+      index - initialClonedNodePosition,
+    );
+
+    const clonedNodeContent = iterateClonedNode.textContent;
+    if (clonedNodeContent) {
+      const startIndex = child.textContent?.indexOf(clonedNodeContent) || 0;
+      const endIndex = startIndex + clonedNodeContent.length;
+
+      points.start = startIndex;
+      points.end = endIndex;
+    }
+
+    const { firstChild } = iterateClonedNode;
+    let comparativeClonedNode = iterateClonedNode;
+
+    if (firstChild && firstChild.nodeName !== '#text') {
+      comparativeClonedNode = firstChild;
+    }
+
+    const { textContent } = comparativeClonedNode;
+    const selectedText = textContent || '';
+    const comparativeNode =
+      child.parentNode !== textRef ? child.parentNode : child;
 
     return formattingTypeSwtich(
       child,
@@ -151,7 +120,6 @@ const getUpdatedNodes = (
       comparativeNode as Node,
       points,
       selectedText,
-      isChild,
     );
   });
 

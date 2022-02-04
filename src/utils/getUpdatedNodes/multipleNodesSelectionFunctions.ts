@@ -75,8 +75,6 @@ const otherTypes = (
       updatedChild = element.firstChild as Node;
     }
 
-    const cloneWasChild = clonedChild.nodeName !== '#text';
-
     const clonedNodeContent = clonedChild.textContent;
     if (clonedNodeContent) {
       const subChild = childrenArray[index];
@@ -98,7 +96,6 @@ const otherTypes = (
       comparativeNode as Node,
       updatedPoints,
       clonedChild.textContent || '',
-      cloneWasChild,
     );
   });
 
