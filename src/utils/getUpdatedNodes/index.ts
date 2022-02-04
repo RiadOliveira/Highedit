@@ -23,16 +23,14 @@ const getSelectedNodes = (
   childrenArray: ChildNode[],
 ): SelectedNodeData => {
   const range = selection.getRangeAt(0);
-  const { startContainer, endContainer } = range;
-
   const clonedNodes = range.cloneContents().childNodes;
+  const { startContainer, endContainer } = range;
 
   const filterNodesBasedOnSelection = (nodeArray: ChildNode[]): ChildNode[] => {
     return nodeArray.filter(node => selection.containsNode(node, true));
   };
 
   const filteredNodes: ChildNode[] = [];
-
   const findedSelectedChildIndex = childrenArray.findIndex(
     child =>
       child !== startContainer &&
@@ -104,18 +102,12 @@ const getUpdatedNodes = (
     child => child === selectedNodes[0].reference,
   );
 
-  const { anchorOffset: start, focusOffset: end } = selection;
-  const points = {
-    start: Math.min(start, end),
-    end: Math.max(start, end),
-  };
-
   // Iterate through all children of the created text.
   const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
     const hasSubChildren = index === childIndex;
 
     if (hasSubChildren) {
-      return subChildrenSelection(child, property, selectedNodes, points);
+      return subChildrenSelection(child, property, selectedNodes);
     }
 
     const indexChildIsSelected =
@@ -130,12 +122,17 @@ const getUpdatedNodes = (
     const comparativeNode =
       child.parentNode !== textRef ? child.parentNode : child;
 
+    const { content, reference } = iterateSelectedNode;
+    const start = reference.textContent?.indexOf(content) || 0;
+    const end = start + content.length;
+    const points = { start, end };
+
     return formattingTypeSwtich(
       child,
       property,
       comparativeNode as Node,
       points,
-      iterateSelectedNode.content,
+      content,
     );
   });
 
