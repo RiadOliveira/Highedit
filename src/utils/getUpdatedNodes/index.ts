@@ -13,21 +13,50 @@ interface SelectedNode {
   content: string;
 }
 
+interface SelectedNodeData {
+  selectedNodes: SelectedNode[];
+  childIndex: number;
+}
+
 const getSelectedNodes = (
   selection: Selection,
   childrenArray: ChildNode[],
-): SelectedNode[] => {
+): SelectedNodeData => {
   const range = selection.getRangeAt(0);
+  const { startContainer, endContainer } = range;
 
   const clonedNodes = range.cloneContents().childNodes;
-  const filteredNodes = childrenArray.filter(node =>
-    selection.containsNode(node, true),
+
+  const filterNodesBasedOnSelection = (nodeArray: ChildNode[]): ChildNode[] => {
+    return nodeArray.filter(node => selection.containsNode(node, true));
+  };
+
+  const filteredNodes: ChildNode[] = [];
+
+  const findedSelectedChildIndex = childrenArray.findIndex(
+    child =>
+      child !== startContainer &&
+      child.contains(startContainer) &&
+      child.contains(endContainer),
   );
 
-  return filteredNodes.map((node, index) => ({
+  if (findedSelectedChildIndex !== -1) {
+    const subChildrenArray = Array.from(
+      childrenArray[findedSelectedChildIndex].childNodes,
+    );
+
+    filteredNodes.push(...filterNodesBasedOnSelection(subChildrenArray));
+  } else filteredNodes.push(...filterNodesBasedOnSelection(childrenArray));
+
+  const parsedNodes = filteredNodes.map((node, index) => ({
     reference: node,
     content: clonedNodes.item(index).textContent || '',
   }));
+
+  return {
+    selectedNodes: parsedNodes,
+    childIndex: findedSelectedChildIndex,
+  };
 };
 
 const formattingTypeSwtich = (
@@ -67,11 +96,12 @@ const getUpdatedNodes = (
 
   if (!selection.toString().trim()) return childrenArray;
 
-  const selectedNodes = getSelectedNodes(selection, childrenArray);
+  const { selectedNodes, childIndex } = getSelectedNodes(
+    selection,
+    childrenArray,
+  );
   const initialSelectedNodePosition = childrenArray.findIndex(
-    child =>
-      child === selectedNodes[0].reference ||
-      child.contains(selectedNodes[0].reference),
+    child => child === selectedNodes[0].reference,
   );
 
   const { anchorOffset: start, focusOffset: end } = selection;
@@ -82,14 +112,7 @@ const getUpdatedNodes = (
 
   // Iterate through all children of the created text.
   const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
-    const isTextTag = child.nodeName === 'SPAN' || child.nodeName === '#text';
-    const firstSelectedNode = selectedNodes[0].reference;
-    const lastSelectedNode = selectedNodes[selectedNodes.length - 1].reference;
-
-    const hasSubChildren =
-      !isTextTag &&
-      child.contains(firstSelectedNode) &&
-      child.contains(lastSelectedNode);
+    const hasSubChildren = index === childIndex;
 
     if (hasSubChildren) {
       return subChildrenSelection(child, property, selectedNodes, points);

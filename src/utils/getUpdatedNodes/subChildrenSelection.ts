@@ -23,11 +23,11 @@ const subChildrenSelection = (
       updatedChild = element.content;
     }
 
-    const clonedNodeContent = selectedNode.content;
-    if (clonedNodeContent && index > 0) {
+    const selectedNodeContent = selectedNode.content;
+    if (selectedNodeContent && index > 0) {
       const startIndex =
-        selectedNode.reference.textContent?.indexOf(clonedNodeContent) || 0;
-      const endIndex = startIndex + clonedNodeContent.length;
+        selectedNode.reference.textContent?.indexOf(selectedNodeContent) || 0;
+      const endIndex = startIndex + selectedNodeContent.length;
 
       updatedPoints.start = startIndex;
       updatedPoints.end = endIndex;
