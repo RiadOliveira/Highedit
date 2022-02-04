@@ -1,5 +1,5 @@
 import specialFunctions from 'utils/specialTags';
-import { tagFormat, styleFormat } from 'utils/formattingCases';
+import { tagFormat, styleFormat } from 'utils/formattingCases/index';
 import { Property } from 'utils/properties';
 import subChildrenSelection from './subChildrenSelection';
 

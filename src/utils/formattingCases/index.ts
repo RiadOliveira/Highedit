@@ -1,4 +1,10 @@
-import replaceTagName from './replaceTagName';
+import replaceTagName from '../replaceTagName';
+import getContentTools from './auxiliaries/getContentTools';
+import getExtremePointsWithTemplate from './auxiliaries/getExtremePointsWithTemplate';
+import {
+  withTagFullTextSelected,
+  withTagPartOfTextSelected,
+} from './auxiliaries/withTagStyleFunctions';
 
 interface Selection {
   start: number;
@@ -9,144 +15,6 @@ interface Code {
   cssProp: string;
   value: string;
 }
-
-interface HandleWithTagFunctionProps {
-  childElement: HTMLElement;
-  childText: string;
-  code: Code;
-}
-
-// -----------
-// Auxiliaries
-// -----------
-
-const getContentTools = (
-  child: ChildNode,
-): { updatedText: string[]; content: string } => {
-  let content = '';
-
-  if (!child.childNodes.length) {
-    content = child.textContent || '';
-  } else {
-    const childrenArray = Array.from(child.childNodes);
-
-    content = childrenArray
-      .map(({ firstChild, textContent }) => {
-        const subChildHTML = firstChild?.parentElement?.outerHTML;
-        return subChildHTML || textContent;
-      })
-      .join('');
-  }
-
-  return {
-    updatedText: [],
-    content,
-  };
-};
-
-// Used when removes a style/tag on some part of text.
-const getExtremePointsWithTemplate = (
-  template: HTMLElement | string,
-  content: string,
-  start: number,
-  end: number,
-): { start: string; end: string } => {
-  const verifiedTemplate =
-    typeof template === 'string'
-      ? template
-      : template.outerHTML.replace(template.innerText, '?');
-
-  const finalTexts = {
-    start: '',
-    end: '',
-  };
-
-  const startText = content.slice(0, start);
-  if (start !== 0 && startText) {
-    finalTexts.start = verifiedTemplate.replace('?', startText);
-  }
-
-  const endText = content.slice(end);
-  if (end !== content.length && endText) {
-    finalTexts.end = verifiedTemplate.replace('?', endText);
-  }
-
-  return finalTexts;
-};
-
-const withTagFullTextSelected = (
-  isAlign: boolean,
-  {
-    childElement: element,
-    childText,
-    code: { cssProp, value },
-  }: HandleWithTagFunctionProps,
-): string => {
-  // All text of the tag.
-  const { nodeName, style } = element;
-  const hasProp = style.getPropertyValue(cssProp);
-
-  // If already has property, remove it.
-  if (hasProp && value === hasProp) {
-    style.removeProperty(cssProp);
-
-    const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
-    const isEmptyTag = !element.getAttribute('style') && verifyEmptyTag;
-
-    if (isEmptyTag) return childText;
-  } else {
-    if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
-      const updatedElement = document.createElement('section');
-
-      updatedElement.style.setProperty(cssProp, value);
-      updatedElement.appendChild(element);
-
-      return updatedElement.outerHTML;
-    }
-
-    style.setProperty(cssProp, value);
-  }
-
-  return element.outerHTML;
-};
-
-const withTagPartOfTextSelected = (
-  selectedText: string,
-  {
-    childElement,
-    childText,
-    code: { cssProp, value },
-  }: HandleWithTagFunctionProps,
-  { start, end }: Selection,
-) => {
-  const { start: startText, end: endText } = getExtremePointsWithTemplate(
-    childElement,
-    childText,
-    start,
-    end,
-  );
-
-  const { style } = childElement;
-  const propertyValue = style.getPropertyValue(cssProp);
-
-  if (propertyValue !== value) style.setProperty(cssProp, value);
-  else style.removeProperty(cssProp);
-  const childStyles = childElement.getAttribute('style');
-
-  if (!childStyles) return `${startText}${selectedText}${endText}`;
-
-  const tagName = cssProp === 'text-align' ? 'section' : 'span';
-
-  const updatedElement = document.createElement(tagName);
-  updatedElement.innerText = selectedText;
-  updatedElement.setAttribute('style', childStyles);
-
-  return `${startText}${updatedElement.outerHTML}${endText}`;
-};
-
-// --------------------
-// Formatting functions
-// --------------------
 
 const tagFormat = (
   child: ChildNode,
@@ -213,7 +81,9 @@ const tagFormat = (
   return `<${tagName} style="${styles}">${selectedText}</${tagName}>`;
 };
 
+// -----------------
 // Styles formatting
+// -----------------
 
 const justText = (
   child: ChildNode,
@@ -249,7 +119,7 @@ const withTag = (
     const isTextTag = comparativeNode.nodeName === 'SPAN';
     const isAlign = code.cssProp === 'text-align';
 
-    const handleWithTagProps: HandleWithTagFunctionProps = {
+    const handleWithTagProps = {
       childElement,
       childText,
       code,
