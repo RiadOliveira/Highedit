@@ -68,6 +68,40 @@ const getExtremePointsWithTemplate = (
   return finalTexts;
 };
 
+const handleHasTagWithFullText = (
+  element: HTMLElement,
+  elementText: string,
+  isAlign: boolean,
+  { cssProp, value }: Code,
+): string => {
+  // All text of the tag.
+  const { nodeName, style } = element;
+  const hasProp = style.getPropertyValue(cssProp);
+
+  // If already has property, remove it.
+  if (hasProp && value === hasProp) {
+    style.removeProperty(cssProp);
+
+    const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
+    const isEmptyTag = !element.getAttribute('style') && verifyEmptyTag;
+
+    if (isEmptyTag) return elementText;
+  } else {
+    if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
+      const updatedElement = document.createElement('section');
+
+      updatedElement.style.setProperty(cssProp, value);
+      updatedElement.appendChild(element);
+
+      return updatedElement.outerHTML;
+    }
+
+    style.setProperty(cssProp, value);
+  }
+
+  return element.outerHTML;
+};
+
 const handleHasTagWithoutFullText = (
   childElement: HTMLElement,
   childText: string,
@@ -75,10 +109,6 @@ const handleHasTagWithoutFullText = (
   { cssProp, value }: Code,
   { start, end }: Selection,
 ) => {
-  const { style } = childElement;
-  const propertyValue = style.getPropertyValue(cssProp);
-  const updatedText: string[] = [];
-
   const { start: startText, end: endText } = getExtremePointsWithTemplate(
     childElement,
     childText,
@@ -86,19 +116,22 @@ const handleHasTagWithoutFullText = (
     end,
   );
 
-  if (startText) updatedText.push(startText);
+  const { style } = childElement;
+  const propertyValue = style.getPropertyValue(cssProp);
 
-  // If has different value (or no value), update it, else, remove all styles.
-  if (propertyValue !== value) {
-    const tagName = cssProp === 'text-align' ? 'section' : 'span';
-    updatedText.push(
-      `<${tagName} style="${cssProp}:${value};">${selectedText}</${tagName}>`,
-    );
-  } else updatedText.push(selectedText);
+  if (propertyValue !== value) style.setProperty(cssProp, value);
+  else style.removeProperty(cssProp);
+  const childStyles = childElement.getAttribute('style');
 
-  if (endText) updatedText.push(endText);
+  if (!childStyles) return `${startText}${selectedText}${endText}`;
 
-  return updatedText.join('');
+  const tagName = cssProp === 'text-align' ? 'section' : 'span';
+
+  const updatedElement = document.createElement(tagName);
+  updatedElement.innerText = selectedText;
+  updatedElement.setAttribute('style', childStyles);
+
+  return `${startText}${updatedElement.outerHTML}${endText}`;
 };
 
 // --------------------
@@ -197,25 +230,36 @@ const hasTag = (
   element: HTMLElement,
   selectedText: string,
   points: Selection,
-  code: Code,
+  { cssProp, value }: Code,
   comparativeNode: Node,
   isChild: boolean,
 ): string | Node => {
   let childElement = element;
   let childText = element.innerText;
+  const isTextTag = comparativeNode.nodeName === 'SPAN';
+  const isAlign = cssProp === 'text-align';
 
   if (isChild) {
     childElement = comparativeNode.firstChild?.parentElement as HTMLElement;
     childText = comparativeNode.textContent || '';
   }
 
-  const finalElement = handleHasTagWithoutFullText(
-    childElement,
-    childText,
-    selectedText,
-    code,
-    points,
-  );
+  let finalElement = '';
+
+  if (selectedText === childText && (isTextTag || isAlign)) {
+    finalElement = handleHasTagWithFullText(childElement, childText, isAlign, {
+      cssProp,
+      value,
+    });
+  } else {
+    finalElement = handleHasTagWithoutFullText(
+      childElement,
+      childText,
+      selectedText,
+      { cssProp, value },
+      points,
+    );
+  }
 
   if (!isChild) return finalElement;
 
