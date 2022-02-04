@@ -1,7 +1,10 @@
-import cases from 'utils/formattingCases';
 import specialFunctions from 'utils/specialTags';
+import { tagFormat, styleFormat } from 'utils/formattingCases';
 import { Property } from 'utils/properties';
-import multipleNodesSelectionFunctions from './multipleNodesSelectionFunctions';
+import {
+  differentParents,
+  sameParents,
+} from './multipleNodesSelectionFunctions';
 
 const formattingTypeSwtich = (
   child: ChildNode,
@@ -15,21 +18,18 @@ const formattingTypeSwtich = (
 ): string | Node => {
   switch (property.type) {
     case 'tag':
-      return cases.tag(child, selectedText, property.name, points);
+      return tagFormat(child, selectedText, property.name, points);
 
     case 'special':
       return specialFunctions.link(child, comparativeNode, selectedText);
 
     default: {
       const { code } = property;
-      const {
-        style: { hasTag, justText },
-      } = cases;
+      const { hasTag, justText } = styleFormat;
 
       if (child.nodeName === '#text') return justText(child, points, code);
 
       const element = child.firstChild?.parentElement as HTMLElement;
-
       return hasTag(element, selectedText, points, comparativeNode, code);
     }
   }
@@ -63,24 +63,16 @@ const getUpdatedNodes = (
 
   // Iterate through all children of the created text.
   const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
+    const isTextTag = child.nodeName === 'SPAN' || child.nodeName === '#text';
     const containersHaveSameParent =
-      startContainer !== endContainer &&
+      !isTextTag &&
       child.contains(startContainer) &&
       child.contains(endContainer);
 
     if (containersHaveSameParent) {
-      const {
-        sameParents: { tagType, otherTypes },
-      } = multipleNodesSelectionFunctions;
-
-      if (property.type === 'tag') {
-        return tagType(child, property.name, points);
-      }
-
-      return otherTypes(child, property, clonedNodes, startContainer);
+      return sameParents(child, property, clonedNodes, startContainer);
     }
 
-    const { differentParents } = multipleNodesSelectionFunctions;
     const indexChildIsSelected = differentParents(
       { startContainer, endContainer },
       childrenArray,

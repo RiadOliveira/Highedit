@@ -277,10 +277,9 @@ const hasTag = (
   return element.outerHTML.replace(childContent, finalElement);
 };
 
-export default {
-  tag: tagFormat,
-  style: {
-    justText,
-    hasTag,
-  },
+const styleFormat = {
+  justText,
+  hasTag,
 };
+
+export { tagFormat, styleFormat };

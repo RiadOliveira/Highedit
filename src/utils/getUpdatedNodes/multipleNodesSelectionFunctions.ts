@@ -1,11 +1,5 @@
 import { Property } from 'utils/properties';
-import cases from '../formattingCases';
 import { formattingTypeSwtich } from '.';
-
-interface Selection {
-  start: number;
-  end: number;
-}
 
 interface Containers {
   startContainer: Node;
@@ -33,26 +27,7 @@ const differentParents = (
   return index >= startNodeIndex && index <= endNodeIndex;
 };
 
-// ------------
-// Same parents
-// ------------
-
-const tagType = (
-  child: ChildNode,
-  propertyName: string,
-  points: Selection,
-): string => {
-  const selectedContent = Array.from(child.childNodes)
-    .map(subChild => {
-      const subChildHTML = subChild.firstChild?.parentElement?.outerHTML;
-      return subChildHTML || subChild.textContent;
-    })
-    .join('');
-
-  return cases.tag(child, selectedContent, propertyName, points);
-};
-
-const otherTypes = (
+const sameParents = (
   child: ChildNode,
   property: Property,
   clonedNodes: NodeListOf<ChildNode>,
@@ -102,10 +77,4 @@ const otherTypes = (
   return updatedChild;
 };
 
-export default {
-  differentParents,
-  sameParents: {
-    tagType,
-    otherTypes,
-  },
-};
+export { differentParents, sameParents };
