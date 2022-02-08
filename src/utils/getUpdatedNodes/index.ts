@@ -42,18 +42,21 @@ const getSelectedNodes = (
         selection.containsNode(subChild, true),
       );
 
-      const iteratedClonedItem = clonedNodes.item(ind);
-      const allChildrenSelected = iteratedClonedItem.nodeName === node.nodeName;
+      const allChildrenSelected =
+        clonedNodes.item(ind).nodeName === node.nodeName;
 
       const children: SelectedNode[] = selectedChildren.map(
         (subChild, subInd) => {
-          const iteratedClonedItemChild =
-            iteratedClonedItem.childNodes.item(subInd);
+          const iteratedClonedItem = clonedNodes.item(ind);
+          let content = '';
 
-          const content =
-            (allChildrenSelected
-              ? iteratedClonedItemChild.textContent
-              : iteratedClonedItem.textContent) || '';
+          if (allChildrenSelected) {
+            const subClonedItem = iteratedClonedItem.childNodes.item(subInd);
+            content = subClonedItem.textContent || '';
+          } else {
+            content = iteratedClonedItem.textContent || '';
+            ind += 1;
+          }
 
           return {
             reference: subChild,
