@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import SideBarButton from 'components/SideBarButton';
 import properties, { Property, PropertyName } from 'utils/properties';
-import getUpdatedNodes from 'utils/getUpdatedNodes';
+import getUpdatedNodes from 'utils/getUpdatedNodes/index';
 import { useElement } from 'hooks/element';
 import { ButtonPair, Container } from './styles';
 
