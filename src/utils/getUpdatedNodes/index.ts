@@ -11,50 +11,64 @@ interface SelectionPoints {
 interface SelectedNode {
   reference: ChildNode;
   content: string;
-}
-
-interface SelectedNodeData {
-  selectedNodes: SelectedNode[];
-  childIndex: number;
+  children?: SelectedNode[];
 }
 
 const getSelectedNodes = (
   selection: Selection,
   childrenArray: ChildNode[],
-): SelectedNodeData => {
+): SelectedNode[] => {
   const range = selection.getRangeAt(0);
   const clonedNodes = range.cloneContents().childNodes;
-  const { startContainer, endContainer } = range;
 
-  const filterNodesBasedOnSelection = (nodeArray: ChildNode[]): ChildNode[] => {
-    return nodeArray.filter(node => selection.containsNode(node, true));
-  };
-
-  const filteredNodes: ChildNode[] = [];
-  const findedSelectedChildIndex = childrenArray.findIndex(
-    child =>
-      child !== startContainer &&
-      child.contains(startContainer) &&
-      child.contains(endContainer),
+  const filteredNodes: ChildNode[] = childrenArray.filter(node =>
+    selection.containsNode(node, true),
   );
 
-  if (findedSelectedChildIndex !== -1) {
-    const subChildrenArray = Array.from(
-      childrenArray[findedSelectedChildIndex].childNodes,
-    );
+  const parsedNodes: SelectedNode[] = [];
 
-    filteredNodes.push(...filterNodesBasedOnSelection(subChildrenArray));
-  } else filteredNodes.push(...filterNodesBasedOnSelection(childrenArray));
+  for (let ind = 0; ind < filteredNodes.length; ind++) {
+    const node = filteredNodes[ind];
+    const isTextTag = node.nodeName === 'SPAN' || node.nodeName === '#text';
 
-  const parsedNodes = filteredNodes.map((node, index) => ({
-    reference: node,
-    content: clonedNodes.item(index).textContent || '',
-  }));
+    const parsedNode: SelectedNode = {
+      reference: node,
+      content: '',
+    };
 
-  return {
-    selectedNodes: parsedNodes,
-    childIndex: findedSelectedChildIndex,
-  };
+    if (isTextTag) parsedNode.content = clonedNodes.item(ind).textContent || '';
+    else {
+      const selectedChildren = Array.from(node.childNodes).filter(subChild =>
+        selection.containsNode(subChild, true),
+      );
+
+      const iteratedClonedItem = clonedNodes.item(ind);
+      const allChildrenSelected = iteratedClonedItem.nodeName === node.nodeName;
+
+      const children: SelectedNode[] = selectedChildren.map(
+        (subChild, subInd) => {
+          const iteratedClonedItemChild =
+            iteratedClonedItem.childNodes.item(subInd);
+
+          const content =
+            (allChildrenSelected
+              ? iteratedClonedItemChild.textContent
+              : iteratedClonedItem.textContent) || '';
+
+          return {
+            reference: subChild,
+            content,
+          };
+        },
+      );
+
+      parsedNode.children = children;
+    }
+
+    parsedNodes.push(parsedNode);
+  }
+
+  return parsedNodes;
 };
 
 const formattingTypeSwtich = (
@@ -94,30 +108,22 @@ const getUpdatedNodes = (
 
   if (!selection.toString()) return childrenArray;
 
-  const { selectedNodes, childIndex } = getSelectedNodes(
-    selection,
-    childrenArray,
-  );
+  const selectedNodes = getSelectedNodes(selection, childrenArray);
   const initialSelectedNodePosition = childrenArray.findIndex(
     child => child === selectedNodes[0].reference,
   );
 
   // Iterate through all children of the created text.
   const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
-    const hasSubChildren = index === childIndex;
-
-    if (hasSubChildren) {
-      return subChildrenSelection(child, property, selectedNodes);
-    }
-
-    const indexChildIsSelected =
-      index >= initialSelectedNodePosition &&
-      index <= initialSelectedNodePosition + selectedNodes.length - 1;
-
-    if (!indexChildIsSelected) return child;
-
     const iterateSelectedNode =
       selectedNodes[index - initialSelectedNodePosition];
+
+    if (!iterateSelectedNode) return child;
+
+    const subChildren = iterateSelectedNode.children;
+    if (subChildren) {
+      return subChildrenSelection(child, property, subChildren);
+    }
 
     const comparativeNode =
       child.parentNode !== textRef ? child.parentNode : child;
