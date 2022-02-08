@@ -2,6 +2,7 @@ import specialFunctions from 'utils/specialTags';
 import { styleFormat } from 'utils/formattingCases/index';
 import { Property } from 'utils/properties';
 import subChildrenSelection from './subChildrenSelection';
+import getExtremeContentPoints from './auxiliaries/getExtremeContentPoints';
 
 interface SelectionPoints {
   start: number;
@@ -24,7 +25,6 @@ const getSelectedNodes = (
   const filteredNodes: ChildNode[] = childrenArray.filter(node =>
     selection.containsNode(node, true),
   );
-
   const parsedNodes: SelectedNode[] = [];
 
   for (let ind = 0; ind < filteredNodes.length; ind++) {
@@ -129,9 +129,23 @@ const getUpdatedNodes = (
       child.parentNode !== textRef ? child.parentNode : child;
 
     const { content, reference } = iterateSelectedNode;
-    const start = reference.textContent?.indexOf(content) || 0;
-    const end = start + content.length;
-    const points = { start, end };
+
+    const points = (() => {
+      if (selectedNodes.length === 1) {
+        const { anchorOffset: start, focusOffset: end } = selection;
+
+        return {
+          start,
+          end,
+        };
+      }
+
+      return getExtremeContentPoints(
+        content,
+        reference.textContent || '',
+        index === initialSelectedNodePosition,
+      );
+    })();
 
     return formattingTypeSwtich(
       child,
