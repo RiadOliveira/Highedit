@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import SideBarButton from 'components/SideBarButton';
 import properties, { Property, PropertyName } from 'utils/properties';
 import getUpdatedNodes from 'utils/getUpdatedNodes/index';
+import generateElementsUsingArrayPositions2By2 from 'utils/generateElementsUsingArrayPositions2By2';
 import { useElement } from 'hooks/element';
 import { ButtonPair, Container } from './styles';
 
@@ -37,18 +38,16 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
       if (isChild) elementStyle += parentElement?.getAttribute('style') || '';
 
       // Gets all style props that a text has.
-      properties.forEach(subprops =>
-        subprops.forEach(property => {
-          if (property.type === 'style') {
-            const {
-              name,
-              code: { value },
-            } = property;
+      properties.forEach(property => {
+        if (property.type === 'style') {
+          const {
+            name,
+            code: { value },
+          } = property;
 
-            if (elementStyle?.includes(value)) props.push(name);
-          }
-        }),
-      );
+          if (elementStyle?.includes(value)) props.push(name);
+        }
+      });
 
       setActiveProps(props);
     }
@@ -68,19 +67,19 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
   return (
     <Container>
-      {properties.map(positions => (
-        <ButtonPair key={positions[0].name + positions[1].name}>
-          {positions.map((position: Property) => (
-            <SideBarButton
-              key={position.name}
-              name={position.name}
-              Icon={position.icon || position.name}
-              active={activeProps.includes(position.name as PropertyName)}
-              onClick={() => handleButtonClick(position)}
-            />
-          ))}
-        </ButtonPair>
-      ))}
+      {generateElementsUsingArrayPositions2By2(
+        properties,
+        ButtonPair,
+        property => (
+          <SideBarButton
+            key={property.name}
+            name={property.name}
+            Icon={property.icon || property.name}
+            active={activeProps.includes(property.name as PropertyName)}
+            onClick={() => handleButtonClick(property)}
+          />
+        ),
+      )}
     </Container>
   );
 };

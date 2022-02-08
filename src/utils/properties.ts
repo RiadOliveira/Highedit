@@ -54,166 +54,149 @@ export type Property =
 
 export default [
   // All possibly buttons of the app (Separated in arrays in order to facilitate exhibition)
-  [
-    {
-      name: 'h1',
-      type: 'style',
-      code: {
-        cssProp: 'font-size',
-        value: '42px',
-      },
+  {
+    name: 'h1',
+    type: 'style',
+    code: {
+      cssProp: 'font-size',
+      value: '42px',
     },
-    {
-      name: 'h2',
-      type: 'style',
-      code: {
-        cssProp: 'font-size',
-        value: '36px',
-      },
+  },
+  {
+    name: 'h2',
+    type: 'style',
+    code: {
+      cssProp: 'font-size',
+      value: '36px',
     },
-  ],
-  [
-    {
-      name: 'h3',
-      type: 'style',
-      code: {
-        cssProp: 'font-size',
-        value: '24px',
-      },
+  },
+  {
+    name: 'h3',
+    type: 'style',
+    code: {
+      cssProp: 'font-size',
+      value: '24px',
     },
-    {
-      name: 'h4',
-      type: 'style',
-      code: {
-        cssProp: 'font-size',
-        value: '16px',
-      },
+  },
+  {
+    name: 'h4',
+    type: 'style',
+    code: {
+      cssProp: 'font-size',
+      value: '16px',
     },
-  ],
-  [
-    {
-      name: 'a',
-      type: 'special',
-      icon: FaLink,
+  },
+  {
+    name: 'a',
+    type: 'special',
+    icon: FaLink,
+  },
+  {
+    name: 'img',
+    type: 'special',
+    icon: FaImage,
+  },
+  {
+    name: 'font',
+    type: 'special',
+    code: {
+      cssProp: 'font-family',
+      value: 'Arial',
     },
-    {
-      name: 'img',
-      type: 'special',
-      icon: FaImage,
+    icon: FaFont,
+  },
+  {
+    name: 'Aa',
+    type: 'special',
+    code: {
+      cssProp: 'font-size',
+      value: '42px',
     },
-  ],
-  [
-    {
-      name: 'font',
-      type: 'special',
-      code: {
-        cssProp: 'font-family',
-        value: 'Arial',
-      },
-      icon: FaFont,
+  },
+
+  {
+    name: 'b',
+    type: 'style',
+    code: {
+      cssProp: 'font-weight',
+      value: 'bold',
     },
-    {
-      name: 'Aa',
-      type: 'special',
-      code: {
-        cssProp: 'font-size',
-        value: '42px',
-      },
+    icon: FaBold,
+  },
+  {
+    name: 'i',
+    type: 'style',
+    code: {
+      cssProp: 'font-style',
+      value: 'italic',
     },
-  ],
-  [
-    {
-      name: 'b',
-      type: 'style',
-      code: {
-        cssProp: 'font-weight',
-        value: 'bold',
-      },
-      icon: FaBold,
+    icon: FaItalic,
+  },
+  {
+    name: 'u',
+    type: 'style',
+    code: {
+      cssProp: 'text-decoration',
+      value: 'underline',
     },
-    {
-      name: 'i',
-      type: 'style',
-      code: {
-        cssProp: 'font-style',
-        value: 'italic',
-      },
-      icon: FaItalic,
+    icon: FaUnderline,
+  },
+  {
+    name: 's',
+    type: 'style',
+    code: {
+      cssProp: 'text-decoration',
+      value: 'line-through',
     },
-  ],
-  [
-    {
-      name: 'u',
-      type: 'style',
-      code: {
-        cssProp: 'text-decoration',
-        value: 'underline',
-      },
-      icon: FaUnderline,
+    icon: FaStrikethrough,
+  },
+  {
+    name: 'center',
+    type: 'style',
+    code: {
+      cssProp: 'text-align',
+      value: 'center',
     },
-    {
-      name: 's',
-      type: 'style',
-      code: {
-        cssProp: 'text-decoration',
-        value: 'line-through',
-      },
-      icon: FaStrikethrough,
+    icon: FaAlignCenter,
+  },
+  {
+    name: 'justify',
+    type: 'style',
+    code: {
+      cssProp: 'text-align',
+      value: 'justify',
     },
-  ],
-  [
-    {
-      name: 'center',
-      type: 'style',
-      code: {
-        cssProp: 'text-align',
-        value: 'center',
-      },
-      icon: FaAlignCenter,
+    icon: FaAlignJustify,
+  },
+  {
+    name: 'left',
+    type: 'style',
+    code: {
+      cssProp: 'text-align',
+      value: 'left',
     },
-    {
-      name: 'justify',
-      type: 'style',
-      code: {
-        cssProp: 'text-align',
-        value: 'justify',
-      },
-      icon: FaAlignJustify,
+    icon: FaAlignLeft,
+  },
+  {
+    name: 'right',
+    type: 'style',
+    code: {
+      cssProp: 'text-align',
+      value: 'right',
     },
-  ],
-  [
-    {
-      name: 'left',
-      type: 'style',
-      code: {
-        cssProp: 'text-align',
-        value: 'left',
-      },
-      icon: FaAlignLeft,
+    icon: FaAlignRight,
+  },
+  {
+    name: '#',
+    type: 'special',
+    code: {
+      cssProp: 'color',
+      value: 'blue',
     },
-    {
-      name: 'right',
-      type: 'style',
-      code: {
-        cssProp: 'text-align',
-        value: 'right',
-      },
-      icon: FaAlignRight,
-    },
-  ],
-  [
-    {
-      name: '#',
-      type: 'special',
-      code: {
-        cssProp: 'color',
-        value: 'blue',
-      },
-    },
-    {
-      name: 'save',
-      type: 'special',
-      icon: FaSave,
-    },
-  ],
-] as Property[][];
+  },
+  {
+    name: 'save',
+    type: 'special',
+    icon: FaSave,
+  },
+] as Property[];
