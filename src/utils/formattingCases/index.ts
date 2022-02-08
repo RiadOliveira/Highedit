@@ -1,6 +1,4 @@
-import replaceTagName from '../replaceTagName';
 import getContentTools from './auxiliaries/getContentTools';
-import getExtremePointsWithTemplate from './auxiliaries/getExtremePointsWithTemplate';
 import {
   withTagFullTextSelected,
   withTagPartOfTextSelected,
@@ -15,75 +13,6 @@ interface Code {
   cssProp: string;
   value: string;
 }
-
-const tagFormat = (
-  child: ChildNode,
-  selectedText: string,
-  propertyName: string,
-  { start, end }: Selection,
-): string => {
-  const childElement = child.firstChild?.parentElement;
-
-  const styles = childElement?.getAttribute('style');
-  const hasTag = child.nodeName !== '#text';
-
-  const childTagName = child.nodeName.toLowerCase();
-  const sameTagName = propertyName === childTagName;
-
-  const childText = child.textContent || '';
-  const childInnerHTML = childElement?.innerHTML || '';
-  const childOuterHTML = childElement?.outerHTML || '';
-
-  if (hasTag && selectedText.trim() !== childInnerHTML.trim()) {
-    // Part of tag's text, removing its tag.
-    const { updatedText, content } = getContentTools(child);
-
-    const element = child.firstChild?.parentElement as HTMLElement;
-    const template = element.outerHTML.replace(childInnerHTML, '?');
-    const { start: startText, end: endText } = getExtremePointsWithTemplate(
-      template,
-      content,
-      start,
-      end,
-    );
-
-    if (startText) updatedText.push(startText);
-
-    // Keep styles with another tag.
-    if (styles) {
-      const tagWhenRemove = styles?.includes('text-align') ? 'section' : 'span';
-      const tagName = sameTagName ? tagWhenRemove : propertyName;
-
-      updatedText.push(
-        template.replaceAll(childTagName, tagName).replace('?', selectedText),
-      );
-    } else updatedText.push(selectedText);
-
-    if (endText) updatedText.push(endText);
-    return updatedText.join('');
-  }
-
-  // All tag's text.
-  if (!hasTag) {
-    return childText.replace(
-      selectedText,
-      `<${propertyName}>${selectedText}</${propertyName}>`,
-    );
-  }
-
-  if (!sameTagName) {
-    return replaceTagName(childOuterHTML, childTagName, propertyName);
-  }
-
-  if (!styles) return selectedText;
-
-  const tagName = styles?.includes('text-align') ? 'section' : 'span';
-  return `<${tagName} style="${styles}">${selectedText}</${tagName}>`;
-};
-
-// -----------------
-// Styles formatting
-// -----------------
 
 const justText = (
   child: ChildNode,
@@ -153,4 +82,4 @@ const styleFormat = {
   withTag,
 };
 
-export { tagFormat, styleFormat };
+export { styleFormat };

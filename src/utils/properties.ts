@@ -16,8 +16,11 @@ import { IconType } from 'react-icons/lib';
 
 // # = color ; Aa = font-size ; save = save result of edition
 export type SpecialProperty = 'a' | 'img' | '#' | 'font' | 'Aa' | 'save';
-export type SelectableTag = 'h1' | 'h2' | 'h3' | 'h4';
 export type SelectableProp =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
   | 'b'
   | 'i'
   | 'u'
@@ -31,12 +34,7 @@ export type PropertyName = SpecialProperty | SelectableProp | SelectableProp;
 
 export type Property =
   | {
-      name: SelectableTag; // Tags Props (h1, h2, h3 and h4)
-      type: 'tag';
-      icon?: IconType;
-    }
-  | {
-      name: SelectableProp; // Styles props (bold, italic, align ...)
+      name: SelectableProp;
       type: 'style';
       code: {
         cssProp: string;
@@ -59,21 +57,37 @@ export default [
   [
     {
       name: 'h1',
-      type: 'tag',
+      type: 'style',
+      code: {
+        cssProp: 'font-size',
+        value: '42px',
+      },
     },
     {
       name: 'h2',
-      type: 'tag',
+      type: 'style',
+      code: {
+        cssProp: 'font-size',
+        value: '36px',
+      },
     },
   ],
   [
     {
       name: 'h3',
-      type: 'tag',
+      type: 'style',
+      code: {
+        cssProp: 'font-size',
+        value: '24px',
+      },
     },
     {
       name: 'h4',
-      type: 'tag',
+      type: 'style',
+      code: {
+        cssProp: 'font-size',
+        value: '16px',
+      },
     },
   ],
   [

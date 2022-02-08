@@ -1,5 +1,5 @@
 import specialFunctions from 'utils/specialTags';
-import { tagFormat, styleFormat } from 'utils/formattingCases/index';
+import { styleFormat } from 'utils/formattingCases/index';
 import { Property } from 'utils/properties';
 import subChildrenSelection from './subChildrenSelection';
 
@@ -82,9 +82,6 @@ const formattingTypeSwtich = (
   selectedText: string,
 ): string | Node => {
   switch (property.type) {
-    case 'tag':
-      return tagFormat(child, selectedText, property.name, points);
-
     case 'special':
       return specialFunctions.link(child, comparativeNode, selectedText);
 
