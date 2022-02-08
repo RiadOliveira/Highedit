@@ -54,6 +54,7 @@ const Main: React.FC = () => {
   const setUpdatedText = useCallback((updatedChildren: (Node | string)[]) => {
     const inputRef = textInputRef.current;
     if (inputRef) unifyAndSetElementChildren(updatedChildren, inputRef);
+    window.getSelection()?.setPosition(inputRef); // Reset position.
   }, []);
 
   const handleContentSelect = useCallback(

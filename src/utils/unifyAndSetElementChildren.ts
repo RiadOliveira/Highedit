@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+
 // Function to get text content of only text tags.
 const isText = (child: Node | string): string => {
   if (typeof child === 'string') return child;
@@ -10,16 +12,16 @@ const isText = (child: Node | string): string => {
 
 const unifyAndSetElementChildren = (
   updatedChildren: (Node | string)[],
-  element: Node,
+  element: HTMLElement,
 ): void => {
-  const elementHTML = element.firstChild?.parentElement as HTMLElement;
-  elementHTML.innerHTML = '';
+  element.innerHTML = '';
 
   for (let ind = 0; ind < updatedChildren.length; ind++) {
     const child = updatedChildren[ind];
     let finalText = isText(child);
 
-    if (finalText) {
+    if (!finalText) element.appendChild(child as Node);
+    else {
       // If has other tags with only text, and they aren't together.
       if (updatedChildren[ind + 1]) {
         for (let i = ind + 1; i < updatedChildren.length; i++, ind++) {
@@ -31,8 +33,8 @@ const unifyAndSetElementChildren = (
         }
       }
 
-      elementHTML.innerHTML += finalText;
-    } else element.appendChild(child as Node);
+      element.innerHTML += finalText;
+    }
   }
 };
 
