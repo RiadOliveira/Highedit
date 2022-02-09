@@ -1,5 +1,7 @@
 import { SelectedNode } from 'utils/getUpdatedNodes';
+import getContentFromChild from './getContentFromChild';
 import getExtremeTextsUsingPoints from './getExtremeTextsUsingPoints';
+import { getEndChildren, getStartChildren } from './getUnselectedSubChildren';
 
 interface Selection {
   start: number;
@@ -57,8 +59,41 @@ const childrenSelect = (
   return updatedContent.join('');
 };
 
-const subChildrenSelect = (): string => {
-  return '';
+const subChildrenSelect = (
+  selectedNode: SelectedNode,
+  propertyValue: string,
+): string => {
+  const nodeElement = selectedNode.reference.firstChild?.parentElement;
+  const previousAlign = nodeElement?.style.getPropertyValue('text-align');
+
+  if (!selectedNode.children || !previousAlign) return '';
+
+  const childrenArray = Array.from(selectedNode.reference.childNodes);
+  const { children: nodeChildren } = selectedNode;
+
+  const updatedElement: string[] = [];
+  const template = `<section style="text-align: ${previousAlign};">?</section>`;
+
+  const startChildren = getStartChildren({ childrenArray, nodeChildren });
+  if (startChildren) updatedElement.push(template.replace('?', startChildren));
+
+  const updatedContent = (() => {
+    const selectedChildren = nodeChildren
+      .map(({ reference }) => getContentFromChild(reference))
+      .join('');
+
+    if (propertyValue === previousAlign) return selectedChildren;
+
+    const updatedTemplate = template.replace(previousAlign, propertyValue);
+    return updatedTemplate.replace('?', selectedChildren);
+  })();
+
+  updatedElement.push(updatedContent);
+
+  const endChildren = getEndChildren({ childrenArray, nodeChildren });
+  if (endChildren) updatedElement.push(template.replace('?', endChildren));
+
+  return updatedElement.join('');
 };
 
 export { childSelect, childrenSelect, subChildrenSelect };

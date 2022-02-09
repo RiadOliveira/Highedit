@@ -29,7 +29,10 @@ const handleAlignProperty = (
     );
   }
 
-  if (selectedNode.children) return subChildrenSelect();
+  if (selectedNode.children) {
+    return subChildrenSelect(selectedNode, propertyValue);
+  }
+
   return childSelect(selectedNode, propertyValue, points);
 };
 
