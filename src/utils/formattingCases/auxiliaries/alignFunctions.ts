@@ -1,11 +1,6 @@
 import { SelectedNode } from 'utils/getUpdatedNodes';
 import getExtremeTextsUsingPoints from './getExtremeTextsUsingPoints';
 
-interface Code {
-  cssProp: string;
-  value: string;
-}
-
 interface Selection {
   start: number;
   end: number;
@@ -13,17 +8,17 @@ interface Selection {
 
 const childSelect = (
   { content, reference }: SelectedNode,
-  { cssProp, value }: Code,
+  propertyValue: string,
   points: Selection,
 ): string => {
   const referenceElement = reference.firstChild?.parentElement || undefined;
   const updatedContent: string[] = [];
 
   const updatedElement = document.createElement('section');
-  updatedElement.style.setProperty(cssProp, value);
+  updatedElement.style.setProperty('text-align', propertyValue);
 
   const { start, end, template } = getExtremeTextsUsingPoints(
-    content,
+    reference.textContent || '',
     points,
     referenceElement,
   );
@@ -38,11 +33,28 @@ const childSelect = (
 };
 
 const childrenSelect = (
-  selectedNodes: SelectedNode[],
-  points: Selection,
-  { value }: Code,
+  selectedNode: SelectedNode,
+  initialPosition: boolean,
+  finalPosition: boolean,
+  propertyValue: string,
 ): string => {
-  return '';
+  const updatedContent: string[] = [];
+  const { reference } = selectedNode;
+
+  if (initialPosition) {
+    updatedContent.push(`<section style="text-align: ${propertyValue};">`);
+  }
+
+  const referenceHTML = reference.firstChild?.parentElement;
+  const childContent = (() => {
+    if (reference.nodeName === 'SECTION') return referenceHTML?.innerHTML;
+    if (reference.nodeName === 'SPAN') return referenceHTML?.outerHTML;
+    return selectedNode.content;
+  })();
+  updatedContent.push(childContent || '');
+
+  if (finalPosition) updatedContent.push('</section>');
+  return updatedContent.join('');
 };
 
 const subChildrenSelect = (): string => {

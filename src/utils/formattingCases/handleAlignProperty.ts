@@ -10,22 +10,27 @@ interface Selection {
   end: number;
 }
 
-interface Code {
-  cssProp: string;
-  value: string;
-}
-
 const handleAlignProperty = (
-  selectedNodes: SelectedNode[],
+  selectedNode: SelectedNode,
+  selectedNodesLength: number,
+  selectedNodePosition: number,
   points: Selection,
-  code: Code,
+  propertyValue: string,
 ): string | Node => {
-  const { length } = selectedNodes;
+  if (selectedNodesLength > 1) {
+    const initialPosition = !selectedNodePosition;
+    const finalPosition = selectedNodePosition === selectedNodesLength - 1;
 
-  if (length > 1) return childrenSelect(selectedNodes, points, code);
-  if (selectedNodes[0].children) return subChildrenSelect();
+    return childrenSelect(
+      selectedNode,
+      initialPosition,
+      finalPosition,
+      propertyValue,
+    );
+  }
 
-  return childSelect(selectedNodes[0], code, points);
+  if (selectedNode.children) return subChildrenSelect();
+  return childSelect(selectedNode, propertyValue, points);
 };
 
 export default handleAlignProperty;
