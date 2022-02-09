@@ -1,14 +1,17 @@
+interface Selection {
+  start: number;
+  end: number;
+}
+
 // Used when removes a style/tag on some part of text.
-const getExtremePointsWithTemplate = (
-  template: HTMLElement | string,
+const getExtremeTextsUsingPoints = (
   content: string,
-  start: number,
-  end: number,
-): { start: string; end: string } => {
-  const verifiedTemplate =
-    typeof template === 'string'
-      ? template
-      : template.outerHTML.replace(template.innerText, '?');
+  { start, end }: Selection,
+  template?: HTMLElement,
+): { start: string; end: string; template: string } => {
+  const verifiedTemplate = template
+    ? template.outerHTML.replace(template.innerText, '?')
+    : '?';
 
   const finalTexts = {
     start: '',
@@ -25,7 +28,7 @@ const getExtremePointsWithTemplate = (
     finalTexts.end = verifiedTemplate.replace('?', endText);
   }
 
-  return finalTexts;
+  return { template: verifiedTemplate, ...finalTexts };
 };
 
-export default getExtremePointsWithTemplate;
+export default getExtremeTextsUsingPoints;

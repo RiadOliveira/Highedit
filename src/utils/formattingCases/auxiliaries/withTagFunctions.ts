@@ -1,4 +1,4 @@
-import getExtremePointsWithTemplate from './getExtremePointsWithTemplate';
+import getExtremeTextsUsingPoints from './getExtremeTextsUsingPoints';
 
 interface Code {
   cssProp: string;
@@ -16,14 +16,11 @@ interface HandleWithTagFunctionProps {
   code: Code;
 }
 
-const withTagFullTextSelected = (
-  isAlign: boolean,
-  {
-    childElement: element,
-    childText,
-    code: { cssProp, value },
-  }: HandleWithTagFunctionProps,
-): string => {
+const fullTextSelected = ({
+  childElement: element,
+  childText,
+  code: { cssProp, value },
+}: HandleWithTagFunctionProps): string => {
   // All text of the tag.
   const { nodeName, style } = element;
   const hasProp = style.getPropertyValue(cssProp);
@@ -36,36 +33,24 @@ const withTagFullTextSelected = (
     const isEmptyTag = !element.getAttribute('style') && verifyEmptyTag;
 
     if (isEmptyTag) return childText;
-  } else {
-    if (isAlign && (nodeName === 'SPAN' || nodeName === 'A')) {
-      const updatedElement = document.createElement('section');
-
-      updatedElement.style.setProperty(cssProp, value);
-      updatedElement.appendChild(element);
-
-      return updatedElement.outerHTML;
-    }
-
-    style.setProperty(cssProp, value);
-  }
+  } else style.setProperty(cssProp, value);
 
   return element.outerHTML;
 };
 
-const withTagPartOfTextSelected = (
+const partOfTextSelected = (
   selectedText: string,
   {
     childElement,
     childText,
     code: { cssProp, value },
   }: HandleWithTagFunctionProps,
-  { start, end }: Selection,
+  points: Selection,
 ): string => {
-  const { start: startText, end: endText } = getExtremePointsWithTemplate(
-    childElement,
+  const { start: startText, end: endText } = getExtremeTextsUsingPoints(
     childText,
-    start,
-    end,
+    points,
+    childElement,
   );
 
   const { style } = childElement;
@@ -77,13 +62,11 @@ const withTagPartOfTextSelected = (
 
   if (!childStyles) return `${startText}${selectedText}${endText}`;
 
-  const tagName = cssProp === 'text-align' ? 'section' : 'span';
-
-  const updatedElement = document.createElement(tagName);
+  const updatedElement = document.createElement('span');
   updatedElement.innerText = selectedText;
   updatedElement.setAttribute('style', childStyles);
 
   return `${startText}${updatedElement.outerHTML}${endText}`;
 };
 
-export { withTagFullTextSelected, withTagPartOfTextSelected };
+export { fullTextSelected, partOfTextSelected };

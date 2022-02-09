@@ -2,7 +2,7 @@ import { Property } from 'utils/properties';
 import { formattingTypeSwtich, SelectedNode } from '.';
 import getExtremeContentPoints from './auxiliaries/getExtremeContentPoints';
 
-const subChildrenSelection = (
+const selectionWithSubTags = (
   child: ChildNode,
   property: Property,
   selectedNodes: SelectedNode[],
@@ -10,12 +10,6 @@ const subChildrenSelection = (
   let updatedChild: string | Node = child;
 
   selectedNodes.forEach(({ content, reference }, index) => {
-    if (typeof updatedChild === 'string') {
-      const element = document.createElement('template');
-      element.innerHTML = updatedChild;
-      updatedChild = element.content;
-    }
-
     const points = getExtremeContentPoints(
       content,
       reference.textContent || '',
@@ -34,4 +28,4 @@ const subChildrenSelection = (
   return updatedChild;
 };
 
-export default subChildrenSelection;
+export default selectionWithSubTags;

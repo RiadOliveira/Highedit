@@ -1,8 +1,8 @@
-import getContentTools from './auxiliaries/getContentTools';
+import getExtremeTextsUsingPoints from './auxiliaries/getExtremeTextsUsingPoints';
 import {
-  withTagFullTextSelected,
-  withTagPartOfTextSelected,
-} from './auxiliaries/withTagStyleFunctions';
+  fullTextSelected,
+  partOfTextSelected,
+} from './auxiliaries/withTagFunctions';
 
 interface Selection {
   start: number;
@@ -19,19 +19,21 @@ const justText = (
   { start, end }: Selection,
   { cssProp, value }: Code,
 ): string => {
-  const { updatedText, content } = getContentTools(child);
+  const updatedText: string[] = [];
+  const content = child.textContent || '';
 
-  if (start !== 0) updatedText.push(content.slice(0, start));
-
-  const tagName = cssProp === 'text-align' ? 'section' : 'span';
-
-  updatedText.push(
-    `<${tagName} style="${cssProp}:${value};">${content.slice(
-      start,
-      end,
-    )}</${tagName}>`,
+  const { start: startText, end: endText } = getExtremeTextsUsingPoints(
+    content,
+    { start, end },
   );
-  updatedText.push(content.slice(end));
+
+  const updatedElement = document.createElement('span');
+  updatedElement.style.setProperty(cssProp, value);
+  updatedElement.innerText = content.slice(start, end);
+
+  if (startText) updatedText.push(startText);
+  updatedText.push(updatedElement.outerHTML);
+  if (endText) updatedText.push(endText);
 
   return updatedText.join('');
 };
@@ -46,17 +48,16 @@ const withTag = (
   const getFinalElement = (childElement: HTMLElement) => {
     const childText = comparativeNode.textContent || '';
     const isTextTag = comparativeNode.nodeName === 'SPAN';
-    const isAlign = code.cssProp === 'text-align';
 
     const handleWithTagProps = {
       childElement,
       childText,
       code,
     };
-    const isFullText = selectedText === childText && (isTextTag || isAlign);
+    const isFullText = selectedText === childText && isTextTag;
 
-    if (isFullText) return withTagFullTextSelected(isAlign, handleWithTagProps);
-    return withTagPartOfTextSelected(selectedText, handleWithTagProps, points);
+    if (isFullText) return fullTextSelected(handleWithTagProps);
+    return partOfTextSelected(selectedText, handleWithTagProps, points);
   };
 
   if (element.nodeName === 'SPAN') return getFinalElement(element);

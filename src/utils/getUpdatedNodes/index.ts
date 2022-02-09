@@ -1,7 +1,8 @@
 import specialFunctions from 'utils/specialTags';
 import { styleFormat } from 'utils/formattingCases/index';
 import { Property } from 'utils/properties';
-import subChildrenSelection from './subChildrenSelection';
+import handleAlignProperty from 'utils/formattingCases/handleAlignProperty';
+import selectionWithSubTags from './selectionWithSubTags';
 import getExtremeContentPoints from './auxiliaries/getExtremeContentPoints';
 
 interface SelectionPoints {
@@ -42,15 +43,14 @@ const getSelectedNodes = (
         selection.containsNode(subChild, true),
       );
 
-      const allChildrenSelected =
-        clonedNodes.item(ind).nodeName === node.nodeName;
+      const onlyClonedNode = clonedNodes.item(ind).nodeName !== node.nodeName;
 
       const children: SelectedNode[] = selectedChildren.map(
         (subChild, subInd) => {
           const iteratedClonedItem = clonedNodes.item(ind);
           let content = '';
 
-          if (allChildrenSelected) {
+          if (!onlyClonedNode) {
             const subClonedItem = iteratedClonedItem.childNodes.item(subInd);
             content = subClonedItem.textContent || '';
           } else {
@@ -120,14 +120,6 @@ const getUpdatedNodes = (
 
     if (!iterateSelectedNode) return child;
 
-    const subChildren = iterateSelectedNode.children;
-    if (subChildren) {
-      return subChildrenSelection(child, property, subChildren);
-    }
-
-    const comparativeNode =
-      child.parentNode !== textRef ? child.parentNode : child;
-
     const { content, reference } = iterateSelectedNode;
 
     const points = (() => {
@@ -146,6 +138,18 @@ const getUpdatedNodes = (
         index === initialSelectedNodePosition,
       );
     })();
+
+    if (property.code?.cssProp === 'text-align') {
+      return handleAlignProperty(selectedNodes, points, property.code);
+    }
+
+    const subChildren = iterateSelectedNode.children;
+    if (subChildren) {
+      return selectionWithSubTags(child, property, subChildren);
+    }
+
+    const comparativeNode =
+      child.parentNode !== textRef ? child.parentNode : child;
 
     return formattingTypeSwtich(
       child,
