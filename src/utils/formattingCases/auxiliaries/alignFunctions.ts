@@ -1,17 +1,13 @@
 import { SelectedNode } from 'utils/getUpdatedNodes';
 import getContentFromChild from './getContentFromChild';
 import getExtremeTextsUsingPoints from './getExtremeTextsUsingPoints';
+import { SelectionPoints } from '..';
 import { getEndChildren, getStartChildren } from './getUnselectedSubChildren';
-
-interface Selection {
-  start: number;
-  end: number;
-}
 
 const childSelect = (
   { content, reference }: SelectedNode,
   propertyValue: string,
-  points: Selection,
+  points: SelectionPoints,
 ): string => {
   const referenceElement = reference.firstChild?.parentElement || undefined;
   const updatedContent: string[] = [];

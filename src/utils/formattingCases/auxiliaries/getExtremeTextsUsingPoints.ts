@@ -1,12 +1,9 @@
-interface Selection {
-  start: number;
-  end: number;
-}
+import { SelectionPoints } from '..';
 
 // Used when removes a style/tag on some part of text.
 const getExtremeTextsUsingPoints = (
   content: string,
-  { start, end }: Selection,
+  { start, end }: SelectionPoints,
   template?: HTMLElement,
 ): { start: string; end: string; template: string } => {
   const verifiedTemplate = template

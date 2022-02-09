@@ -1,14 +1,5 @@
+import { Code, SelectionPoints } from '..';
 import getExtremeTextsUsingPoints from './getExtremeTextsUsingPoints';
-
-interface Code {
-  cssProp: string;
-  value: string;
-}
-
-interface Selection {
-  start: number;
-  end: number;
-}
 
 interface HandleWithTagFunctionProps {
   childElement: HTMLElement;
@@ -45,7 +36,7 @@ const partOfTextSelected = (
     childText,
     code: { cssProp, value },
   }: HandleWithTagFunctionProps,
-  points: Selection,
+  points: SelectionPoints,
 ): string => {
   const { start: startText, end: endText } = getExtremeTextsUsingPoints(
     childText,

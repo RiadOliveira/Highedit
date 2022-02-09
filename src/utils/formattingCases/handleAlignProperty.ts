@@ -1,22 +1,18 @@
 import { SelectedNode } from 'utils/getUpdatedNodes';
+import { SelectionPoints } from '.';
 import {
   childSelect,
   childrenSelect,
   subChildrenSelect,
 } from './auxiliaries/alignFunctions';
 
-interface Selection {
-  start: number;
-  end: number;
-}
-
 const handleAlignProperty = (
   selectedNode: SelectedNode,
   selectedNodesLength: number,
   selectedNodePosition: number,
-  points: Selection,
+  points: SelectionPoints,
   propertyValue: string,
-): string | Node => {
+): string => {
   if (selectedNodesLength > 1) {
     const initialPosition = !selectedNodePosition;
     const finalPosition = selectedNodePosition === selectedNodesLength - 1;

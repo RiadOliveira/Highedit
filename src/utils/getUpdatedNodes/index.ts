@@ -1,14 +1,9 @@
 import specialFunctions from 'utils/specialTags';
-import { styleFormat } from 'utils/formattingCases/index';
+import { SelectionPoints, styleFormat } from 'utils/formattingCases/index';
 import { Property } from 'utils/properties';
 import handleAlignProperty from 'utils/formattingCases/handleAlignProperty';
 import selectionWithSubTags from './selectionWithSubTags';
 import getExtremeContentPoints from './auxiliaries/getExtremeContentPoints';
-
-interface SelectionPoints {
-  start: number;
-  end: number;
-}
 
 interface SelectedNode {
   reference: ChildNode;

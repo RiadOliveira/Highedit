@@ -4,7 +4,7 @@ import {
   partOfTextSelected,
 } from './auxiliaries/withTagFunctions';
 
-interface Selection {
+interface SelectionPoints {
   start: number;
   end: number;
 }
@@ -16,7 +16,7 @@ interface Code {
 
 const justText = (
   child: ChildNode,
-  { start, end }: Selection,
+  { start, end }: SelectionPoints,
   { cssProp, value }: Code,
 ): string => {
   const updatedText: string[] = [];
@@ -41,7 +41,7 @@ const justText = (
 const withTag = (
   element: HTMLElement,
   selectedText: string,
-  points: Selection,
+  points: SelectionPoints,
   comparativeNode: Node,
   code: Code,
 ): string | Node => {
@@ -84,3 +84,4 @@ const styleFormat = {
 };
 
 export { styleFormat };
+export type { SelectionPoints, Code };
