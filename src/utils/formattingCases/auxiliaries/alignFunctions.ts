@@ -16,19 +16,16 @@ const childSelect = (
   { cssProp, value }: Code,
   points: Selection,
 ): string => {
-  const parentElement = reference.parentElement as HTMLElement;
+  const referenceElement = reference.firstChild?.parentElement || undefined;
   const updatedContent: string[] = [];
 
   const updatedElement = document.createElement('section');
   updatedElement.style.setProperty(cssProp, value);
 
-  const tagTemplate =
-    parentElement.nodeName === 'SPAN' ? parentElement : undefined;
-
   const { start, end, template } = getExtremeTextsUsingPoints(
     content,
     points,
-    tagTemplate,
+    referenceElement,
   );
 
   updatedElement.innerHTML = template.replace('?', content);
