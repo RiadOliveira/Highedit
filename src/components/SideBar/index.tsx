@@ -17,35 +17,33 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
   // To handle selection change and highlight props of selected text.
   useEffect(() => {
-    if (selectedElement && selectedElement.nodeName !== 'text') {
-      const props: PropertyName[] = [];
-      const { parentElement, firstChild, nodeName } = selectedElement;
+    if (!selectedElement) return;
 
-      // To verify and get tags applied and highlighted it (Except section and span).
-      if (nodeName !== 'SPAN' && nodeName !== 'SECTION') {
-        props.push(nodeName.toLowerCase() as PropertyName);
+    const props: PropertyName[] = [];
+    const textInput = inputRef.current;
+    const { parentElement, firstChild, nodeName } = selectedElement;
+
+    const isSpecialTag = nodeName !== 'SPAN' && nodeName !== 'SECTION';
+    if (isSpecialTag) props.push(nodeName.toLowerCase() as PropertyName);
+
+    const isChild = parentElement !== textInput || firstChild?.nodeName === 'A';
+    if (isChild) props.push(firstChild?.nodeName.toLowerCase() as PropertyName);
+
+    const elementStyle = firstChild?.parentElement?.getAttribute('style');
+
+    // Gets all style props that a text has.
+    properties.forEach(property => {
+      if (property.type === 'style') {
+        const {
+          name,
+          code: { value },
+        } = property;
+
+        if (elementStyle?.includes(value)) props.push(name);
       }
+    });
 
-      let elementStyle = firstChild?.parentElement?.getAttribute('style');
-      const isChild = selectedElement.parentElement !== inputRef.current;
-
-      // To get parent's styles highlighted too.
-      if (isChild) elementStyle += parentElement?.getAttribute('style') || '';
-
-      // Gets all style props that a text has.
-      properties.forEach(property => {
-        if (property.type === 'style') {
-          const {
-            name,
-            code: { value },
-          } = property;
-
-          if (elementStyle?.includes(value)) props.push(name);
-        }
-      });
-
-      setActiveProps(props);
-    }
+    setActiveProps(props);
   }, [inputRef, selectedElement]);
 
   const handleButtonClick = useCallback(

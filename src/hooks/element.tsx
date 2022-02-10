@@ -1,17 +1,17 @@
 import React, { createContext, useContext, useState } from 'react';
 
 interface IElementContext {
-  selectedElement?: ChildNode;
-  updateElement: (element?: ChildNode) => void;
+  selectedElement?: Node;
+  updateElement: (element?: Node) => void;
 }
 
 const elementContext = createContext<IElementContext>({} as IElementContext);
 
 const ElementContext: React.FC = ({ children }) => {
-  const [selectedElement, setSelectedElement] = useState<ChildNode | undefined>(
+  const [selectedElement, setSelectedElement] = useState<Node | undefined>(
     undefined,
   );
-  const updateElement = (element?: ChildNode) => setSelectedElement(element);
+  const updateElement = (element?: Node) => setSelectedElement(element);
 
   return (
     <elementContext.Provider value={{ selectedElement, updateElement }}>

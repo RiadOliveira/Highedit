@@ -58,45 +58,26 @@ const Main: React.FC = () => {
     window.getSelection()?.setPosition(inputRef); // Reset position.
   }, []);
 
-  const handleContentSelect = useCallback(
-    (nodes: ChildNode[]) => {
-      const selection = window.getSelection();
-      const textRef = textInputRef.current;
+  const handleContentSelect = useCallback(() => {
+    const { anchorNode } = window.getSelection() as Selection;
+    const { nodeName, parentNode } = anchorNode as Node;
 
-      if (selection && textRef) {
-        const parentNode = selection.anchorNode?.parentNode;
+    if (nodeName === 'PRE') return; // Initial Selection.
+    if (nodeName === '#text' && parentNode?.nodeName === 'PRE') return;
 
-        // Gets selectedNode without error.
-        const comparativeNode: Node | null | undefined =
-          parentNode !== textRef ? parentNode : selection.anchorNode;
+    const textRef = textInputRef.current;
 
-        let findedNode: ChildNode | undefined;
+    if (textRef) {
+      const selectedNode = (() => {
+        if (parentNode?.nodeName !== 'A') return parentNode;
 
-        // eslint-disable-next-line no-restricted-syntax
-        for (const node of nodes) {
-          // Loop to find which node is (Can be child).
-          if (node === comparativeNode) {
-            findedNode = node;
-            break;
-          }
+        return parentNode.parentNode;
+      })() as Node;
 
-          // In case that the element is a child of the node.
-          const childNode = Array.from(node.childNodes).find(
-            child => child === comparativeNode,
-          );
-
-          if (childNode) {
-            findedNode = childNode;
-            break;
-          }
-        }
-
-        // If it's a different element, update it.
-        if (findedNode !== selectedElement) updateElement(findedNode);
-      }
-    },
-    [selectedElement, updateElement],
-  );
+      // If it's a different element, update it.
+      if (selectedNode !== selectedElement) updateElement(selectedNode);
+    }
+  }, [selectedElement, updateElement]);
 
   const enterPressWithContent = (
     { childrenArray, selection, node }: EnterPressHandlersProps,
@@ -231,9 +212,7 @@ const Main: React.FC = () => {
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           onKeyDown={({ key }) => handleLineChange(key)}
-          onSelect={({ currentTarget: { childNodes } }) =>
-            handleContentSelect(Array.from(childNodes))
-          }
+          onSelect={handleContentSelect}
         />
       </EditableArea>
 
