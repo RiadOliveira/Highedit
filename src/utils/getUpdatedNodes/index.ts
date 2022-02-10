@@ -1,9 +1,11 @@
-import specialFunctions from 'utils/specialTags';
 import { SelectionPoints, styleFormat } from 'utils/formattingCases/index';
 import { Property } from 'utils/properties';
+
+import specialFunctions from 'utils/specialTags';
 import handleAlignProperty from 'utils/formattingCases/handleAlignProperty';
 import selectionWithSubTags from './selectionWithSubTags';
 import getExtremeContentPoints from './auxiliaries/getExtremeContentPoints';
+import getParsedNodeChildren from './auxiliaries/getParsedNodeChildren';
 
 interface SelectedNode {
   reference: ChildNode;
@@ -34,33 +36,15 @@ const getSelectedNodes = (
 
     if (isTextTag) parsedNode.content = clonedNodes.item(ind).textContent || '';
     else {
-      const selectedChildren = Array.from(node.childNodes).filter(subChild =>
-        selection.containsNode(subChild, true),
-      );
-
-      const onlyClonedNode = clonedNodes.item(ind).nodeName !== node.nodeName;
-
-      const children: SelectedNode[] = selectedChildren.map(
-        (subChild, subInd) => {
-          const iteratedClonedItem = clonedNodes.item(ind);
-          let content = '';
-
-          if (!onlyClonedNode) {
-            const subClonedItem = iteratedClonedItem.childNodes.item(subInd);
-            content = subClonedItem.textContent || '';
-          } else {
-            content = iteratedClonedItem.textContent || '';
-            ind += 1;
-          }
-
-          return {
-            reference: subChild,
-            content,
-          };
-        },
+      const { children, indexAddition } = getParsedNodeChildren(
+        node,
+        selection,
+        clonedNodes,
+        ind,
       );
 
       parsedNode.children = children;
+      ind += indexAddition;
     }
 
     parsedNodes.push(parsedNode);
@@ -116,7 +100,6 @@ const getUpdatedNodes = (
     if (!iterateSelectedNode) return child;
 
     const { content, reference } = iterateSelectedNode;
-
     const points = (() => {
       if (selectedNodes.length === 1) {
         const { anchorOffset: start, focusOffset: end } = selection;
