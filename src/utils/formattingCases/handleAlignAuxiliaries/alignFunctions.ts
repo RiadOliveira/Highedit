@@ -1,14 +1,21 @@
 import { SelectedNode } from 'utils/getUpdatedNodes';
-import getContentFromChild from './getContentFromChild';
-import getExtremeTextsUsingPoints from './getExtremeTextsUsingPoints';
 import { SelectionPoints } from '..';
-import { getEndChildren, getStartChildren } from './getUnselectedSubChildren';
+import { getStartChildren, getEndChildren } from './getUnselectedSubChildren';
 
-const childSelect = (
-  { content, reference }: SelectedNode,
-  propertyValue: string,
-  points: SelectionPoints,
-): string => {
+import getExtremeTextsUsingPoints from '../auxiliaries/getExtremeTextsUsingPoints';
+import getUpdatedContentForAlignProperty from './getUpdatedContentForAlignProperty';
+
+interface OneSelectedNodeProps {
+  selectedNode: SelectedNode;
+  propertyValue: string;
+  points: SelectionPoints;
+}
+
+const childSelect = ({
+  selectedNode: { content, reference },
+  propertyValue,
+  points,
+}: OneSelectedNodeProps): string => {
   const referenceElement = reference.firstChild?.parentElement || undefined;
   const updatedContent: string[] = [];
 
@@ -55,10 +62,11 @@ const childrenSelect = (
   return updatedContent.join('');
 };
 
-const subChildrenSelect = (
-  selectedNode: SelectedNode,
-  propertyValue: string,
-): string => {
+const subChildrenSelect = ({
+  selectedNode,
+  propertyValue,
+  points,
+}: OneSelectedNodeProps): string => {
   const nodeElement = selectedNode.reference.firstChild?.parentElement;
   const previousAlign = nodeElement?.style.getPropertyValue('text-align');
 
@@ -73,16 +81,13 @@ const subChildrenSelect = (
   const startChildren = getStartChildren({ childrenArray, nodeChildren });
   if (startChildren) updatedElement.push(template.replace('?', startChildren));
 
-  const updatedContent = (() => {
-    const selectedChildren = nodeChildren
-      .map(({ reference }) => getContentFromChild(reference))
-      .join('');
-
-    if (propertyValue === previousAlign) return selectedChildren;
-
-    const updatedTemplate = template.replace(previousAlign, propertyValue);
-    return updatedTemplate.replace('?', selectedChildren);
-  })();
+  const updatedContent = getUpdatedContentForAlignProperty(
+    nodeChildren,
+    propertyValue,
+    previousAlign,
+    template,
+    points,
+  );
 
   updatedElement.push(updatedContent);
 

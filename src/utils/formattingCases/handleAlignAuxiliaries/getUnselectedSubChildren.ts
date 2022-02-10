@@ -1,5 +1,5 @@
 import { SelectedNode } from 'utils/getUpdatedNodes';
-import getContentFromChild from './getContentFromChild';
+import getContentFromChild from '../auxiliaries/getContentFromChild';
 
 interface GetUnselectedSubChildrenFunctionsProps {
   nodeChildren: SelectedNode[];

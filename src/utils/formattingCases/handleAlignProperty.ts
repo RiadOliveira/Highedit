@@ -4,7 +4,7 @@ import {
   childSelect,
   childrenSelect,
   subChildrenSelect,
-} from './auxiliaries/alignFunctions';
+} from './handleAlignAuxiliaries/alignFunctions';
 
 const handleAlignProperty = (
   selectedNode: SelectedNode,
@@ -25,11 +25,14 @@ const handleAlignProperty = (
     );
   }
 
-  if (selectedNode.children) {
-    return subChildrenSelect(selectedNode, propertyValue);
-  }
+  const oneSelectedNodeProps = {
+    selectedNode,
+    propertyValue,
+    points,
+  };
 
-  return childSelect(selectedNode, propertyValue, points);
+  if (selectedNode.children) return subChildrenSelect(oneSelectedNodeProps);
+  return childSelect(oneSelectedNodeProps);
 };
 
 export default handleAlignProperty;
