@@ -19,7 +19,12 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
   useEffect(() => {
     if (selectedElement && selectedElement.nodeName !== 'text') {
       const props: PropertyName[] = [];
-      const { parentElement, firstChild } = selectedElement;
+      const { parentElement, firstChild, nodeName } = selectedElement;
+
+      // To verify and get tags applied and highlighted it (Except section and span).
+      if (nodeName !== 'SPAN' && nodeName !== 'SECTION') {
+        props.push(nodeName.toLowerCase() as PropertyName);
+      }
 
       let elementStyle = firstChild?.parentElement?.getAttribute('style');
       const isChild = selectedElement.parentElement !== inputRef.current;

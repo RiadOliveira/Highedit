@@ -62,7 +62,12 @@ const formattingTypeSwtich = (
 ): string | Node => {
   switch (property.type) {
     case 'special':
-      return specialFunctions.link(child, comparativeNode, selectedText);
+      return specialFunctions.link(
+        child,
+        comparativeNode,
+        selectedText,
+        points,
+      );
 
     default: {
       const { code } = property;
