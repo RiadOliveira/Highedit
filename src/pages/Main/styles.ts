@@ -31,13 +31,6 @@ export const EditableArea = styled.main`
   margin-bottom: 3%;
   position: relative;
 
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-weight: initial;
-  }
-
   &::after {
     content: '';
     position: absolute;
