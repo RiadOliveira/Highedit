@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import SideBar from 'components/SideBar';
-import { useElement } from 'hooks/element';
 import unifyAndSetElementChildren from 'utils/unifyAndSetElementChildren';
+
+import { useElement } from 'hooks/element';
 import { Container, EditableArea, TextArea } from './styles';
 
 interface EnterPressHandlersProps {

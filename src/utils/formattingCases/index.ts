@@ -1,8 +1,8 @@
-import getExtremeTextsUsingPoints from './auxiliaries/getExtremeTextsUsingPoints';
 import {
   fullTextSelected,
   partOfTextSelected,
 } from './auxiliaries/withTagFunctions';
+import getExtremeTextsUsingPoints from './auxiliaries/getExtremeTextsUsingPoints';
 
 interface SelectionPoints {
   start: number;

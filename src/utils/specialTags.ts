@@ -6,20 +6,21 @@ const link = (
   selectedLink: string,
 ): string => {
   const comparativeElement = comparativeNode.firstChild?.parentElement;
+  if (!comparativeElement) return '';
 
   // Removing tag.
   if (child.nodeName === 'A') {
-    const hasAlign = comparativeElement?.style.getPropertyValue('text-align');
+    const hasAlign = comparativeElement.style.getPropertyValue('text-align');
     const withoutTagName = hasAlign ? 'section' : 'span';
 
-    comparativeElement?.style.removeProperty('color');
-    comparativeElement?.style.removeProperty('text-decoration');
+    comparativeElement.style.removeProperty('color');
+    comparativeElement.style.removeProperty('text-decoration');
 
-    const updatedElementContent = comparativeElement?.outerHTML || '';
+    const updatedElementContent = comparativeElement.outerHTML;
     return replaceTagName(updatedElementContent, 'a', withoutTagName);
   }
 
-  const nodeText = comparativeElement?.outerHTML || '';
+  const nodeText = comparativeElement.outerHTML;
 
   // Replace selectedText to a link.
   const replaceToLink = (elementText: string) => {
@@ -31,7 +32,7 @@ const link = (
     let extraStyles = '';
 
     if (!isPropertyTag) {
-      const elementStyles = comparativeElement?.getAttribute('style');
+      const elementStyles = comparativeElement.getAttribute('style');
       extraStyles = elementStyles || '';
 
       if (extraStyles.includes('color')) textColor = '';
@@ -50,8 +51,8 @@ const link = (
   const childText = child.textContent || '';
   if (child.nodeName === '#text') return replaceToLink(childText);
 
-  // If has a tag (h1, h2, h3, h4, span, section).
-  // --------------------------------------------
+  // If has a tag (span or section).
+  // -------------------------------
 
   const parentElement = child.firstChild?.parentElement as HTMLElement;
 
