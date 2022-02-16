@@ -1,5 +1,6 @@
 import { Property } from 'utils/properties';
-import { formattingTypeSwtich, SelectedNode } from '.';
+import { SelectedNode } from '.';
+import formattingTypeSwtich from './auxiliaries/formattingTypeSwitch';
 import getExtremeContentPoints from './auxiliaries/getExtremeContentPoints';
 
 const selectionWithSubTags = (

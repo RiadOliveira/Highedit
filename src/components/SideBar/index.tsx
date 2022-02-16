@@ -3,7 +3,10 @@ import SideBarButton from 'components/SideBarButton';
 import properties, { Property, PropertyName } from 'utils/properties';
 import getUpdatedNodes from 'utils/getUpdatedNodes/index';
 import generateElementsUsingArrayPositions2By2 from 'utils/generateElementsUsingArrayPositions2By2';
+import getSelectedNodes from 'utils/getSelectedNodes';
 import { useElement } from 'hooks/element';
+import specialTagsSwitch from 'utils/specialTags/specialTagsSwitch';
+import { useModal } from 'hooks/modal';
 import { ButtonPair, Container } from './styles';
 
 interface SideBarProps {
@@ -14,6 +17,7 @@ interface SideBarProps {
 const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
   const [activeProps, setActiveProps] = useState<PropertyName[]>([]);
   const { selectedElement, updateElement } = useElement();
+  const { showModal } = useModal();
 
   // To handle selection change and highlight props of selected text.
   useEffect(() => {
@@ -48,14 +52,42 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
   const handleButtonClick = useCallback(
     (property: Property) => {
-      if (!inputRef.current?.onfocus) inputRef.current?.focus();
-      setUpdatedText(getUpdatedNodes(inputRef, property));
+      const selection = window.getSelection() as Selection;
+      const selectedText = selection.toString();
 
+      const textRef = inputRef.current as HTMLPreElement;
+      const childrenArray = Array.from(textRef.childNodes);
+
+      if (!selectedText) setUpdatedText(childrenArray);
+      else {
+        const selectedNodes = getSelectedNodes(selection, childrenArray);
+        const { anchorOffset: start, focusOffset: end } = selection;
+        const parsedProperty: Property = { ...property };
+
+        specialTagsSwitch(parsedProperty, showModal, () => {
+          const selectionPoints = {
+            start: Math.min(start, end),
+            end: Math.max(start, end),
+          };
+
+          const props = {
+            textRef,
+            childrenArray,
+            selectedNodes,
+            property: parsedProperty,
+            selectionPoints,
+          };
+
+          setUpdatedText(getUpdatedNodes(props));
+        });
+      }
+
+      if (!textRef.onfocus) textRef.focus();
       // Resets all activeProps and selectedElement.
       setActiveProps([]);
       updateElement(undefined);
     },
-    [inputRef, setUpdatedText, updateElement],
+    [inputRef, setUpdatedText, showModal, updateElement],
   );
 
   return (

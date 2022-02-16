@@ -113,7 +113,6 @@ export default [
       value: '42px',
     },
   },
-
   {
     name: 'b',
     type: 'style',

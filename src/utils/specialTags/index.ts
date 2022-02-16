@@ -2,7 +2,7 @@ import unifyAndSetElementChildren from 'utils/unifyAndSetElementChildren';
 import convertChildToLinkTag from './linkAuxiliaries/convertChildToLinkTag';
 import { SelectionPoints } from '../formattingCases';
 
-const link = (
+const linkTag = (
   child: ChildNode,
   comparativeNode: Node,
   selectedLink: string,
@@ -33,5 +33,5 @@ const link = (
 };
 
 export default {
-  link,
+  linkTag,
 };

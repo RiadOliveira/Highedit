@@ -15,9 +15,11 @@ interface IModalProps {
   options: Option[];
 }
 
+type ParsedModalProps = Omit<IModalProps, 'isVisible'>;
+
 interface IModalContextData {
-  modalProps: Omit<IModalProps, 'isVisible'>;
-  showModal: (ModalProps: Omit<IModalProps, 'isVisible'>) => void;
+  modalProps: ParsedModalProps;
+  showModal: (modalProps: ParsedModalProps) => void;
   hideModal: () => void;
 }
 
@@ -72,3 +74,4 @@ const ModalContext: React.FC = ({ children }) => {
 const useModal = (): IModalContextData => useContext(modalContext);
 
 export { ModalContext, useModal };
+export type { ParsedModalProps };

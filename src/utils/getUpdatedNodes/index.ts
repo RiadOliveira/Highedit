@@ -1,11 +1,10 @@
-import { SelectionPoints, styleFormat } from 'utils/formattingCases/index';
 import { Property } from 'utils/properties';
+import { SelectionPoints } from 'utils/formattingCases';
 
-import specialFunctions from 'utils/specialTags';
 import handleAlignProperty from 'utils/formattingCases/handleAlignProperty';
 import selectionWithSubTags from './selectionWithSubTags';
 import getExtremeContentPoints from './auxiliaries/getExtremeContentPoints';
-import getParsedNodeChildren from './auxiliaries/getParsedNodeChildren';
+import formattingTypeSwtich from './auxiliaries/formattingTypeSwitch';
 
 interface SelectedNode {
   reference: ChildNode;
@@ -13,86 +12,22 @@ interface SelectedNode {
   children?: SelectedNode[];
 }
 
-const getSelectedNodes = (
-  selection: Selection,
-  childrenArray: ChildNode[],
-): SelectedNode[] => {
-  const range = selection.getRangeAt(0);
-  const clonedNodes = range.cloneContents().childNodes;
-
-  const filteredNodes: ChildNode[] = childrenArray.filter(node =>
-    selection.containsNode(node, true),
-  );
-  const parsedNodes: SelectedNode[] = [];
-
-  for (let ind = 0; ind < filteredNodes.length; ind++) {
-    const node = filteredNodes[ind];
-    const isTextTag = node.nodeName === 'SPAN' || node.nodeName === '#text';
-
-    const parsedNode: SelectedNode = {
-      reference: node,
-      content: '',
-    };
-
-    if (isTextTag) parsedNode.content = clonedNodes.item(ind).textContent || '';
-    else {
-      const { children, indexAddition } = getParsedNodeChildren(
-        node,
-        selection,
-        clonedNodes,
-        ind,
-      );
-
-      parsedNode.children = children;
-      ind += indexAddition;
-    }
-
-    parsedNodes.push(parsedNode);
-  }
-
-  return parsedNodes;
-};
-
-const formattingTypeSwtich = (
-  child: ChildNode,
-  property: Property,
-  comparativeNode: Node,
-  points: SelectionPoints,
-  selectedText: string,
-): string | Node => {
-  switch (property.type) {
-    case 'special':
-      return specialFunctions.link(
-        child,
-        comparativeNode,
-        selectedText,
-        points,
-      );
-
-    default: {
-      const { code } = property;
-      const { withTag, justText } = styleFormat;
-
-      if (child.nodeName === '#text') return justText(child, points, code);
-
-      const element = child.firstChild?.parentElement as HTMLElement;
-      return withTag(element, selectedText, points, comparativeNode, code);
-    }
-  }
-};
+interface GetUpdatedNodesProps {
+  textRef: HTMLPreElement;
+  childrenArray: ChildNode[];
+  selectedNodes: SelectedNode[];
+  property: Property;
+  selectionPoints: SelectionPoints;
+}
 
 // Function to return all nodes, including the updated node with the property pressed.
-const getUpdatedNodes = (
-  inputRef: React.RefObject<HTMLPreElement>,
-  property: Property,
-): (Node | string)[] => {
-  const selection = window.getSelection() as Selection;
-  const textRef = inputRef.current as HTMLPreElement;
-  const childrenArray = Array.from(textRef.childNodes);
-
-  if (!selection.toString()) return childrenArray;
-
-  const selectedNodes = getSelectedNodes(selection, childrenArray);
+const getUpdatedNodes = ({
+  textRef,
+  childrenArray,
+  selectedNodes,
+  property,
+  selectionPoints,
+}: GetUpdatedNodesProps): (Node | string)[] => {
   const initialSelectedNodePosition = childrenArray.findIndex(
     child => child === selectedNodes[0].reference,
   );
@@ -106,14 +41,7 @@ const getUpdatedNodes = (
 
     const { content, reference } = iterateSelectedNode;
     const points = (() => {
-      if (selectedNodes.length === 1) {
-        const { anchorOffset: start, focusOffset: end } = selection;
-
-        return {
-          start,
-          end,
-        };
-      }
+      if (selectedNodes.length === 1) return selectionPoints;
 
       return getExtremeContentPoints(
         content,
@@ -151,5 +79,4 @@ const getUpdatedNodes = (
 };
 
 export default getUpdatedNodes;
-export { formattingTypeSwtich };
 export type { SelectedNode };
