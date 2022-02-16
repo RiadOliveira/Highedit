@@ -65,8 +65,8 @@ Tools used on this project:
 - [X] Text style formatting (Change text into Bold, Italic...).
 - [ ] Text color formatting.
 - [ ] Text font editing.
-- [ ] Text size editing.
-- [ ] Embed links into the document.
+- [X] Text size editing.
+- [X] Embed links into the document.
 - [ ] Upload/Embed images into the document.
 - [ ] Save created document as PDF.
 
