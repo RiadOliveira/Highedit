@@ -27,10 +27,10 @@ const specialTagsSwitch = (
     options: [],
   };
 
-  if (name === 'Aa') props.text = 'Digite o tamanho da fonte';
+  if (name === 'Aa') props.text = 'Digite o tamanho da fonte:';
   if (name === 'font') {
     props.type = 'select';
-    props.text = 'Selecione a fonte desejada';
+    props.text = 'Selecione a fonte desejada:';
   }
 
   modalFunction(props);

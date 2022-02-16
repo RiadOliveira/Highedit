@@ -9,7 +9,9 @@ export const Container = styled.input`
   border-radius: 6px;
   padding: 10px;
 
+  text-align: center;
   font-family: 'Poppins', sans-serif;
+  font-size: 20px;
   transition: 0.2s;
 
   &:focus-within {

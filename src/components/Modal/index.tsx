@@ -20,9 +20,20 @@ const Modal: React.FC<ModalProps> = ({ style }) => {
     actionFunction(selectedText);
   }, [actionFunction, hideModal, selectedText]);
 
+  const handleKeyPress = useCallback(
+    (key: string) => {
+      if (key === 'Escape') hideModal();
+      if (key === 'Enter') confirmModal();
+    },
+    [confirmModal, hideModal],
+  );
+
   return (
     <Container style={style}>
-      <ContentBox>
+      <ContentBox
+        onMouseLeave={hideModal}
+        onKeyUp={event => handleKeyPress(event.key)}
+      >
         <p>{text}</p>
 
         {type === 'input' ? (

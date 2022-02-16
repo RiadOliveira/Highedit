@@ -31,7 +31,6 @@ export const ContentBox = styled.div`
     font-size: 22px;
     font-weight: bold;
     font-family: 'Poppins', sans-serif;
-    color: #2b2929;
 
     margin: 20px 0;
   }
@@ -45,12 +44,14 @@ export const Button = styled.button`
   outline: 0;
   cursor: pointer;
 
-  border: 2px solid #d1d1d1;
+  background-color: #279116;
+  border: none;
   border-radius: 6px;
 
   width: 150px;
   height: 45px;
 
+  color: #fff;
   font-family: 'Poppins', sans-serif;
   font-weight: bold;
   font-size: 16px;

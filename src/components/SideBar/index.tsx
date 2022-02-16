@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import SideBarButton from 'components/SideBarButton';
 import properties, { Property, PropertyName } from 'utils/properties';
+
+import SideBarButton from 'components/SideBarButton';
 import getUpdatedNodes from 'utils/getUpdatedNodes/index';
 import generateElementsUsingArrayPositions2By2 from 'utils/generateElementsUsingArrayPositions2By2';
 import getSelectedNodes from 'utils/getSelectedNodes';
+import handleSpecialTagsWithModal from 'utils/specialTags/handleSpecialTagsWithModal';
+
 import { useElement } from 'hooks/element';
-import specialTagsSwitch from 'utils/specialTags/specialTagsSwitch';
 import { useModal } from 'hooks/modal';
 import { ButtonPair, Container } from './styles';
 
@@ -64,7 +66,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
         const { anchorOffset: start, focusOffset: end } = selection;
         const parsedProperty: Property = { ...property };
 
-        specialTagsSwitch(parsedProperty, showModal, () => {
+        handleSpecialTagsWithModal(parsedProperty, showModal, () => {
           const selectionPoints = {
             start: Math.min(start, end),
             end: Math.max(start, end),
