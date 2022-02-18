@@ -1,4 +1,5 @@
 import { ParsedModalProps } from 'hooks/modal';
+import ConvertRGBtoHex from 'utils/convertRgbToHex';
 import { SelectedNode } from 'utils/getUpdatedNodes';
 import { Property } from 'utils/properties';
 
@@ -29,16 +30,29 @@ const specialTagsSwitch = (
     options: [],
   };
 
-  if (name === '#') {
-    props.initialValue = firstChild?.parentElement?.style.color || '#000000';
-    props.text = 'Insira a cor desejada:';
-    props.inputType = 'color';
-  } else if (name === 'Aa') {
-    props.text = 'Digite o tamanho da fonte:';
-    props.inputType = 'text';
-  } else {
-    props.type = 'select';
-    props.text = 'Selecione a fonte desejada:';
+  switch (name) {
+    case '#': {
+      const rgbValue = firstChild?.parentElement?.style.color;
+      props.initialValue = rgbValue ? ConvertRGBtoHex(rgbValue) : '#000000';
+
+      props.text = 'Insira a cor desejada:';
+      props.inputType = 'color';
+
+      break;
+    }
+
+    case 'Aa': {
+      props.text = 'Digite o tamanho da fonte:';
+      props.inputType = 'text';
+
+      break;
+    }
+
+    // Case font.
+    default: {
+      props.type = 'select';
+      props.text = 'Selecione a fonte desejada:';
+    }
   }
 
   modalFunction(props);
