@@ -34,21 +34,25 @@ const Modal: React.FC<ModalProps> = ({ style }) => {
         onMouseLeave={hideModal}
         onKeyUp={event => handleKeyPress(event.key)}
       >
-        <p>{text}</p>
+        {text && (
+          <>
+            <p>{text}</p>
 
-        {type === 'input' ? (
-          <Input
-            type={inputType}
-            defaultValue={initialValue}
-            onChange={({ target: { value } }) => setSelectedText(value)}
-          />
-        ) : (
-          <Select setFunction={setSelectedText} />
+            {type === 'input' ? (
+              <Input
+                type={inputType}
+                defaultValue={initialValue}
+                onChange={({ target: { value } }) => setSelectedText(value)}
+              />
+            ) : (
+              <Select setFunction={setSelectedText} />
+            )}
+
+            <Button onClick={confirmModal} type="button">
+              Confirmar
+            </Button>
+          </>
         )}
-
-        <Button onClick={confirmModal} type="button">
-          Confirmar
-        </Button>
       </ContentBox>
     </Container>
   );
