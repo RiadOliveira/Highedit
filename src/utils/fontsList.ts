@@ -36,11 +36,6 @@ const fontsList = [
   'Trebuchet MS, sans-serif',
   'URW Chancery L, cursive',
   'Verdana, sans-serif',
-  'cursive',
-  'fantasy',
-  'monospace',
-  'sans-serif',
-  'serif',
 ];
 
 export default fontsList;

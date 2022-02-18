@@ -26,6 +26,10 @@ export const Option = styled.button`
   min-height: 54px;
   transition: background-color 0.3s;
 
+  p {
+    font-weight: normal;
+  }
+
   &:hover {
     background-color: ${shade(0.05, '#fff')};
   }
@@ -61,7 +65,6 @@ export const SelectContainer = styled.div<OptionProps>`
         width: 96%;
 
         p {
-          font-weight: initial;
           margin-left: 4.2%;
         }
       }
@@ -98,5 +101,5 @@ export const ArrowIcon = styled(MdArrowDropDown)`
   cursor: pointer;
 
   right: 5px;
-  top: 18%;
+  top: 24%;
 `;

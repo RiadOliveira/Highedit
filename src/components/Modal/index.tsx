@@ -31,7 +31,7 @@ const Modal: React.FC<ModalProps> = ({ style }) => {
   return (
     <Container style={style}>
       <ContentBox
-        onMouseLeave={hideModal}
+        // onMouseLeave={hideModal}
         onKeyUp={event => handleKeyPress(event.key)}
       >
         <p>{text}</p>

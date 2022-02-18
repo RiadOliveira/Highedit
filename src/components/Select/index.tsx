@@ -38,7 +38,7 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
   useEffect(() => {
     if (selectRef.current) {
       if (isShowingOptions) {
-        selectRef.current.scrollTo({ top: Number(selectedOption) * 60 });
+        selectRef.current.scrollTo({ top: Number(selectedOption) * 54 });
 
         selectRef.current.addEventListener('keydown', event => {
           if (event.code === 'Space') event.preventDefault();
@@ -108,8 +108,16 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
               selectRef.current?.focus();
             }}
           >
-            <ArrowIcon size={40} />
-            {fontsList[selectedOption].split(',')[0]}
+            <p
+              style={{
+                marginRight: 16,
+                fontSize:
+                  fontsList[selectedOption].split(',')[0].length > 15 ? 16 : 22,
+              }}
+            >
+              {fontsList[selectedOption].split(',')[0]}
+            </p>
+            <ArrowIcon size={34} />
           </Option>
         ) : (
           <>
@@ -121,7 +129,7 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
             {fontsList.map((font, index) => (
               <Option onClick={() => handleSelectOption(index)} key={font}>
                 <p
-                  style={{ fontSize: font.split(',')[0].length > 15 ? 14 : 20 }}
+                  style={{ fontSize: font.split(',')[0].length > 15 ? 14 : 18 }}
                 >
                   {font.split(',')[0]}
                 </p>
