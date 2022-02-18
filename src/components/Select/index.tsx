@@ -100,6 +100,7 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
       >
         {!isShowingOptions ? (
           <Option
+            style={{ fontSize: 24 }}
             onClick={() => {
               setIsShowingOptions(true);
               selectRef.current?.focus();
@@ -117,7 +118,11 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
 
             {fontsList.map((font, index) => (
               <Option onClick={() => handleSelectOption(index)} key={font}>
-                <p>{font.split(',')[0]}</p>
+                <p
+                  style={{ fontSize: font.split(',')[0].length > 15 ? 14 : 20 }}
+                >
+                  {font.split(',')[0]}
+                </p>
               </Option>
             ))}
           </>

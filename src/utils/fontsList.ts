@@ -1,5 +1,6 @@
 const fontsList = [
   'Arial, sans-serif',
+  'Poppins, sans-serif',
   'Helvetica, sans-serif',
   'Verdana, sans-serif',
   'Trebuchet MS, sans-serif',

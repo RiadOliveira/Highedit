@@ -15,15 +15,15 @@ export const Option = styled.button`
   outline: 0;
   background-color: #fff;
 
-  width: 100%;
   cursor: pointer;
 
-  font-family: 'Poppins', sans-serif;
+  font-family: Poppins, sans-serif;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
+  min-height: 54px;
   transition: background-color 0.3s;
 
   &:hover {
@@ -33,9 +33,10 @@ export const Option = styled.button`
 
 export const SelectContainer = styled.div<OptionProps>`
   width: 100%;
-  height: ${props => (props.isShowingOptions ? '25vh' : '100%')};
+  height: ${props => (props.isShowingOptions ? '17.5vh' : '100%')};
 
   background-color: #fff;
+
   outline: 0;
 
   display: flex;
@@ -49,32 +50,27 @@ export const SelectContainer = styled.div<OptionProps>`
   }
 
   ${props =>
-    props.isShowingOptions
-      ? css`
-          & button:first-of-type {
-            margin-top: 10px;
-            border: none;
-          }
+    props.isShowingOptions &&
+    css`
+      & button:first-of-type {
+        margin-top: 10px;
+        border: none;
+      }
 
-          ${Option} {
-            min-height: 60px;
-            width: 96%;
+      ${Option} {
+        width: 96%;
 
-            p {
-              margin-left: 4.2%;
-            }
-          }
-        `
-      : css`
-          ${Option} {
-            min-height: 80px;
-          }
-        `}
+        p {
+          font-weight: initial;
+          margin-left: 4.2%;
+        }
+      }
+    `};
 `;
 
 export const Container = styled.div<SelectProps>`
-  width: 280px;
-  height: 44px;
+  width: 240px;
+  height: 54px;
 
   position: relative;
 
@@ -95,10 +91,6 @@ export const Container = styled.div<SelectProps>`
     border: 2px solid #c4c4c4;
     border-radius: 20px;
   }
-
-  ${Option} {
-    font-size: 26px;
-  }
 `;
 
 export const ArrowIcon = styled(MdArrowDropDown)`
@@ -106,5 +98,5 @@ export const ArrowIcon = styled(MdArrowDropDown)`
   cursor: pointer;
 
   right: 5px;
-  top: 10%;
+  top: 18%;
 `;
