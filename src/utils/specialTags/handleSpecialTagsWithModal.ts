@@ -51,9 +51,7 @@ const specialTagsSwitch = (
 
     // Case font.
     default: {
-      const fontFamily = elementStyle?.fontFamily;
-      props.initialValue = fontFamily || 'Poppins, sans-serif';
-
+      props.initialValue = elementStyle?.fontFamily;
       props.type = 'select';
       props.text = 'Selecione a fonte desejada:';
     }
