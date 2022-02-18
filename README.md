@@ -64,7 +64,7 @@ Tools used on this project:
 - [X] Tag formatting (Change part of the text into H1, H2 ...).
 - [X] Text style formatting (Change text into Bold, Italic...).
 - [X] Text color formatting.
-- [ ] Text font editing.
+- [X] Text font editing.
 - [X] Text size editing.
 - [X] Embed links into the document.
 - [ ] Upload/Embed images into the document.

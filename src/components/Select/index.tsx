@@ -36,14 +36,18 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
   };
 
   useEffect(() => {
-    if (selectRef.current) {
-      if (isShowingOptions) {
-        selectRef.current.scrollTo({ top: Number(selectedOption) * 54 });
+    const selectElement = selectRef.current;
 
-        selectRef.current.addEventListener('keydown', event => {
+    if (selectElement) {
+      selectElement.focus();
+
+      if (isShowingOptions) {
+        selectElement.scrollTo({ top: Number(selectedOption) * 54 });
+
+        selectElement.addEventListener('keydown', event => {
           if (event.code === 'Space') event.preventDefault();
         });
-      } else selectRef.current?.removeEventListener('keydown', () => null);
+      } else selectElement?.removeEventListener('keydown', () => null);
     }
   }, [selectedOption, isShowingOptions]);
 

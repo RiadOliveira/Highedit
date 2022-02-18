@@ -100,6 +100,6 @@ export const ArrowIcon = styled(MdArrowDropDown)`
   position: absolute;
   cursor: pointer;
 
-  right: 5px;
+  right: 0;
   top: 24%;
 `;
