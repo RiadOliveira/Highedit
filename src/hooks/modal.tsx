@@ -2,11 +2,6 @@ import React, { createContext, useState, useContext, useCallback } from 'react';
 import Modal from 'components/Modal';
 import { useTransition } from 'react-spring';
 
-interface Option {
-  label: string;
-  value: string;
-}
-
 interface IModalProps {
   isVisible: boolean;
   text?: string;
@@ -14,7 +9,6 @@ interface IModalProps {
   type: 'select' | 'input';
   inputType?: 'text' | 'color';
   initialValue?: string;
-  options: Option[];
 }
 
 type ParsedModalProps = Omit<IModalProps, 'isVisible'>;
@@ -31,7 +25,6 @@ const initialData: IModalProps = {
   isVisible: false,
   type: 'input',
   actionFunction: () => null,
-  options: [],
 };
 
 const ModalContext: React.FC = ({ children }) => {

@@ -8,7 +8,6 @@ interface SelectProps {
 
 interface OptionProps {
   isShowingOptions?: boolean;
-  hasScrollBar?: boolean;
 }
 
 export const Option = styled.button`
@@ -59,7 +58,7 @@ export const SelectContainer = styled.div<OptionProps>`
 
           ${Option} {
             min-height: 60px;
-            width: ${props.hasScrollBar ? '96%' : '100%'};
+            width: 96%;
 
             p {
               margin-left: 4.2%;

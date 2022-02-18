@@ -27,7 +27,6 @@ const specialTagsSwitch = (
     actionFunction,
     type: 'input',
     text: '',
-    options: [],
   };
 
   switch (name) {

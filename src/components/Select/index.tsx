@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { differenceInSeconds } from 'date-fns';
 import { useModal } from 'hooks/modal';
+import fontsList from 'utils/fontsList';
 import { Container, SelectContainer, Option, ArrowIcon } from './styles';
 import ScrollBar from './ScrollBar';
 
@@ -15,7 +16,7 @@ interface ISearchedTextProps {
 
 const Select: React.FC<SelectProps> = ({ setFunction }) => {
   const {
-    modalProps: { options },
+    modalProps: { type },
   } = useModal();
   const selectRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +36,7 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
   useEffect(() => {
     if (selectRef.current) {
       if (isShowingOptions) {
-        selectRef.current.scrollTo({ top: selectedOption * 60 });
+        selectRef.current.scrollTo({ top: Number(selectedOption) * 60 });
 
         selectRef.current.addEventListener('keydown', event => {
           if (event.code === 'Space') event.preventDefault();
@@ -45,8 +46,8 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
   }, [selectedOption, isShowingOptions]);
 
   useEffect(() => {
-    if (options.length > 0) setFunction(options[selectedOption].value);
-  }, [options, selectedOption, setFunction]);
+    if (type === 'select') setFunction(fontsList[selectedOption]);
+  }, [selectedOption, setFunction, type]);
 
   // Search system through select.
   const handleKeyPress = (key: string) =>
@@ -69,8 +70,8 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
         }
       }
 
-      const findedIndex = options.findIndex(({ label }) =>
-        label.toLowerCase().startsWith(searchText),
+      const findedIndex = fontsList.findIndex(font =>
+        font.toLowerCase().startsWith(searchText),
       );
 
       // If not find any option with the searched text, resets it.
@@ -94,7 +95,6 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
         }
         onMouseLeave={() => setIsShowingOptions(false)}
         isShowingOptions={isShowingOptions}
-        hasScrollBar={options.length > 4}
         ref={selectRef}
         style={{ overflowY: isShowingOptions ? 'scroll' : 'hidden' }}
       >
@@ -106,20 +106,18 @@ const Select: React.FC<SelectProps> = ({ setFunction }) => {
             }}
           >
             <ArrowIcon size={40} />
-            {options.length > 0 && options[selectedOption].label}
+            {fontsList[selectedOption].split(',')[0]}
           </Option>
         ) : (
           <>
-            {options.length > 4 && (
-              <ScrollBar
-                dataLength={options.length}
-                scrollTop={scrollTopDistance}
-              />
-            )}
+            <ScrollBar
+              dataLength={fontsList.length}
+              scrollTop={scrollTopDistance}
+            />
 
-            {options.map(({ label }, index) => (
-              <Option onClick={() => handleSelectOption(index)} key={label}>
-                <p>{label}</p>
+            {fontsList.map((font, index) => (
+              <Option onClick={() => handleSelectOption(index)} key={font}>
+                <p>{font.split(',')[0]}</p>
               </Option>
             ))}
           </>
