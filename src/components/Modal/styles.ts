@@ -19,24 +19,20 @@ export const ContentBox = styled.div`
   background-color: #fff;
 
   width: 420px;
-  height: 260px;
+  height: 280px;
 
   border-radius: 10px;
 
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-evenly;
 
   p {
     font-size: 22px;
     font-weight: bold;
     font-family: 'Poppins', sans-serif;
-
-    margin: 20px 0;
-  }
-
-  * {
-    margin: 20px 0;
+    margin: 0;
   }
 `;
 
@@ -44,24 +40,22 @@ export const Button = styled.button`
   outline: 0;
   cursor: pointer;
 
-  background-color: #279116;
-  border: none;
+  background-color: #fff;
+  border: 2.5px solid #279116;
   border-radius: 6px;
 
   width: 150px;
   height: 45px;
 
-  color: #fff;
+  color: #000;
   font-family: 'Poppins', sans-serif;
   font-weight: bold;
-  font-size: 16px;
+  font-size: 18px;
 
   transition: 0.3s;
 
   &:hover {
-    width: 160px;
-    height: 55px;
-
-    font-size: 20px;
+    background-color: #2cab18;
+    color: #fff;
   }
 `;

@@ -66,22 +66,32 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
         const { anchorOffset: start, focusOffset: end } = selection;
         const parsedProperty: Property = { ...property };
 
-        handleSpecialTagsWithModal(parsedProperty, showModal, () => {
-          const selectionPoints = {
-            start: Math.min(start, end),
-            end: Math.max(start, end),
-          };
+        const firstNode = selectedNodes[0];
+        const firstSelectedNode = firstNode.children
+          ? firstNode.children[0]
+          : firstNode;
 
-          const props = {
-            textRef,
-            childrenArray,
-            selectedNodes,
-            property: parsedProperty,
-            selectionPoints,
-          };
+        handleSpecialTagsWithModal(
+          parsedProperty,
+          firstSelectedNode,
+          showModal,
+          () => {
+            const selectionPoints = {
+              start: Math.min(start, end),
+              end: Math.max(start, end),
+            };
 
-          setUpdatedText(getUpdatedNodes(props));
-        });
+            const props = {
+              textRef,
+              childrenArray,
+              selectedNodes,
+              property: parsedProperty,
+              selectionPoints,
+            };
+
+            setUpdatedText(getUpdatedNodes(props));
+          },
+        );
       }
 
       if (!textRef.onfocus) textRef.focus();

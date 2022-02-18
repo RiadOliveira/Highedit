@@ -9,7 +9,7 @@ type ModalProps = AnimatedProps<AllHTMLAttributes<HTMLDivElement>>;
 
 const Modal: React.FC<ModalProps> = ({ style }) => {
   const {
-    modalProps: { text, type, actionFunction },
+    modalProps: { text, type, actionFunction, inputType, initialValue },
     hideModal,
   } = useModal();
 
@@ -31,13 +31,17 @@ const Modal: React.FC<ModalProps> = ({ style }) => {
   return (
     <Container style={style}>
       <ContentBox
-        onMouseLeave={hideModal}
+        // onMouseLeave={hideModal}
         onKeyUp={event => handleKeyPress(event.key)}
       >
         <p>{text}</p>
 
         {type === 'input' ? (
-          <Input onChange={({ target: { value } }) => setSelectedText(value)} />
+          <Input
+            type={inputType}
+            defaultValue={initialValue}
+            onChange={({ target: { value } }) => setSelectedText(value)}
+          />
         ) : (
           <Select setFunction={setSelectedText} />
         )}

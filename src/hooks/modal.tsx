@@ -12,6 +12,8 @@ interface IModalProps {
   text?: string;
   actionFunction: (modalText: string) => void;
   type: 'select' | 'input';
+  inputType?: 'text' | 'color';
+  initialValue?: string;
   options: Option[];
 }
 

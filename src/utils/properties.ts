@@ -101,7 +101,7 @@ export default [
     type: 'special',
     code: {
       cssProp: 'font-family',
-      value: 'Arial',
+      value: '',
     },
     icon: FaFont,
   },
@@ -110,7 +110,7 @@ export default [
     type: 'special',
     code: {
       cssProp: 'font-size',
-      value: '42px',
+      value: '',
     },
   },
   {
@@ -190,7 +190,7 @@ export default [
     type: 'special',
     code: {
       cssProp: 'color',
-      value: 'blue',
+      value: '',
     },
   },
   {
