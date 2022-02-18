@@ -51,7 +51,7 @@ const specialTagsSwitch = (
 
     // Case font.
     default: {
-      props.initialValue = elementStyle?.fontFamily;
+      props.initialValue = elementStyle?.fontFamily.replaceAll('"', '');
       props.type = 'select';
       props.text = 'Selecione a fonte desejada:';
     }

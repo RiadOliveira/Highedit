@@ -28,10 +28,10 @@ export const ContentBox = styled.div`
   align-items: center;
   justify-content: space-evenly;
 
-  p {
+  & > p {
     font-size: 22px;
     font-weight: bold;
-    font-family: 'Poppins', sans-serif;
+    font-family: Poppins, sans-serif;
     margin: 0;
   }
 `;
