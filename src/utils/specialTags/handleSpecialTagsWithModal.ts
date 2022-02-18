@@ -29,9 +29,11 @@ const specialTagsSwitch = (
     text: '',
   };
 
+  const elementStyle = firstChild?.parentElement?.style;
+
   switch (name) {
     case '#': {
-      const rgbValue = firstChild?.parentElement?.style.color;
+      const rgbValue = elementStyle?.color;
       props.initialValue = rgbValue ? ConvertRGBtoHex(rgbValue) : '#000000';
 
       props.text = 'Insira a cor desejada:';
@@ -49,6 +51,9 @@ const specialTagsSwitch = (
 
     // Case font.
     default: {
+      const fontFamily = elementStyle?.fontFamily;
+      props.initialValue = fontFamily || 'Poppins, sans-serif';
+
       props.type = 'select';
       props.text = 'Selecione a fonte desejada:';
     }

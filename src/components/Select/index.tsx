@@ -16,14 +16,16 @@ interface ISearchedTextProps {
 
 const Select: React.FC<SelectProps> = ({ setFunction }) => {
   const {
-    modalProps: { type },
+    modalProps: { type, initialValue },
   } = useModal();
   const selectRef = useRef<HTMLDivElement>(null);
 
   const [searchedTextProps, setSearchedTextProps] =
     useState<ISearchedTextProps>({} as ISearchedTextProps);
 
-  const [selectedOption, setSelectedOption] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(
+    initialValue ? fontsList.findIndex(font => font === initialValue) : 0,
+  );
   const [isShowingOptions, setIsShowingOptions] = useState(false);
 
   const [scrollTopDistance, setScrollTopDistance] = useState(0);
