@@ -42,7 +42,10 @@ const Main: React.FC = () => {
 
     if (inputRef && inputRef.innerHTML === placeHolder) {
       inputRef.innerHTML = ' ';
-      window.getSelection()?.setPosition(inputRef.firstChild, 0);
+      setTimeout(
+        () => window.getSelection()?.setPosition(inputRef.firstChild, 0),
+        1,
+      );
     }
   }, []);
 
