@@ -41,8 +41,8 @@ const Main: React.FC = () => {
     const inputRef = textInputRef.current;
 
     if (inputRef && inputRef.innerHTML === placeHolder) {
-      inputRef.innerHTML = '';
-      window.getSelection()?.setPosition(inputRef, 0);
+      inputRef.innerHTML = ' ';
+      window.getSelection()?.setPosition(inputRef.firstChild, 0);
     }
   }, []);
 
