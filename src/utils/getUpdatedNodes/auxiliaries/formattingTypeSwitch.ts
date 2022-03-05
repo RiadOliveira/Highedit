@@ -23,7 +23,13 @@ const formattingTypeSwtich = (
 
   switch (property.name) {
     case 'a':
-      return linkTag(child, comparativeNode, selectedText, points);
+      return linkTag(
+        child,
+        comparativeNode,
+        selectedText,
+        property.code || '',
+        points,
+      );
 
     case 'img':
       return imageTag(child, comparativeNode, property.code || '', points);

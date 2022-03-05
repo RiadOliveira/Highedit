@@ -10,10 +10,11 @@ const handleSpecialTagsWithModal = (
   modalFunction: (modalProps: ParsedModalProps) => void,
   afterModalFunction: () => void,
 ): void => {
-  const { name } = property;
-  const notModalProperty =
-    name !== 'Aa' && name !== 'font' && name !== '#' && name !== 'img';
-  if (property.type === 'style' || notModalProperty) {
+  const { name, code } = property;
+  const isModalProperty =
+    code === 'modal' || (typeof code !== 'string' && code?.value === 'modal');
+
+  if (!isModalProperty) {
     afterModalFunction();
     return;
   }
@@ -54,7 +55,7 @@ const handleSpecialTagsWithModal = (
     }
 
     case 'img': {
-      props.text = 'Digite o link da imagem:';
+      props.text = 'Insira o link da imagem:';
       props.inputType = 'text';
 
       break;
@@ -68,6 +69,11 @@ const handleSpecialTagsWithModal = (
       props.text = 'Selecione a fonte desejada:';
 
       break;
+    }
+
+    case 'a': {
+      props.text = 'Insira o link desejado:';
+      props.inputType = 'text';
     }
   }
 

@@ -91,12 +91,13 @@ export default [
   {
     name: 'a',
     type: 'special',
+    code: 'modal',
     icon: FaLink,
   },
   {
     name: 'img',
     type: 'special',
-    code: 'default',
+    code: 'modal',
     icon: FaImage,
   },
   {
@@ -104,7 +105,7 @@ export default [
     type: 'special',
     code: {
       cssProp: 'font-family',
-      value: '',
+      value: 'modal',
     },
     icon: FaFont,
   },
@@ -113,7 +114,7 @@ export default [
     type: 'special',
     code: {
       cssProp: 'font-size',
-      value: '',
+      value: 'modal',
     },
   },
   {
@@ -193,7 +194,7 @@ export default [
     type: 'special',
     code: {
       cssProp: 'color',
-      value: '',
+      value: 'modal',
     },
   },
   {

@@ -6,18 +6,21 @@ import { SelectionPoints } from '../formattingCases';
 const linkTag = (
   child: ChildNode,
   comparativeNode: Node,
-  selectedLink: string,
+  selectedText: string,
+  link: string,
   points: SelectionPoints,
 ): Node | string => {
-  if (child.nodeName !== 'SECTION') {
-    return convertChildToLinkTag(child, points, selectedLink);
-  }
-
-  const convertedChild = convertChildToLinkTag(
-    comparativeNode as ChildNode,
+  const props = {
+    child,
     points,
-    selectedLink,
-  );
+    link,
+    selectedText,
+  };
+
+  if (child.nodeName !== 'SECTION') return convertChildToLinkTag(props);
+
+  props.child = comparativeNode as ChildNode;
+  const convertedChild = convertChildToLinkTag(props);
 
   const templateElement = document.createElement('template');
   templateElement.innerHTML = convertedChild;

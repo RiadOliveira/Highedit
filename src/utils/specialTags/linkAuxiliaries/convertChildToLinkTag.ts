@@ -2,6 +2,13 @@ import { SelectionPoints } from 'utils/formattingCases';
 import getContentFromChild from 'utils/formattingCases/auxiliaries/getContentFromChild';
 import getExtremeTextsUsingPoints from 'utils/formattingCases/auxiliaries/getExtremeTextsUsingPoints';
 
+interface ConvertChildToLinkTagProps {
+  child: ChildNode;
+  points: SelectionPoints;
+  link: string;
+  selectedText: string;
+}
+
 const alreadyHasTag = (
   child: ChildNode,
   linkElement: HTMLAnchorElement,
@@ -37,14 +44,15 @@ const alreadyHasTag = (
   return `${startText}${parentElement.outerHTML}${endText}`;
 };
 
-const convertChildToLinkTag = (
-  child: ChildNode,
-  points: SelectionPoints,
-  selectedLink: string,
-): string => {
+const convertChildToLinkTag = ({
+  child,
+  points,
+  link,
+  selectedText,
+}: ConvertChildToLinkTagProps): string => {
   const linkElement = document.createElement('a');
-  linkElement.href = selectedLink;
-  linkElement.innerText = selectedLink;
+  linkElement.href = link;
+  linkElement.innerText = selectedText;
 
   const template = child.firstChild?.parentElement || undefined;
   const { start, end } = getExtremeTextsUsingPoints(
