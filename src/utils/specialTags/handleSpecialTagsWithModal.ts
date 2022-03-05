@@ -4,7 +4,7 @@ import ConvertRGBtoHex from 'utils/convertRgbToHex';
 import { SelectedNode } from 'utils/getUpdatedNodes';
 import { Property } from 'utils/properties';
 
-const specialTagsSwitch = (
+const handleSpecialTagsWithModal = (
   property: Property,
   { reference: { firstChild } }: SelectedNode,
   modalFunction: (modalProps: ParsedModalProps) => void,
@@ -34,14 +34,12 @@ const specialTagsSwitch = (
     text: '',
   };
 
-  const elementStyle = firstChild?.parentElement?.style;
-
   // eslint-disable-next-line default-case
   switch (name) {
     case '#': {
-      const rgbValue = elementStyle?.color;
-      props.initialValue = rgbValue ? ConvertRGBtoHex(rgbValue) : '#000000';
+      const rgbValue = firstChild?.parentElement?.style.color;
 
+      props.initialValue = rgbValue ? ConvertRGBtoHex(rgbValue) : '#000000';
       props.text = 'Insira a cor desejada:';
       props.inputType = 'color';
 
@@ -63,7 +61,9 @@ const specialTagsSwitch = (
     }
 
     case 'font': {
-      props.initialValue = elementStyle?.fontFamily.replaceAll('"', '');
+      const fontFamily = firstChild?.parentElement?.style.fontFamily;
+
+      props.initialValue = fontFamily?.replaceAll('"', '');
       props.type = 'select';
       props.text = 'Selecione a fonte desejada:';
 
@@ -74,4 +74,4 @@ const specialTagsSwitch = (
   modalFunction(props);
 };
 
-export default specialTagsSwitch;
+export default handleSpecialTagsWithModal;

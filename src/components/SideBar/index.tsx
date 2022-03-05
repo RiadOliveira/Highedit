@@ -59,10 +59,16 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
       const textRef = inputRef.current as HTMLPreElement;
       const childrenArray = Array.from(textRef.childNodes);
+      const isImage = property.name === 'img';
 
-      if (!selectedText) setUpdatedText(childrenArray);
+      if (!selectedText && !isImage) setUpdatedText(childrenArray);
       else {
-        const selectedNodes = getSelectedNodes(selection, childrenArray);
+        const selectedNodes = getSelectedNodes(
+          selection,
+          childrenArray,
+          isImage,
+        );
+
         const { anchorOffset: start, focusOffset: end } = selection;
         const parsedProperty: Property = { ...property };
 

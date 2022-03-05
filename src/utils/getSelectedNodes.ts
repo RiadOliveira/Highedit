@@ -4,18 +4,44 @@ import { SelectedNode } from './getUpdatedNodes';
 const getSelectedNodes = (
   selection: Selection,
   childrenArray: ChildNode[],
+  isImageProperty: boolean,
 ): SelectedNode[] => {
+  if (isImageProperty) {
+    const findedNode = childrenArray.find(node =>
+      selection.containsNode(node, true),
+    ) as ChildNode;
+
+    const isTextTag = findedNode.nodeName !== 'SECTION';
+    let findedChildren;
+
+    if (!isTextTag) {
+      findedChildren = Array.from(findedNode?.childNodes).map(child => ({
+        reference: child,
+        content: child.textContent || '',
+      }));
+    }
+
+    const parsedNode: SelectedNode = {
+      reference: findedNode,
+      content: '',
+      children: findedChildren,
+    };
+
+    return [parsedNode];
+  }
+
   const range = selection.getRangeAt(0);
   const clonedNodes = range.cloneContents().childNodes;
 
   const filteredNodes: ChildNode[] = childrenArray.filter(node =>
     selection.containsNode(node, true),
   );
+
   const parsedNodes: SelectedNode[] = [];
 
   for (let ind = 0; ind < filteredNodes.length; ind++) {
     const node = filteredNodes[ind];
-    const isTextTag = node.nodeName === 'SPAN' || node.nodeName === '#text';
+    const isTextTag = node.nodeName !== 'SECTION';
 
     const parsedNode: SelectedNode = {
       reference: node,
