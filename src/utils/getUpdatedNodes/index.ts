@@ -64,7 +64,13 @@ const getUpdatedNodes = ({
     }
 
     const subChildren = iterateSelectedNode.children;
-    if (subChildren) return selectionWithSubTags(child, property, subChildren);
+    if (subChildren)
+      return selectionWithSubTags(
+        child,
+        property,
+        subChildren,
+        selectionPoints,
+      );
 
     const { parentNode } = child;
     const comparativeNode = parentNode !== textRef ? parentNode : child;

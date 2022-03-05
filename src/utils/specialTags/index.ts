@@ -42,12 +42,14 @@ const imageTag = (
   const imageElement = document.createElement('img');
   imageElement.src = imageLink;
 
+  const comparativeNodeTemplate = comparativeNode.firstChild?.parentElement;
   const { start: startText, end: endText } = getExtremeTextsUsingPoints(
-    child.textContent || '',
+    comparativeNode.textContent || '',
     { start, end: start },
+    comparativeNodeTemplate || undefined,
   );
-  const finalText = `${startText}${imageElement.outerHTML}${endText}`;
 
+  const finalText = `${startText}${imageElement.outerHTML}${endText}`;
   if (child.nodeName === '#text') return finalText;
 
   const childElement = child.firstChild?.parentElement as HTMLElement;

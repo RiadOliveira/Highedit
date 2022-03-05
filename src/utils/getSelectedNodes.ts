@@ -12,19 +12,31 @@ const getSelectedNodes = (
     ) as ChildNode;
 
     const isTextTag = findedNode.nodeName !== 'SECTION';
-    let findedChildren;
+    let children;
 
     if (!isTextTag) {
-      findedChildren = Array.from(findedNode?.childNodes).map(child => ({
-        reference: child,
-        content: child.textContent || '',
-      }));
+      const { anchorNode } = selection;
+      const { parentNode } = anchorNode as Node;
+
+      const comparativeChild =
+        parentNode?.nodeName !== 'SECTION' ? parentNode : anchorNode;
+
+      const findedChild = Array.from(findedNode?.childNodes).find(
+        child => child === comparativeChild,
+      ) as ChildNode;
+
+      const parsedChild = {
+        reference: findedChild,
+        content: findedChild.textContent || '',
+      };
+
+      children = [parsedChild];
     }
 
     const parsedNode: SelectedNode = {
       reference: findedNode,
       content: '',
-      children: findedChildren,
+      children,
     };
 
     return [parsedNode];
