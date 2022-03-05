@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { ParsedModalProps } from 'hooks/modal';
 import ConvertRGBtoHex from 'utils/convertRgbToHex';
 import { SelectedNode } from 'utils/getUpdatedNodes';
@@ -10,7 +11,8 @@ const specialTagsSwitch = (
   afterModalFunction: () => void,
 ): void => {
   const { name } = property;
-  const notModalProperty = name !== 'Aa' && name !== 'font' && name !== '#';
+  const notModalProperty =
+    name !== 'Aa' && name !== 'font' && name !== '#' && name !== 'img';
   if (property.type === 'style' || notModalProperty) {
     afterModalFunction();
     return;
@@ -18,8 +20,11 @@ const specialTagsSwitch = (
 
   const actionFunction = (value: string) => {
     const parsedValue = Number(value) ? `${value}px` : value;
-    // eslint-disable-next-line no-param-reassign
-    if (value && property.code) property.code.value = parsedValue;
+
+    if (value && property.code) {
+      if (typeof property.code !== 'string') property.code.value = parsedValue;
+      else property.code = parsedValue;
+    }
     afterModalFunction();
   };
 
@@ -31,6 +36,7 @@ const specialTagsSwitch = (
 
   const elementStyle = firstChild?.parentElement?.style;
 
+  // eslint-disable-next-line default-case
   switch (name) {
     case '#': {
       const rgbValue = elementStyle?.color;
@@ -49,11 +55,19 @@ const specialTagsSwitch = (
       break;
     }
 
-    // Case font.
-    default: {
+    case 'img': {
+      props.text = 'Digite o link da imagem:';
+      props.inputType = 'text';
+
+      break;
+    }
+
+    case 'font': {
       props.initialValue = elementStyle?.fontFamily.replaceAll('"', '');
       props.type = 'select';
       props.text = 'Selecione a fonte desejada:';
+
+      break;
     }
   }
 

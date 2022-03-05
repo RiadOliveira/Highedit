@@ -45,10 +45,12 @@ export type Property =
   | {
       name: SpecialProperty; // Props with unique handling
       type: 'special';
-      code?: {
-        cssProp: string;
-        value: string;
-      };
+      code?:
+        | {
+            cssProp: string;
+            value: string;
+          }
+        | string;
       icon?: IconType;
     };
 
@@ -94,6 +96,7 @@ export default [
   {
     name: 'img',
     type: 'special',
+    code: 'default',
     icon: FaImage,
   },
   {

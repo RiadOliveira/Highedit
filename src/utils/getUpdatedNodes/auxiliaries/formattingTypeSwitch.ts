@@ -9,7 +9,7 @@ const formattingTypeSwtich = (
   points: SelectionPoints,
   selectedText: string,
 ): string | Node => {
-  if (property.code) {
+  if (property.code && typeof property.code !== 'string') {
     const { code } = property;
     const { withTag, justText } = styleFormat;
 
@@ -19,11 +19,14 @@ const formattingTypeSwtich = (
     return withTag(element, selectedText, points, comparativeNode, code);
   }
 
-  const { linkTag } = specialTags;
+  const { linkTag, imageTag } = specialTags;
 
   switch (property.name) {
     case 'a':
       return linkTag(child, comparativeNode, selectedText, points);
+
+    case 'img':
+      return imageTag(child, comparativeNode, property.code || '', points);
 
     default:
       return '';

@@ -50,7 +50,10 @@ const getUpdatedNodes = ({
       );
     })();
 
-    if (property.code?.cssProp === 'text-align') {
+    if (
+      typeof property.code !== 'string' &&
+      property.code?.cssProp === 'text-align'
+    ) {
       return handleAlignProperty(
         iterateSelectedNode,
         selectedNodes.length,
