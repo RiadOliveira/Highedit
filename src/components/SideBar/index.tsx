@@ -54,7 +54,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
   }, [inputRef, selectedElement]);
 
   const handleButtonClick = useCallback(
-    (property: Property) => {
+    ({ code, ...property }: Property) => {
       const textRef = inputRef.current as HTMLPreElement;
 
       if (property.name === 'save') {
@@ -76,13 +76,17 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
           isImage,
         );
 
-        const { anchorOffset: start, focusOffset: end } = selection;
-        const parsedProperty: Property = { ...property };
+        const parsedProperty: Property = { ...property } as Property;
+        if (code) {
+          // In order to not copy address of code object.
+          if (typeof code === 'string') parsedProperty.code = code;
+          else parsedProperty.code = { ...code };
+        }
 
-        const firstNode = selectedNodes[0];
-        const firstSelectedNode = firstNode.children
-          ? firstNode.children[0]
-          : firstNode;
+        const { anchorOffset: start, focusOffset: end } = selection;
+        const [firstNode] = selectedNodes;
+        const { children } = firstNode;
+        const firstSelectedNode = children ? children[0] : firstNode;
 
         handleSpecialTagsWithModal(
           parsedProperty,
@@ -108,6 +112,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
       }
 
       if (!textRef.onfocus) textRef.focus();
+
       // Resets all activeProps and selectedElement.
       setActiveProps([]);
       updateElement(undefined);

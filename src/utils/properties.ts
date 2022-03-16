@@ -55,7 +55,6 @@ export type Property =
     };
 
 export default [
-  // All possibly buttons of the app (Separated in arrays in order to facilitate exhibition)
   {
     name: 'h1',
     type: 'style',
