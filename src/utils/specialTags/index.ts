@@ -1,9 +1,11 @@
 import unifyAndSetElementChildren from 'utils/unifyAndSetElementChildren';
 import getExtremeTextsUsingPoints from 'utils/formattingCases/auxiliaries/getExtremeTextsUsingPoints';
+import html2canvas from 'html2canvas';
+import JsPDF from 'jspdf';
 import convertChildToLinkTag from './linkAuxiliaries/convertChildToLinkTag';
 import { SelectionPoints } from '../formattingCases';
 
-const linkTag = (
+export const linkTag = (
   child: ChildNode,
   comparativeNode: Node,
   selectedText: string,
@@ -36,7 +38,7 @@ const linkTag = (
   return childElement;
 };
 
-const imageTag = (
+export const imageTag = (
   child: ChildNode,
   comparativeNode: Node,
   imageLink: string,
@@ -68,7 +70,11 @@ const imageTag = (
   return child;
 };
 
-export default {
-  linkTag,
-  imageTag,
+export const saveFile = (textRef: HTMLPreElement): void => {
+  html2canvas(textRef.parentElement as HTMLElement).then(canvas => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new JsPDF();
+    pdf.addImage(imgData, 'JPEG', 0, 0, 0, 0);
+    pdf.save('download.pdf');
+  });
 };

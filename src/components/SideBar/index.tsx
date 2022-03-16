@@ -9,6 +9,7 @@ import handleSpecialTagsWithModal from 'utils/specialTags/handleSpecialTagsWithM
 
 import { useElement } from 'hooks/element';
 import { useModal } from 'hooks/modal';
+import { saveFile } from 'utils/specialTags';
 import { ButtonPair, Container } from './styles';
 
 interface SideBarProps {
@@ -54,10 +55,16 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
   const handleButtonClick = useCallback(
     (property: Property) => {
+      const textRef = inputRef.current as HTMLPreElement;
+
+      if (property.name === 'save') {
+        saveFile(textRef);
+        return;
+      }
+
       const selection = window.getSelection() as Selection;
       const selectedText = selection.toString();
 
-      const textRef = inputRef.current as HTMLPreElement;
       const childrenArray = Array.from(textRef.childNodes);
       const isImage = property.name === 'img';
 

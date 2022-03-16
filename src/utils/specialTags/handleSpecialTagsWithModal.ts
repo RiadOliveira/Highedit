@@ -40,7 +40,7 @@ const handleSpecialTagsWithModal = (
     case '#': {
       const rgbValue = firstChild?.parentElement?.style.color;
 
-      props.initialValue = rgbValue ? ConvertRGBtoHex(rgbValue) : '#000000';
+      props.initialValue = rgbValue ? ConvertRGBtoHex(rgbValue) : '#ffffff';
       props.text = 'Insira a cor desejada:';
       props.inputType = 'color';
 

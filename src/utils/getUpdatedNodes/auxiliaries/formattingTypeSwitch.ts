@@ -1,6 +1,6 @@
 import { SelectionPoints, styleFormat } from 'utils/formattingCases';
 import { Property } from 'utils/properties';
-import specialTags from 'utils/specialTags';
+import { linkTag, imageTag } from 'utils/specialTags';
 
 const formattingTypeSwtich = (
   child: ChildNode,
@@ -18,8 +18,6 @@ const formattingTypeSwtich = (
     const element = child.firstChild?.parentElement as HTMLElement;
     return withTag(element, selectedText, points, comparativeNode, code);
   }
-
-  const { linkTag, imageTag } = specialTags;
 
   switch (property.name) {
     case 'a':
