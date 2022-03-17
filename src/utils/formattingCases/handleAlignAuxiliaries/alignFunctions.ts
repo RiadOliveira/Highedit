@@ -38,7 +38,7 @@ const childSelect = ({
 };
 
 const subChildrenSelect = (
-  onlyOneChild: boolean,
+  onlyOneNode: boolean,
   { selectedNode, propertyValue, points }: OneSelectedNodeProps,
 ): string => {
   const nodeElement = selectedNode.reference.firstChild?.parentElement;
@@ -57,13 +57,16 @@ const subChildrenSelect = (
     updatedElement.push(previousTemplate.replace('?', startChildren));
   }
 
+  const alignTemplate = `<div style="text-align: ${propertyValue}">?</div>`;
+  // If are equal, removes div.
+  const template = propertyValue === previousAlign ? '?' : alignTemplate;
+
   const updatedContent = getUpdatedContentForAlignProperty(
     nodeChildren,
-    propertyValue,
+    template,
     points,
     previousTemplate,
-    previousAlign,
-    onlyOneChild,
+    onlyOneNode,
   );
   updatedElement.push(updatedContent);
 

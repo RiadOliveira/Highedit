@@ -10,30 +10,30 @@ import {
 
 const getUpdatedContentForAlignProperty = (
   nodeChildren: SelectedNode[],
-  propertyValue: string,
+  template: string,
   selectionPoints: SelectionPoints,
   previousTemplate: string,
-  previousAlign: string | undefined,
   onlyOneNode: boolean,
 ): string => {
-  const removeSelectedContentAlign = propertyValue === previousAlign;
-
-  const alignTemplate = `<div style="text-align: ${propertyValue}">?</div>`;
-  const template = removeSelectedContentAlign ? '?' : alignTemplate;
-
   if (onlyOneNode && nodeChildren.length === 1) {
     const [{ reference, content }] = nodeChildren;
 
-    const { start, end } = getExtremeTextsUsingPoints(
+    // To get spans texts with their styles.
+    const {
+      start,
+      end,
+      template: tagTemplate,
+    } = getExtremeTextsUsingPoints(
       reference.textContent || '',
       selectionPoints,
       reference.firstChild?.parentElement || undefined,
     );
 
     const updatedContent: string[] = [];
+    const contentWithTemplate = tagTemplate.replace('?', content);
 
     if (start) updatedContent.push(previousTemplate.replace('?', start));
-    updatedContent.push(template.replace('?', content));
+    updatedContent.push(template.replace('?', contentWithTemplate));
     if (end) updatedContent.push(previousTemplate.replace('?', end));
 
     return updatedContent.join('');
