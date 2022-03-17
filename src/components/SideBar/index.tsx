@@ -28,13 +28,15 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
     const props: PropertyName[] = [];
     const textInput = inputRef.current;
-    const { parentElement, firstChild, nodeName } = selectedElement;
 
-    const isSpecialTag = nodeName !== 'SPAN' && nodeName !== 'DIV';
-    if (isSpecialTag) props.push(nodeName.toLowerCase() as PropertyName);
+    const { parentElement, firstChild } = selectedElement;
+    if (firstChild?.nodeName === 'A') props.push('a');
 
-    const isChild = parentElement !== textInput || firstChild?.nodeName === 'A';
-    if (isChild) props.push(firstChild?.nodeName.toLowerCase() as PropertyName);
+    const isChild = parentElement !== textInput;
+    if (isChild && parentElement?.nodeName === 'DIV') {
+      const { style } = parentElement as HTMLElement;
+      props.push(style.getPropertyValue('text-align') as PropertyName);
+    }
 
     const elementStyle = firstChild?.parentElement?.getAttribute('style');
 
