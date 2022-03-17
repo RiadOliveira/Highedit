@@ -67,8 +67,8 @@ Tools used on this project:
 - [X] Text font editing.
 - [X] Text size editing.
 - [X] Embed links into the document.
-- [ ] Upload/Embed images into the document.
-- [ ] Save created document as HTML file.
+- [X] Embed images into the document using their link.
+- [X] Save created document as HTML file.
 
 </br>
 
