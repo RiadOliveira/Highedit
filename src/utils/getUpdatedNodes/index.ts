@@ -32,6 +32,8 @@ const getUpdatedNodes = ({
     child => child === selectedNodes[0].reference,
   );
 
+  const onlyOneNode = selectedNodes.length === 1;
+
   // Iterate through all children of the created text.
   const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
     const relativeSelectedNodePosition = index - initialSelectedNodePosition;
@@ -40,8 +42,20 @@ const getUpdatedNodes = ({
     if (!iterateSelectedNode) return child;
 
     const { content, reference } = iterateSelectedNode;
+    const subChildren = iterateSelectedNode.children;
+    if (subChildren) {
+      return selectionWithSubTags(
+        child,
+        property,
+        subChildren,
+        selectionPoints,
+        onlyOneNode,
+        index === initialSelectedNodePosition,
+      );
+    }
+
     const points = (() => {
-      if (selectedNodes.length === 1) return selectionPoints;
+      if (onlyOneNode) return selectionPoints;
 
       return getExtremeContentPoints(
         content,
@@ -62,15 +76,6 @@ const getUpdatedNodes = ({
         property.code.value,
       );
     }
-
-    const subChildren = iterateSelectedNode.children;
-    if (subChildren)
-      return selectionWithSubTags(
-        child,
-        property,
-        subChildren,
-        selectionPoints,
-      );
 
     const { parentNode } = child;
     const comparativeNode = parentNode !== textRef ? parentNode : child;

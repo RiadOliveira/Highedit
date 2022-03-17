@@ -20,7 +20,7 @@ const fullTextSelected = ({
   if (hasProp && value === hasProp) {
     style.removeProperty(cssProp);
 
-    const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'SECTION';
+    const verifyEmptyTag = nodeName === 'SPAN' || nodeName === 'DIV';
     const isEmptyTag = !element.getAttribute('style') && verifyEmptyTag;
 
     if (isEmptyTag) return childText;

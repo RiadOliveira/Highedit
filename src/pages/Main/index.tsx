@@ -5,12 +5,6 @@ import unifyAndSetElementChildren from 'utils/unifyAndSetElementChildren';
 import { useElement } from 'hooks/element';
 import { Container, EditableArea, TextArea } from './styles';
 
-interface EnterPressHandlersProps {
-  childrenArray: ChildNode[];
-  selection: Selection;
-  node: Node;
-}
-
 const placeHolder =
   '<div style="color:#8e8e8e;">Insira o conteúdo aqui...</div>';
 
@@ -82,127 +76,6 @@ const Main: React.FC = () => {
     }
   }, [selectedElement, updateElement]);
 
-  const enterPressWithContent = (
-    { childrenArray, selection, node }: EnterPressHandlersProps,
-    parentNodeName: string,
-    cuttedString: string,
-  ) => {
-    const inputRef = textInputRef.current as HTMLPreElement;
-    const withoutTag = node.nodeName === '#text' && parentNodeName === 'PRE';
-
-    const { parentNode } = node;
-    const comparativeNode = parentNodeName !== 'PRE' ? parentNode : node;
-
-    let index = 0;
-
-    // If has tag, a div isn't created (When has cuttedString), is created a copy of the tag.
-    if (withoutTag) {
-      index = childrenArray.findIndex(child => child.nodeName === 'DIV');
-    } else index = childrenArray.findIndex(child => child === comparativeNode);
-
-    inputRef.removeChild(childrenArray[index] as Node);
-
-    const lastChar = cuttedString?.charAt(cuttedString.length - 1);
-    const selectedChild = childrenArray[index - 1];
-
-    selectedChild.textContent += `\n${lastChar !== '\n' ? cuttedString : ''}`;
-    const childLength = selectedChild.textContent?.length || 0;
-    const selectedNode = withoutTag ? selectedChild : selectedChild.firstChild;
-
-    // Sets cursor position on the new line.
-    selection.setPosition(selectedNode, childLength - cuttedString.length);
-  };
-
-  const enterPressWithoutContent = (
-    { childrenArray, selection, node }: EnterPressHandlersProps,
-    isNotBreak: boolean,
-  ) => {
-    const { nodeName, textContent, parentNode } = node;
-    const { length } = textContent || '';
-
-    const inputRef = textInputRef.current as HTMLPreElement;
-
-    if (parentNode?.nodeName === 'SECTION') {
-      childrenArray.forEach(
-        child => child.textContent === '' && inputRef.removeChild(child),
-      );
-    } else {
-      childrenArray.forEach(
-        child => child.nodeName === 'DIV' && inputRef.removeChild(child),
-      );
-    }
-
-    const { firstChild } = node;
-    const selectionNode = nodeName === 'PRE' && firstChild ? firstChild : node;
-
-    if (selectionNode) {
-      selectionNode.textContent += `\n${isNotBreak ? '\n' : ''}`;
-      selection.setPosition(selectionNode, length + Number(isNotBreak));
-    }
-  };
-
-  // Function to insert '\n' instead of create a new <div> and <br>. (To facilitate texts handling)
-  const handleEnterPress = useCallback(() => {
-    const selection = window.getSelection() as Selection;
-    const { anchorOffset: start, focusNode: node } = selection;
-
-    if (node) {
-      const { textContent, parentNode } = node;
-      const { nodeName: parentNodeName } = parentNode as ParentNode;
-
-      // If has string after the point where Enter was pressed.
-      const cuttedString = textContent?.slice(start, textContent.length) || '';
-      const handlersProps: EnterPressHandlersProps = {
-        node,
-        selection,
-        childrenArray: [],
-      };
-
-      // Timeout to exclude created <div>.
-      setTimeout(() => {
-        const { childNodes } = textInputRef.current as HTMLPreElement;
-        handlersProps.childrenArray = Array.from(childNodes);
-
-        const isNotBreak =
-          cuttedString.charAt(cuttedString.length - 1) !== '\n';
-        const hasContent = cuttedString && isNotBreak;
-
-        if (!hasContent) enterPressWithoutContent(handlersProps, isNotBreak);
-        else enterPressWithContent(handlersProps, parentNodeName, cuttedString);
-      }, 1);
-    }
-  }, []);
-
-  const handleBackspacePress = useCallback(() => {
-    const inputRef = textInputRef.current as HTMLPreElement;
-    const { childNodes } = inputRef;
-
-    const { focusNode } = window.getSelection() as Selection;
-    const content = focusNode?.firstChild?.parentElement?.innerText;
-
-    const comparativeNode =
-      focusNode?.nodeName === 'PRE' ? focusNode.firstChild : focusNode;
-
-    if (
-      content?.charAt(content.length - 1) === '\n' &&
-      comparativeNode?.nodeName === '#text'
-    ) {
-      const childrenArray = Array.from(childNodes);
-      const index = childrenArray.findIndex(child => child.nodeName === 'BR');
-
-      inputRef.removeChild(childrenArray[index]);
-      childrenArray[index - 1].textContent += '\n';
-    }
-  }, []);
-
-  const handleLineChange = useCallback(
-    (key: string) => {
-      if (key === 'Enter') handleEnterPress();
-      else if (key === 'Backspace') setTimeout(() => handleBackspacePress(), 1);
-    },
-    [handleBackspacePress, handleEnterPress],
-  );
-
   return (
     <Container ref={containerRef}>
       <h1>Highedit</h1>
@@ -214,7 +87,6 @@ const Main: React.FC = () => {
           onInput={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          onKeyDown={({ key }) => handleLineChange(key)}
           onSelect={handleContentSelect}
         />
       </EditableArea>

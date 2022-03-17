@@ -10,19 +10,30 @@ const selectionWithSubTags = (
   property: Property,
   selectedNodes: SelectedNode[],
   selectionPoints: SelectionPoints,
+  onlyOneNode: boolean,
+  isInitialPosition: boolean,
 ): string | Node => {
   let updatedChild: string | Node = child;
 
-  selectedNodes.forEach(({ content, reference }, index) => {
-    const points = (() => {
-      if (selectedNodes.length === 1) return selectionPoints;
+  if (onlyOneNode && selectedNodes.length === 1) {
+    const [selectedNode] = selectedNodes;
+    const { reference, content } = selectedNode;
 
-      return getExtremeContentPoints(
-        content,
-        reference.textContent || '',
-        !index, // First index, index === 0.
-      );
-    })();
+    return formattingTypeSwtich(
+      updatedChild as ChildNode,
+      property,
+      reference,
+      selectionPoints,
+      content,
+    );
+  }
+
+  selectedNodes.forEach(({ content, reference }, index) => {
+    const points = getExtremeContentPoints(
+      content,
+      reference.textContent || '',
+      isInitialPosition && !index,
+    );
 
     updatedChild = formattingTypeSwtich(
       updatedChild as ChildNode,

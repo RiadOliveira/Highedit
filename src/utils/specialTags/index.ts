@@ -17,7 +17,7 @@ export const linkTag = (
     selectedText,
   };
 
-  if (child.nodeName !== 'SECTION') return convertChildToLinkTag(props);
+  if (child.nodeName !== 'DIV') return convertChildToLinkTag(props);
 
   props.child = comparativeNode as ChildNode;
   const convertedChild = convertChildToLinkTag(props);
@@ -56,7 +56,7 @@ export const imageTag = (
   if (child.nodeName === '#text') return finalText;
 
   const childElement = child.firstChild?.parentElement as HTMLElement;
-  if (child.nodeName !== 'SECTION') {
+  if (child.nodeName !== 'DIV') {
     childElement.innerHTML = finalText;
     return childElement;
   }

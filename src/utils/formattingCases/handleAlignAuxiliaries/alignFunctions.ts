@@ -19,7 +19,7 @@ const childSelect = ({
   const referenceElement = reference.firstChild?.parentElement || undefined;
   const updatedContent: string[] = [];
 
-  const updatedElement = document.createElement('section');
+  const updatedElement = document.createElement('div');
   updatedElement.style.setProperty('text-align', propertyValue);
 
   const { start, end, template } = getExtremeTextsUsingPoints(
@@ -47,18 +47,18 @@ const childrenSelect = (
   const { reference } = selectedNode;
 
   if (initialPosition) {
-    updatedContent.push(`<section style="text-align: ${propertyValue};">`);
+    updatedContent.push(`<div style="text-align: ${propertyValue};">`);
   }
 
   const referenceHTML = reference.firstChild?.parentElement;
   const childContent = (() => {
-    if (reference.nodeName === 'SECTION') return referenceHTML?.innerHTML;
+    if (reference.nodeName === 'DIV') return referenceHTML?.innerHTML;
     if (reference.nodeName === 'SPAN') return referenceHTML?.outerHTML;
     return selectedNode.content;
   })();
   updatedContent.push(childContent || '');
 
-  if (finalPosition) updatedContent.push('</section>');
+  if (finalPosition) updatedContent.push('</div>');
   return updatedContent.join('');
 };
 
@@ -76,7 +76,7 @@ const subChildrenSelect = ({
   const { children: nodeChildren } = selectedNode;
 
   const updatedElement: string[] = [];
-  const template = `<section style="text-align: ${previousAlign};">?</section>`;
+  const template = `<div style="text-align: ${previousAlign};">?</div>`;
 
   const startChildren = getStartChildren({ childrenArray, nodeChildren });
   if (startChildren) updatedElement.push(template.replace('?', startChildren));

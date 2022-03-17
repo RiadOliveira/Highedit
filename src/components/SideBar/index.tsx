@@ -30,7 +30,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
     const textInput = inputRef.current;
     const { parentElement, firstChild, nodeName } = selectedElement;
 
-    const isSpecialTag = nodeName !== 'SPAN' && nodeName !== 'SECTION';
+    const isSpecialTag = nodeName !== 'SPAN' && nodeName !== 'DIV';
     if (isSpecialTag) props.push(nodeName.toLowerCase() as PropertyName);
 
     const isChild = parentElement !== textInput || firstChild?.nodeName === 'A';

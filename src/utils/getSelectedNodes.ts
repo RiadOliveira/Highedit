@@ -11,7 +11,7 @@ const getSelectedNodes = (
       selection.containsNode(node, true),
     ) as ChildNode;
 
-    const isTextTag = findedNode.nodeName !== 'SECTION';
+    const isTextTag = findedNode.nodeName !== 'DIV';
     let children;
 
     if (!isTextTag) {
@@ -19,7 +19,7 @@ const getSelectedNodes = (
       const { parentNode } = anchorNode as Node;
 
       const comparativeChild =
-        parentNode?.nodeName !== 'SECTION' ? parentNode : anchorNode;
+        parentNode?.nodeName !== 'DIV' ? parentNode : anchorNode;
 
       const findedChild = Array.from(findedNode?.childNodes).find(
         child => child === comparativeChild,
@@ -53,7 +53,7 @@ const getSelectedNodes = (
 
   for (let ind = 0; ind < filteredNodes.length; ind++) {
     const node = filteredNodes[ind];
-    const isTextTag = node.nodeName !== 'SECTION';
+    const isTextTag = node.nodeName !== 'DIV';
 
     const parsedNode: SelectedNode = {
       reference: node,
