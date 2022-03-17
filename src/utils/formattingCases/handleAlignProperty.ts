@@ -2,37 +2,22 @@ import { SelectedNode } from 'utils/getUpdatedNodes';
 import { SelectionPoints } from '.';
 import {
   childSelect,
-  childrenSelect,
   subChildrenSelect,
 } from './handleAlignAuxiliaries/alignFunctions';
 
-const handleAlignProperty = (
-  selectedNode: SelectedNode,
-  selectedNodesLength: number,
-  selectedNodePosition: number,
-  points: SelectionPoints,
-  propertyValue: string,
-): string => {
-  if (selectedNodesLength > 1) {
-    const isInitialPosition = !selectedNodePosition;
-    const isFinalPosition = selectedNodePosition === selectedNodesLength - 1;
+interface HandleAlignPropertyProps {
+  selectedNode: SelectedNode;
+  points: SelectionPoints;
+  propertyValue: string;
+}
 
-    return childrenSelect(
-      selectedNode,
-      isInitialPosition,
-      isFinalPosition,
-      propertyValue,
-    );
-  }
+const handleAlignProperty = (props: HandleAlignPropertyProps): string => {
+  const {
+    selectedNode: { children },
+  } = props;
 
-  const oneSelectedNodeProps = {
-    selectedNode,
-    propertyValue,
-    points,
-  };
-
-  if (selectedNode.children) return subChildrenSelect(oneSelectedNodeProps);
-  return childSelect(oneSelectedNodeProps);
+  if (children) return subChildrenSelect(props);
+  return childSelect(props);
 };
 
 export default handleAlignProperty;

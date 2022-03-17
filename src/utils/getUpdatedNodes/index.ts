@@ -33,6 +33,9 @@ const getUpdatedNodes = ({
   );
 
   const onlyOneNode = selectedNodes.length === 1;
+  const isAlign =
+    typeof property.code !== 'string' &&
+    property.code?.cssProp === 'text-align';
 
   // Iterate through all children of the created text.
   const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
@@ -42,21 +45,8 @@ const getUpdatedNodes = ({
     if (!iterateSelectedNode) return child;
     const { content, reference } = iterateSelectedNode;
 
-    if (
-      typeof property.code !== 'string' &&
-      property.code?.cssProp === 'text-align'
-    ) {
-      return handleAlignProperty(
-        iterateSelectedNode,
-        selectedNodes.length,
-        relativeSelectedNodePosition,
-        selectionPoints,
-        (property.code as { value: string }).value,
-      );
-    }
-
     const subChildren = iterateSelectedNode.children;
-    if (subChildren) {
+    if (subChildren && !isAlign) {
       return selectionWithSubTags(
         child,
         property,
@@ -76,6 +66,14 @@ const getUpdatedNodes = ({
         index === initialSelectedNodePosition,
       );
     })();
+
+    if (isAlign) {
+      return handleAlignProperty({
+        selectedNode: iterateSelectedNode,
+        points,
+        propertyValue: (property.code as { value: string }).value,
+      });
+    }
 
     const { parentNode } = child;
     const comparativeNode = parentNode !== textRef ? parentNode : child;

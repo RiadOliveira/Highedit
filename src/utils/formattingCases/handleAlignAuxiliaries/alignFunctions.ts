@@ -1,5 +1,4 @@
 import { SelectedNode } from 'utils/getUpdatedNodes';
-import getExtremeContentPoints from 'utils/getUpdatedNodes/auxiliaries/getExtremeContentPoints';
 import { SelectionPoints } from '..';
 import { getStartChildren, getEndChildren } from './getUnselectedSubChildren';
 
@@ -38,70 +37,6 @@ const childSelect = ({
   return updatedContent.join('');
 };
 
-const childrenSelect = (
-  selectedNode: SelectedNode,
-  isInitialPosition: boolean,
-  isFinalPosition: boolean,
-  propertyValue: string,
-): string => {
-  const updatedContent: string[] = [];
-  const { reference, content } = selectedNode;
-
-  if (isInitialPosition) {
-    const { start } = getExtremeContentPoints(
-      content,
-      reference.textContent || '',
-      true,
-    );
-
-    const template =
-      reference.nodeName === 'SPAN'
-        ? (reference.firstChild?.parentElement as HTMLElement)
-        : undefined;
-
-    const { start: startText, end: endText } = getExtremeTextsUsingPoints(
-      reference.textContent || '',
-      { start, end: start },
-      template,
-    );
-
-    updatedContent.push(startText);
-    updatedContent.push(`<div style="text-align: ${propertyValue};">`);
-    updatedContent.push(endText);
-  } else if (isFinalPosition) {
-    const { end } = getExtremeContentPoints(
-      content,
-      reference.textContent || '',
-      false,
-    );
-
-    const template =
-      reference.nodeName === 'SPAN'
-        ? (reference.firstChild?.parentElement as HTMLElement)
-        : undefined;
-
-    const { start: startText, end: endText } = getExtremeTextsUsingPoints(
-      reference.textContent || '',
-      { start: end, end },
-      template,
-    );
-
-    updatedContent.push(startText);
-    updatedContent.push('</div>');
-    updatedContent.push(endText);
-  } else {
-    const referenceHTML = reference.firstChild?.parentElement;
-    const childContent = (() => {
-      if (reference.nodeName === 'DIV') return referenceHTML?.innerHTML;
-      if (reference.nodeName === 'SPAN') return referenceHTML?.outerHTML;
-      return selectedNode.content;
-    })();
-    updatedContent.push(childContent || '');
-  }
-
-  return updatedContent.join('');
-};
-
 const subChildrenSelect = ({
   selectedNode,
   propertyValue,
@@ -119,7 +54,7 @@ const subChildrenSelect = ({
   };">?</div>`;
 
   const startChildren = getStartChildren({ childrenArray, nodeChildren });
-  if (startChildren) updatedElement.push(template.replace('?', startChildren));
+  if (startChildren) updatedElement.push(startChildren);
 
   const updatedContent = getUpdatedContentForAlignProperty(
     nodeChildren,
@@ -128,13 +63,12 @@ const subChildrenSelect = ({
     points,
     previousAlign,
   );
-
   updatedElement.push(updatedContent);
 
   const endChildren = getEndChildren({ childrenArray, nodeChildren });
-  if (endChildren) updatedElement.push(template.replace('?', endChildren));
+  if (endChildren) updatedElement.push(endChildren);
 
   return updatedElement.join('');
 };
 
-export { childSelect, childrenSelect, subChildrenSelect };
+export { childSelect, subChildrenSelect };
