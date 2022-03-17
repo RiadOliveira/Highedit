@@ -53,7 +53,6 @@ const getUpdatedNodes = ({
         subChildren,
         selectionPoints,
         onlyOneNode,
-        index === initialSelectedNodePosition,
       );
     }
 
@@ -68,7 +67,7 @@ const getUpdatedNodes = ({
     })();
 
     if (isAlign) {
-      return handleAlignProperty({
+      return handleAlignProperty(selectedNodes.length === 1, {
         selectedNode: iterateSelectedNode,
         points,
         propertyValue: (property.code as { value: string }).value,

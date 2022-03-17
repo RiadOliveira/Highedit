@@ -11,7 +11,6 @@ const selectionWithSubTags = (
   selectedNodes: SelectedNode[],
   selectionPoints: SelectionPoints,
   onlyOneNode: boolean,
-  isInitialPosition: boolean,
 ): string | Node => {
   let updatedChild: string | Node = child;
 
@@ -32,7 +31,7 @@ const selectionWithSubTags = (
     const points = getExtremeContentPoints(
       content,
       reference.textContent || '',
-      isInitialPosition && !index,
+      !index,
     );
 
     updatedChild = formattingTypeSwtich(

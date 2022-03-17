@@ -37,11 +37,10 @@ const childSelect = ({
   return updatedContent.join('');
 };
 
-const subChildrenSelect = ({
-  selectedNode,
-  propertyValue,
-  points,
-}: OneSelectedNodeProps): string => {
+const subChildrenSelect = (
+  onlyOneChild: boolean,
+  { selectedNode, propertyValue, points }: OneSelectedNodeProps,
+): string => {
   const nodeElement = selectedNode.reference.firstChild?.parentElement;
   const previousAlign = nodeElement?.style.getPropertyValue('text-align');
 
@@ -49,24 +48,29 @@ const subChildrenSelect = ({
   const nodeChildren = selectedNode.children as SelectedNode[];
 
   const updatedElement: string[] = [];
-  const template = `<div style="text-align: ${
-    previousAlign || propertyValue
-  };">?</div>`;
+  const previousTemplate = previousAlign
+    ? `<div style="text-align: ${previousAlign};">?</div>`
+    : '?';
 
   const startChildren = getStartChildren({ childrenArray, nodeChildren });
-  if (startChildren) updatedElement.push(startChildren);
+  if (startChildren) {
+    updatedElement.push(previousTemplate.replace('?', startChildren));
+  }
 
   const updatedContent = getUpdatedContentForAlignProperty(
     nodeChildren,
     propertyValue,
-    template,
     points,
+    previousTemplate,
     previousAlign,
+    onlyOneChild,
   );
   updatedElement.push(updatedContent);
 
   const endChildren = getEndChildren({ childrenArray, nodeChildren });
-  if (endChildren) updatedElement.push(endChildren);
+  if (endChildren) {
+    updatedElement.push(previousTemplate.replace('?', endChildren));
+  }
 
   return updatedElement.join('');
 };

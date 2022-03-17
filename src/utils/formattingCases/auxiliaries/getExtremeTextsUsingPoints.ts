@@ -7,7 +7,7 @@ const getExtremeTextsUsingPoints = (
   template?: HTMLElement,
 ): { start: string; end: string; template: string } => {
   const verifiedTemplate = template
-    ? template.outerHTML.replace(template.innerText, '?')
+    ? template.outerHTML.replace(template.innerHTML, '?')
     : '?';
 
   const finalTexts = {

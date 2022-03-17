@@ -11,12 +11,15 @@ interface HandleAlignPropertyProps {
   propertyValue: string;
 }
 
-const handleAlignProperty = (props: HandleAlignPropertyProps): string => {
+const handleAlignProperty = (
+  onlyOneChild: boolean,
+  props: HandleAlignPropertyProps,
+): string => {
   const {
     selectedNode: { children },
   } = props;
 
-  if (children) return subChildrenSelect(props);
+  if (children) return subChildrenSelect(onlyOneChild, props);
   return childSelect(props);
 };
 
