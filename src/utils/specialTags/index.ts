@@ -1,7 +1,5 @@
 import unifyAndSetElementChildren from 'utils/unifyAndSetElementChildren';
 import getExtremeTextsUsingPoints from 'utils/formattingCases/auxiliaries/getExtremeTextsUsingPoints';
-import html2canvas from 'html2canvas';
-import JsPDF from 'jspdf';
 import convertChildToLinkTag from './linkAuxiliaries/convertChildToLinkTag';
 import { SelectionPoints } from '../formattingCases';
 
@@ -71,10 +69,23 @@ export const imageTag = (
 };
 
 export const saveFile = (textRef: HTMLPreElement): void => {
-  html2canvas(textRef.parentElement as HTMLElement).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new JsPDF();
-    pdf.addImage(imgData, 'JPEG', 0, 0, 0, 0);
-    pdf.save('download.pdf');
-  });
+  const { documentElement } = document;
+
+  const copyHTML = documentElement.cloneNode(true).firstChild
+    ?.parentElement as HTMLElement;
+  const copyElement = textRef.cloneNode(true).firstChild?.parentElement;
+  copyElement?.removeAttribute('contentEditable');
+  copyElement?.style.setProperty('width', '100%');
+
+  const copyBody = document.body.cloneNode(false);
+  copyBody.appendChild(copyElement as HTMLElement);
+  copyHTML.replaceChild(copyBody, copyHTML.getElementsByTagName('body')[0]);
+
+  const downloadElement = document.createElement('a');
+  downloadElement.setAttribute(
+    'href',
+    `data:text/plain;charset=utf-8,${encodeURIComponent(copyHTML.outerHTML)}`,
+  );
+  downloadElement.setAttribute('download', 'download.html');
+  downloadElement.click();
 };

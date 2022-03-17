@@ -68,7 +68,7 @@ Tools used on this project:
 - [X] Text size editing.
 - [X] Embed links into the document.
 - [ ] Upload/Embed images into the document.
-- [ ] Save created document as PDF.
+- [ ] Save created document as HTML file.
 
 </br>
 
