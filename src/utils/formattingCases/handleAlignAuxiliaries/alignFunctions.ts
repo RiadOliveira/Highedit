@@ -1,4 +1,5 @@
 import { SelectedNode } from 'utils/getUpdatedNodes';
+import getExtremeContentPoints from 'utils/getUpdatedNodes/auxiliaries/getExtremeContentPoints';
 import { SelectionPoints } from '..';
 import { getStartChildren, getEndChildren } from './getUnselectedSubChildren';
 
@@ -39,26 +40,65 @@ const childSelect = ({
 
 const childrenSelect = (
   selectedNode: SelectedNode,
-  initialPosition: boolean,
-  finalPosition: boolean,
+  isInitialPosition: boolean,
+  isFinalPosition: boolean,
   propertyValue: string,
 ): string => {
   const updatedContent: string[] = [];
-  const { reference } = selectedNode;
+  const { reference, content } = selectedNode;
 
-  if (initialPosition) {
+  if (isInitialPosition) {
+    const { start } = getExtremeContentPoints(
+      content,
+      reference.textContent || '',
+      true,
+    );
+
+    const template =
+      reference.nodeName === 'SPAN'
+        ? (reference.firstChild?.parentElement as HTMLElement)
+        : undefined;
+
+    const { start: startText, end: endText } = getExtremeTextsUsingPoints(
+      reference.textContent || '',
+      { start, end: start },
+      template,
+    );
+
+    updatedContent.push(startText);
     updatedContent.push(`<div style="text-align: ${propertyValue};">`);
+    updatedContent.push(endText);
+  } else if (isFinalPosition) {
+    const { end } = getExtremeContentPoints(
+      content,
+      reference.textContent || '',
+      false,
+    );
+
+    const template =
+      reference.nodeName === 'SPAN'
+        ? (reference.firstChild?.parentElement as HTMLElement)
+        : undefined;
+
+    const { start: startText, end: endText } = getExtremeTextsUsingPoints(
+      reference.textContent || '',
+      { start: end, end },
+      template,
+    );
+
+    updatedContent.push(startText);
+    updatedContent.push('</div>');
+    updatedContent.push(endText);
+  } else {
+    const referenceHTML = reference.firstChild?.parentElement;
+    const childContent = (() => {
+      if (reference.nodeName === 'DIV') return referenceHTML?.innerHTML;
+      if (reference.nodeName === 'SPAN') return referenceHTML?.outerHTML;
+      return selectedNode.content;
+    })();
+    updatedContent.push(childContent || '');
   }
 
-  const referenceHTML = reference.firstChild?.parentElement;
-  const childContent = (() => {
-    if (reference.nodeName === 'DIV') return referenceHTML?.innerHTML;
-    if (reference.nodeName === 'SPAN') return referenceHTML?.outerHTML;
-    return selectedNode.content;
-  })();
-  updatedContent.push(childContent || '');
-
-  if (finalPosition) updatedContent.push('</div>');
   return updatedContent.join('');
 };
 
@@ -70,13 +110,13 @@ const subChildrenSelect = ({
   const nodeElement = selectedNode.reference.firstChild?.parentElement;
   const previousAlign = nodeElement?.style.getPropertyValue('text-align');
 
-  if (!selectedNode.children || !previousAlign) return '';
-
   const childrenArray = Array.from(selectedNode.reference.childNodes);
-  const { children: nodeChildren } = selectedNode;
+  const nodeChildren = selectedNode.children as SelectedNode[];
 
   const updatedElement: string[] = [];
-  const template = `<div style="text-align: ${previousAlign};">?</div>`;
+  const template = `<div style="text-align: ${
+    previousAlign || propertyValue
+  };">?</div>`;
 
   const startChildren = getStartChildren({ childrenArray, nodeChildren });
   if (startChildren) updatedElement.push(template.replace('?', startChildren));
@@ -84,9 +124,9 @@ const subChildrenSelect = ({
   const updatedContent = getUpdatedContentForAlignProperty(
     nodeChildren,
     propertyValue,
-    previousAlign,
     template,
     points,
+    previousAlign,
   );
 
   updatedElement.push(updatedContent);

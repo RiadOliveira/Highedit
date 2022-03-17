@@ -3,14 +3,13 @@ import { SelectionPoints } from '..';
 import { childSelect } from './alignFunctions';
 
 import getContentFromChild from '../auxiliaries/getContentFromChild';
-import buildTemplateElementForAlignProperty from './buildTemplateElementForAlignProperty';
 
 const getUpdatedContentForAlignProperty = (
   nodeChildren: SelectedNode[],
   propertyValue: string,
-  previousAlign: string,
   template: string,
   points: SelectionPoints,
+  previousAlign: string | undefined,
 ): string => {
   const removeSelectedContentAlign = propertyValue === previousAlign;
 
@@ -20,24 +19,17 @@ const getUpdatedContentForAlignProperty = (
       .join('');
 
     if (removeSelectedContentAlign) return selectedChildren;
+    if (!previousAlign) return template.replace('?', selectedChildren);
 
     const updatedTemplate = template.replace(previousAlign, propertyValue);
     return updatedTemplate.replace('?', selectedChildren);
   }
 
-  const updatedChildContent = childSelect({
+  return childSelect({
     selectedNode: nodeChildren[0],
     propertyValue,
     points,
   });
-
-  const templateElement = buildTemplateElementForAlignProperty(
-    updatedChildContent,
-    template,
-    removeSelectedContentAlign,
-  );
-
-  return templateElement.innerHTML;
 };
 
 export default getUpdatedContentForAlignProperty;

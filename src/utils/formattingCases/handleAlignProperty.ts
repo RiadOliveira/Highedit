@@ -14,13 +14,13 @@ const handleAlignProperty = (
   propertyValue: string,
 ): string => {
   if (selectedNodesLength > 1) {
-    const initialPosition = !selectedNodePosition;
-    const finalPosition = selectedNodePosition === selectedNodesLength - 1;
+    const isInitialPosition = !selectedNodePosition;
+    const isFinalPosition = selectedNodePosition === selectedNodesLength - 1;
 
     return childrenSelect(
       selectedNode,
-      initialPosition,
-      finalPosition,
+      isInitialPosition,
+      isFinalPosition,
       propertyValue,
     );
   }

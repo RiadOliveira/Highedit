@@ -40,8 +40,21 @@ const getUpdatedNodes = ({
     const iterateSelectedNode = selectedNodes[relativeSelectedNodePosition];
 
     if (!iterateSelectedNode) return child;
-
     const { content, reference } = iterateSelectedNode;
+
+    if (
+      typeof property.code !== 'string' &&
+      property.code?.cssProp === 'text-align'
+    ) {
+      return handleAlignProperty(
+        iterateSelectedNode,
+        selectedNodes.length,
+        relativeSelectedNodePosition,
+        selectionPoints,
+        (property.code as { value: string }).value,
+      );
+    }
+
     const subChildren = iterateSelectedNode.children;
     if (subChildren) {
       return selectionWithSubTags(
@@ -63,19 +76,6 @@ const getUpdatedNodes = ({
         index === initialSelectedNodePosition,
       );
     })();
-
-    if (
-      typeof property.code !== 'string' &&
-      property.code?.cssProp === 'text-align'
-    ) {
-      return handleAlignProperty(
-        iterateSelectedNode,
-        selectedNodes.length,
-        relativeSelectedNodePosition,
-        points,
-        property.code.value,
-      );
-    }
 
     const { parentNode } = child;
     const comparativeNode = parentNode !== textRef ? parentNode : child;
