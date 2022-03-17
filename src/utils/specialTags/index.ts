@@ -68,14 +68,26 @@ export const imageTag = (
   return child;
 };
 
-export const saveFile = (textRef: HTMLPreElement): void => {
-  const { documentElement } = document;
+export const saveFile = (
+  textRef: HTMLPreElement,
+  backgroundColor: string,
+): void => {
+  const documentElement = document.documentElement.cloneNode(true);
 
-  const copyHTML = documentElement.cloneNode(true).firstChild
+  const copyHTML = documentElement.firstChild?.parentElement as HTMLElement;
+  Array.from(copyHTML.getElementsByTagName('script')).forEach(element =>
+    element.remove(),
+  );
+
+  const copyElement = textRef.cloneNode(true).firstChild
     ?.parentElement as HTMLElement;
-  const copyElement = textRef.cloneNode(true).firstChild?.parentElement;
-  copyElement?.removeAttribute('contentEditable');
-  copyElement?.style.setProperty('width', '100%');
+  copyElement.removeAttribute('contentEditable');
+
+  copyElement.style.setProperty('width', '100%');
+  copyElement.style.setProperty('height', '100%');
+  copyElement.style.setProperty('overflow', 'auto');
+  copyElement.style.setProperty('margin', '0px');
+  copyElement.style.setProperty('background', backgroundColor);
 
   const copyBody = document.body.cloneNode(false);
   copyBody.appendChild(copyElement as HTMLElement);

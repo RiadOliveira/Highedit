@@ -13,7 +13,7 @@ const Modal: React.FC<ModalProps> = ({ style }) => {
     hideModal,
   } = useModal();
 
-  const [selectedText, setSelectedText] = useState('');
+  const [selectedText, setSelectedText] = useState(initialValue || '');
 
   const confirmModal = useCallback(() => {
     hideModal();

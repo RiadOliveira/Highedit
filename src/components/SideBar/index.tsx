@@ -58,7 +58,14 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
       const textRef = inputRef.current as HTMLPreElement;
 
       if (property.name === 'save') {
-        saveFile(textRef);
+        showModal({
+          actionFunction: backgroundColor => saveFile(textRef, backgroundColor),
+          type: 'input',
+          inputType: 'color',
+          initialValue: '#00112e',
+          text: 'Insira a cor de fundo:',
+        });
+
         return;
       }
 
