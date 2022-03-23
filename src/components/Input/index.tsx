@@ -16,7 +16,7 @@ const Input: React.FC<InputProps> = ({
   ...props
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState(defaultValue);
+  const [inputValue, setInputValue] = useState(defaultValue || '');
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus();
