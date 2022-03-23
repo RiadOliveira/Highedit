@@ -73,52 +73,46 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
       const selection = window.getSelection() as Selection;
       const selectedText = selection.toString();
-
-      const childrenArray = Array.from(textRef.childNodes);
       const isImage = property.name === 'img';
 
-      if (!selectedText && !isImage) setUpdatedText(childrenArray);
-      else {
-        const selectedNodes = getSelectedNodes(
-          selection,
-          childrenArray,
-          isImage,
-        );
+      if (!selectedText && !isImage) return;
 
-        const parsedProperty: Property = { ...property } as Property;
-        if (code) {
-          // In order to not copy address of code object.
-          if (typeof code === 'string') parsedProperty.code = code;
-          else parsedProperty.code = { ...code };
-        }
+      const childrenArray = Array.from(textRef.childNodes);
+      const selectedNodes = getSelectedNodes(selection, childrenArray, isImage);
 
-        const { anchorOffset: start, focusOffset: end } = selection;
-        const [firstNode] = selectedNodes;
-        const { children } = firstNode;
-        const firstSelectedNode = children ? children[0] : firstNode;
-
-        handleSpecialTagsWithModal(
-          parsedProperty,
-          firstSelectedNode,
-          showModal,
-          () => {
-            const selectionPoints = {
-              start: Math.min(start, end),
-              end: Math.max(start, end),
-            };
-
-            const props = {
-              textRef,
-              childrenArray,
-              selectedNodes,
-              property: parsedProperty,
-              selectionPoints,
-            };
-
-            setUpdatedText(getUpdatedNodes(props));
-          },
-        );
+      const parsedProperty: Property = { ...property } as Property;
+      if (code) {
+        // In order to not copy address of code object.
+        if (typeof code === 'string') parsedProperty.code = code;
+        else parsedProperty.code = { ...code };
       }
+
+      const { anchorOffset: start, focusOffset: end } = selection;
+      const [firstNode] = selectedNodes;
+      const { children } = firstNode;
+      const firstSelectedNode = children ? children[0] : firstNode;
+
+      handleSpecialTagsWithModal(
+        parsedProperty,
+        firstSelectedNode,
+        showModal,
+        () => {
+          const selectionPoints = {
+            start: Math.min(start, end),
+            end: Math.max(start, end),
+          };
+
+          const props = {
+            textRef,
+            childrenArray,
+            selectedNodes,
+            property: parsedProperty,
+            selectionPoints,
+          };
+
+          setUpdatedText(getUpdatedNodes(props));
+        },
+      );
 
       if (!textRef.onfocus) textRef.focus();
 
