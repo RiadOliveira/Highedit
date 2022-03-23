@@ -15,7 +15,7 @@ const childSelect = ({
   selectedNode: { content, reference },
   propertyValue,
   points,
-}: OneSelectedNodeProps): string => {
+}: OneSelectedNodeProps): Node => {
   const referenceElement = reference.firstChild?.parentElement || undefined;
   const updatedContent: string[] = [];
 
@@ -34,7 +34,10 @@ const childSelect = ({
   updatedContent.push(updatedElement.outerHTML);
   if (end) updatedContent.push(end);
 
-  return updatedContent.join('');
+  const templateElement = document.createElement('template');
+  templateElement.innerHTML = updatedContent.join('');
+
+  return templateElement.content.firstChild as ChildNode;
 };
 
 const subChildrenSelect = (
