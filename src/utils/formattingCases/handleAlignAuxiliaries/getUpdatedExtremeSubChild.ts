@@ -7,6 +7,7 @@ const getUpdatedExtremeSubChild = (
   template: string,
   previousTemplate: string,
   isInitialPosition: boolean,
+  onlyOneChild: boolean,
   { reference, content }: SelectedNode,
   selectionPoints?: SelectionPoints,
 ): string => {
@@ -21,6 +22,8 @@ const getUpdatedExtremeSubChild = (
       childContent,
       isInitialPosition,
     );
+
+    if (onlyOneChild) return { start, end };
 
     const point = isInitialPosition ? start : end;
     return {
@@ -43,15 +46,22 @@ const getUpdatedExtremeSubChild = (
   const contentWithTemplate = tagTemplate.replace('?', content);
   const finalUpdatedContent = template.replace('?', contentWithTemplate);
 
-  const parsedStartText =
-    (selectionPoints || isInitialPosition) && startText
-      ? previousTemplate.replace('?', startText)
-      : '';
+  const hasExtraText = onlyOneChild || selectionPoints;
+  const parsedStartText = (() => {
+    if (startText && (hasExtraText || isInitialPosition)) {
+      return previousTemplate.replace('?', startText);
+    }
 
-  const parsedEndText =
-    (selectionPoints || !isInitialPosition) && endText
-      ? previousTemplate.replace('?', endText)
-      : '';
+    return '';
+  })();
+
+  const parsedEndText = (() => {
+    if (endText && (hasExtraText || !isInitialPosition)) {
+      return previousTemplate.replace('?', endText);
+    }
+
+    return '';
+  })();
 
   if (parsedStartText) updatedContent.push(parsedStartText);
   updatedContent.push(finalUpdatedContent);

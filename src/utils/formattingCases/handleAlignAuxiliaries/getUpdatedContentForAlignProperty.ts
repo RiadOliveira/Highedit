@@ -8,6 +8,7 @@ const getUpdatedContentForAlignProperty = (
   nodeChildren: SelectedNode[],
   template: string,
   previousTemplate: string,
+  onlyOneChild: boolean,
   selectionPoints?: SelectionPoints,
 ): string => {
   const { length } = nodeChildren;
@@ -18,6 +19,7 @@ const getUpdatedContentForAlignProperty = (
         template,
         previousTemplate,
         index === 0,
+        onlyOneChild,
         child,
         selectionPoints,
       );

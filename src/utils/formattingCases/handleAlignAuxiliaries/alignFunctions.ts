@@ -60,12 +60,14 @@ const subChildrenSelect = (
   const alignTemplate = `<div style="text-align: ${propertyValue}">?</div>`;
   // If are equal, removes div.
   const template = propertyValue === previousAlign ? '?' : alignTemplate;
+  const onlyOneChild = nodeChildren.length === 1;
 
   const updatedContent = getUpdatedContentForAlignProperty(
     nodeChildren,
     template,
     previousTemplate,
-    onlyOneNode && nodeChildren.length === 1 ? points : undefined,
+    onlyOneChild,
+    onlyOneNode && onlyOneChild ? points : undefined,
   );
   updatedElement.push(updatedContent);
 
