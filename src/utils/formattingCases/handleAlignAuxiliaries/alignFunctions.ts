@@ -64,9 +64,8 @@ const subChildrenSelect = (
   const updatedContent = getUpdatedContentForAlignProperty(
     nodeChildren,
     template,
-    points,
     previousTemplate,
-    onlyOneNode,
+    onlyOneNode && nodeChildren.length === 1 ? points : undefined,
   );
   updatedElement.push(updatedContent);
 
