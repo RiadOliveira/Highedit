@@ -76,6 +76,24 @@ const Main: React.FC = () => {
     }
   }, [selectedElement, updateElement]);
 
+  const handleTabPress = useCallback(
+    (event: React.KeyboardEvent<HTMLPreElement>) => {
+      const inputRef = textInputRef.current;
+      const selection = window.getSelection() as Selection;
+
+      if (event.key === 'Tab' && inputRef) {
+        event.preventDefault();
+        const tabElement = document.createTextNode('\t');
+
+        const range = selection.getRangeAt(0);
+        range.insertNode(tabElement);
+        range.setStartAfter(tabElement);
+        range.setEndAfter(tabElement);
+      }
+    },
+    [],
+  );
+
   return (
     <Container ref={containerRef}>
       <h1>Highedit</h1>
@@ -88,6 +106,7 @@ const Main: React.FC = () => {
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           onSelect={handleContentSelect}
+          onKeyDown={event => handleTabPress(event)}
         />
       </EditableArea>
 
