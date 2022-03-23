@@ -28,7 +28,19 @@ const childSelect = ({
     referenceElement,
   );
 
-  updatedElement.innerHTML = template.replace('?', content);
+  const { firstChild } = referenceElement as HTMLElement;
+
+  updatedElement.innerHTML = (() => {
+    if (firstChild?.nodeName === '#text') return template.replace('?', content);
+
+    const childElement = firstChild?.firstChild?.parentElement as HTMLElement;
+    const childTemplate = childElement.outerHTML.replace(
+      childElement.innerHTML,
+      '?',
+    );
+
+    return template.replace('?', childTemplate.replace('?', content));
+  })();
 
   if (start) updatedContent.push(start);
   updatedContent.push(updatedElement.outerHTML);
