@@ -45,12 +45,9 @@ const getUpdatedExtremeSubChild = (
   const updatedContent: string[] = [];
   const contentWithTemplate = tagTemplate.replace('?', content);
 
-  const { firstChild } = reference.firstChild?.parentElement as HTMLElement;
-
   const finalUpdatedContent = (() => {
-    if (firstChild?.nodeName === '#text') {
-      return template.replace('?', contentWithTemplate);
-    }
+    const firstChild = reference.firstChild?.parentElement?.firstChild;
+    if (!firstChild) return template.replace('?', contentWithTemplate);
 
     const childElement = firstChild?.firstChild?.parentElement as HTMLElement;
     const childTemplate = childElement.outerHTML.replace(

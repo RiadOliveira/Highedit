@@ -56,7 +56,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
   }, [inputRef, selectedElement]);
 
   const handleButtonClick = useCallback(
-    ({ code, ...property }: Property) => {
+    (property: Property) => {
       const textRef = inputRef.current as HTMLPreElement;
 
       if (property.name === 'save') {
@@ -82,6 +82,7 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
 
       // In order to not copy addresses of original object.
       const parsedProperty: Property = { ...property } as Property;
+      const { code } = property;
       if (code && typeof code !== 'string') parsedProperty.code = { ...code };
 
       const { anchorOffset: start, focusOffset: end } = selection;

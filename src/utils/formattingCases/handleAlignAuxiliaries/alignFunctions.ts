@@ -28,10 +28,9 @@ const childSelect = ({
     referenceElement,
   );
 
-  const { firstChild } = referenceElement as HTMLElement;
-
   updatedElement.innerHTML = (() => {
-    if (firstChild?.nodeName === '#text') return template.replace('?', content);
+    const firstChild = referenceElement?.firstChild;
+    if (!firstChild) return template.replace('?', content);
 
     const childElement = firstChild?.firstChild?.parentElement as HTMLElement;
     const childTemplate = childElement.outerHTML.replace(
