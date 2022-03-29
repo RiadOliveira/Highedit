@@ -80,12 +80,9 @@ const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {
       const childrenArray = Array.from(textRef.childNodes);
       const selectedNodes = getSelectedNodes(selection, childrenArray, isImage);
 
+      // In order to not copy addresses of original object.
       const parsedProperty: Property = { ...property } as Property;
-      if (code) {
-        // In order to not copy address of code object.
-        if (typeof code === 'string') parsedProperty.code = code;
-        else parsedProperty.code = { ...code };
-      }
+      if (code && typeof code !== 'string') parsedProperty.code = { ...code };
 
       const { anchorOffset: start, focusOffset: end } = selection;
       const [firstNode] = selectedNodes;
