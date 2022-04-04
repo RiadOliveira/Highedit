@@ -27,7 +27,7 @@ const getUpdatedNodes = ({
   selectedNodes,
   property,
   selectionPoints,
-}: GetUpdatedNodesProps): (Node | string)[] => {
+}: GetUpdatedNodesProps): Node[] => {
   const initialSelectedNodePosition = childrenArray.findIndex(
     child => child === selectedNodes[0].reference,
   );
@@ -38,7 +38,7 @@ const getUpdatedNodes = ({
     property.code?.cssProp === 'text-align';
 
   // Iterate through all children of the created text.
-  const inputNodes: (Node | string)[] = childrenArray.map((child, index) => {
+  const inputNodes: Node[] = childrenArray.map((child, index) => {
     const relativeSelectedNodePosition = index - initialSelectedNodePosition;
     const iterateSelectedNode = selectedNodes[relativeSelectedNodePosition];
 

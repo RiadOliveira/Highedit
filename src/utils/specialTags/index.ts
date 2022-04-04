@@ -1,4 +1,3 @@
-import unifyAndSetElementChildren from 'utils/unifyAndSetElementChildren';
 import getExtremeTextsUsingPoints from 'utils/formattingCases/auxiliaries/getExtremeTextsUsingPoints';
 import generateTemplateElementFromString from 'utils/formattingCases/auxiliaries/generateTemplateElementFromString';
 import convertChildToLinkTag from './linkAuxiliaries/convertChildToLinkTag';
@@ -29,7 +28,7 @@ export const linkTag = (
   );
 
   const childElement = child.firstChild?.parentElement as HTMLElement;
-  unifyAndSetElementChildren(updatedChildren.flat(), childElement);
+  childElement.replaceChildren(...updatedChildren.flat());
 
   return childElement;
 };

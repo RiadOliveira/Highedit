@@ -14,7 +14,7 @@ import { ButtonPair, Container } from './styles';
 
 interface SideBarProps {
   inputRef: React.RefObject<HTMLPreElement>;
-  setUpdatedText: (updatedChildren: (Node | string)[]) => void;
+  setUpdatedText: (updatedChildren: Node[]) => void;
 }
 
 const SideBar: React.FC<SideBarProps> = ({ inputRef, setUpdatedText }) => {

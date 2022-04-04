@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import SideBar from 'components/SideBar';
-import unifyAndSetElementChildren from 'utils/unifyAndSetElementChildren';
 
 import { useElement } from 'hooks/element';
 import { Container, EditableArea, TextArea } from './styles';
@@ -49,9 +48,10 @@ const Main: React.FC = () => {
     if (inputRef && inputRef.innerHTML === '') inputRef.innerHTML = placeHolder;
   }, []);
 
-  const setUpdatedText = useCallback((updatedChildren: (Node | string)[]) => {
+  const setUpdatedText = useCallback((updatedChildren: Node[]) => {
     const inputRef = textInputRef.current;
-    if (inputRef) unifyAndSetElementChildren(updatedChildren, inputRef);
+    if (inputRef) inputRef.replaceChildren(...updatedChildren);
+
     window.getSelection()?.setPosition(inputRef); // Reset position.
   }, []);
 

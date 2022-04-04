@@ -46,10 +46,7 @@ const childSelect = ({
   updatedContent.push(updatedElement.outerHTML);
   if (end) updatedContent.push(end);
 
-  const templateElement = document.createElement('template');
-  templateElement.innerHTML = updatedContent.join('');
-
-  return templateElement.content.firstChild as ChildNode;
+  return generateTemplateElementFromString(updatedContent.join(''));
 };
 
 const subChildrenSelect = (

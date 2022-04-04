@@ -11,8 +11,8 @@ const selectionWithSubTags = (
   selectedNodes: SelectedNode[],
   selectionPoints: SelectionPoints,
   onlyOneNode: boolean,
-): string | Node => {
-  let updatedChild: string | Node = child;
+): Node => {
+  let updatedChild: Node = child;
 
   if (onlyOneNode && selectedNodes.length === 1) {
     const [selectedNode] = selectedNodes;
