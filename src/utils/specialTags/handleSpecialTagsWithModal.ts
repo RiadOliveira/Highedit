@@ -14,7 +14,7 @@ const handleSpecialTagsWithModal = (
   const isModalProperty =
     code === 'modal' || (typeof code !== 'string' && code?.value === 'modal');
 
-  if (!isModalProperty) {
+  if (!isModalProperty || firstChild?.nodeName === 'A') {
     afterModalFunction();
     return;
   }
