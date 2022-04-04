@@ -33,7 +33,7 @@ const childSelect = ({
     const firstChild = referenceElement?.firstChild;
     if (!firstChild) return template.replace('?', content);
 
-    const childElement = firstChild?.firstChild?.parentElement as HTMLElement;
+    const childElement = firstChild.parentElement as HTMLElement;
     const childTemplate = childElement.outerHTML.replace(
       childElement.innerHTML,
       '?',
