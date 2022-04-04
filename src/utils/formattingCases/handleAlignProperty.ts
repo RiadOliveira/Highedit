@@ -14,7 +14,7 @@ interface HandleAlignPropertyProps {
 const handleAlignProperty = (
   onlyOneChild: boolean,
   props: HandleAlignPropertyProps,
-): string | Node => {
+): Node => {
   const {
     selectedNode: { children },
   } = props;

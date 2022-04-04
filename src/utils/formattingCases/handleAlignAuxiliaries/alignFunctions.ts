@@ -4,6 +4,7 @@ import { getStartChildren, getEndChildren } from './getUnselectedSubChildren';
 
 import getExtremeTextsUsingPoints from '../auxiliaries/getExtremeTextsUsingPoints';
 import getUpdatedContentForAlignProperty from './getUpdatedContentForAlignProperty';
+import generateTemplateElementFromString from '../auxiliaries/generateTemplateElementFromString';
 
 interface OneSelectedNodeProps {
   selectedNode: SelectedNode;
@@ -54,7 +55,7 @@ const childSelect = ({
 const subChildrenSelect = (
   onlyOneNode: boolean,
   { selectedNode, propertyValue, points }: OneSelectedNodeProps,
-): string => {
+): Node => {
   const nodeElement = selectedNode.reference.firstChild?.parentElement;
   const previousAlign = nodeElement?.style.getPropertyValue('text-align');
 
@@ -90,7 +91,7 @@ const subChildrenSelect = (
     updatedElement.push(previousTemplate.replace('?', endChildren));
   }
 
-  return updatedElement.join('');
+  return generateTemplateElementFromString(updatedElement.join(''));
 };
 
 export { childSelect, subChildrenSelect };
