@@ -1,4 +1,5 @@
 import { SelectionPoints } from 'utils/formattingCases';
+import generateTemplateElementFromString from 'utils/formattingCases/auxiliaries/generateTemplateElementFromString';
 import getContentFromChild from 'utils/formattingCases/auxiliaries/getContentFromChild';
 import getExtremeTextsUsingPoints from 'utils/formattingCases/auxiliaries/getExtremeTextsUsingPoints';
 
@@ -49,7 +50,7 @@ const convertChildToLinkTag = ({
   points,
   link,
   selectedText,
-}: ConvertChildToLinkTagProps): string => {
+}: ConvertChildToLinkTagProps): Node => {
   const linkElement = document.createElement('a');
   linkElement.href = link;
   linkElement.innerText = selectedText;
@@ -61,17 +62,21 @@ const convertChildToLinkTag = ({
     template,
   );
 
+  let finalContent: string;
+
   if (child.nodeName === 'SPAN') {
-    return alreadyHasTag(child, linkElement, start, end);
+    finalContent = alreadyHasTag(child, linkElement, start, end);
+  } else {
+    // Only text.
+    const spanElement = document.createElement('span');
+    spanElement.style.setProperty('color', 'blue');
+    spanElement.style.setProperty('text-decoration', 'underline');
+    spanElement.appendChild(linkElement);
+
+    finalContent = `${start}${spanElement.outerHTML}${end}`;
   }
 
-  // Only text.
-  const spanElement = document.createElement('span');
-  spanElement.style.setProperty('color', 'blue');
-  spanElement.style.setProperty('text-decoration', 'underline');
-  spanElement.appendChild(linkElement);
-
-  return `${start}${spanElement.outerHTML}${end}`;
+  return generateTemplateElementFromString(finalContent);
 };
 
 export default convertChildToLinkTag;

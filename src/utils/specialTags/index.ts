@@ -1,5 +1,6 @@
 import unifyAndSetElementChildren from 'utils/unifyAndSetElementChildren';
 import getExtremeTextsUsingPoints from 'utils/formattingCases/auxiliaries/getExtremeTextsUsingPoints';
+import generateTemplateElementFromString from 'utils/formattingCases/auxiliaries/generateTemplateElementFromString';
 import convertChildToLinkTag from './linkAuxiliaries/convertChildToLinkTag';
 import { SelectionPoints } from '../formattingCases';
 
@@ -9,7 +10,7 @@ export const linkTag = (
   selectedText: string,
   link: string,
   points: SelectionPoints,
-): Node | string => {
+): Node => {
   const props = {
     child,
     points,
@@ -21,10 +22,7 @@ export const linkTag = (
 
   props.child = comparativeNode as ChildNode;
   const convertedChild = convertChildToLinkTag(props);
-
-  const templateElement = document.createElement('template');
-  templateElement.innerHTML = convertedChild;
-  const templateChildren = Array.from(templateElement.content.childNodes);
+  const templateChildren = Array.from(convertedChild.childNodes);
 
   const updatedChildren = Array.from(child.childNodes).map(subChild =>
     subChild !== comparativeNode ? subChild : templateChildren,
@@ -41,7 +39,7 @@ export const imageTag = (
   comparativeNode: Node,
   imageLink: string,
   { start }: SelectionPoints,
-): Node | string => {
+): Node => {
   const imageElement = document.createElement('img');
   imageElement.src = imageLink;
 
@@ -53,18 +51,17 @@ export const imageTag = (
   );
 
   const finalText = `${startText}${imageElement.outerHTML}${endText}`;
-  if (child.nodeName === '#text') return finalText;
+  const templateElement = generateTemplateElementFromString(finalText);
+  if (child.nodeName === '#text') return templateElement;
 
-  const childElement = child.firstChild?.parentElement as HTMLElement;
   if (child.nodeName !== 'DIV') {
+    const childElement = child.firstChild?.parentElement as HTMLElement;
+
     childElement.innerHTML = finalText;
     return childElement;
   }
 
-  const template = document.createElement('template');
-  template.innerHTML = finalText;
-
-  child.replaceChild(template.content, comparativeNode);
+  child.replaceChild(templateElement, comparativeNode);
   return child;
 };
 

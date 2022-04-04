@@ -8,7 +8,7 @@ const formattingTypeSwtich = (
   comparativeNode: Node,
   points: SelectionPoints,
   selectedText: string,
-): string | Node => {
+): Node => {
   if (property.code && typeof property.code !== 'string') {
     const { code } = property;
     const { withTag, justText } = styleFormat;
@@ -33,7 +33,7 @@ const formattingTypeSwtich = (
       return imageTag(child, comparativeNode, property.code || '', points);
 
     default:
-      return '';
+      return new Node();
   }
 };
 

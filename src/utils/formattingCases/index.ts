@@ -3,6 +3,7 @@ import {
   partOfTextSelected,
 } from './auxiliaries/withTagFunctions';
 import getExtremeTextsUsingPoints from './auxiliaries/getExtremeTextsUsingPoints';
+import generateTemplateElementFromString from './auxiliaries/generateTemplateElementFromString';
 
 interface SelectionPoints {
   start: number;
@@ -18,7 +19,7 @@ const justText = (
   child: ChildNode,
   { start, end }: SelectionPoints,
   { cssProp, value }: Code,
-): string => {
+): Node => {
   const updatedText: string[] = [];
   const content = child.textContent || '';
 
@@ -35,7 +36,7 @@ const justText = (
   updatedText.push(updatedElement.outerHTML);
   if (endText) updatedText.push(endText);
 
-  return updatedText.join('');
+  return generateTemplateElementFromString(updatedText.join(''));
 };
 
 const withTag = (
@@ -44,7 +45,7 @@ const withTag = (
   points: SelectionPoints,
   comparativeNode: Node,
   code: Code,
-): string | Node => {
+): Node => {
   const getFinalElement = (childElement: HTMLElement) => {
     const childText = comparativeNode.textContent || '';
     const isTextTag = comparativeNode.nodeName === 'SPAN';
@@ -56,8 +57,12 @@ const withTag = (
     };
     const isFullText = selectedText === childText && isTextTag;
 
-    if (isFullText) return fullTextSelected(handleWithTagProps);
-    return partOfTextSelected(selectedText, handleWithTagProps, points);
+    return generateTemplateElementFromString(
+      (() => {
+        if (isFullText) return fullTextSelected(handleWithTagProps);
+        return partOfTextSelected(selectedText, handleWithTagProps, points);
+      })(),
+    );
   };
 
   if (element.nodeName === 'SPAN') return getFinalElement(element);
@@ -71,10 +76,7 @@ const withTag = (
     return getFinalElement(childElement as HTMLElement);
   })();
 
-  const updatedElement = document.createElement('template');
-  updatedElement.innerHTML = finalElement;
-  element.replaceChild(updatedElement.content, comparativeNode);
-
+  element.replaceChild(finalElement, comparativeNode);
   return element;
 };
 
